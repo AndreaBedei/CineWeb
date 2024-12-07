@@ -617,6 +617,11 @@ video {
   display: flex;
 }
 
+.size-10 {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .h-12 {
   height: 3rem;
 }
@@ -637,8 +642,20 @@ video {
   width: 1.5rem;
 }
 
+.w-0 {
+  width: 0px;
+}
+
+.w-14 {
+  width: 3.5rem;
+}
+
 .max-w-4xl {
   max-width: 56rem;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 
 .list-decimal {
@@ -803,8 +820,23 @@ video {
 }
 
 @media (min-width: 640px) {
+  .sm\:size-12 {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .sm\:w-fit {
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+
   .sm\:flex-grow {
     flex-grow: 1;
+  }
+
+  .sm\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 }
 
