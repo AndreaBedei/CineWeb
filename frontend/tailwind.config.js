@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./src/**/*.{html,js,ts,vue}"],
   theme: {
-    extend: {},
+    extend: {
+        borderWidth: {
+            '1': '1px'
+        }
+    },
   },
   plugins: [],
 }
