@@ -5,7 +5,9 @@ import PageFooter from './components/PageFooter.vue';
 
 <template>
     <PageHeader :logged="false"></PageHeader>
-    <RouterView />
+    <main class="flex flex-grow">
+        <RouterView />
+    </main>
     <PageFooter></PageFooter>
 </template>
 
