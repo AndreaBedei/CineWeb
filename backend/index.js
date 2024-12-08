@@ -1,14 +1,30 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const movieRouter = require('./src/routes/movieRoutes');
+const moviesRouter = require('./src/routes/moviesRoutes');
+const usersRouter = require('./src/routes/usersRoutes');
+const genresRouter = require('./src/routes/genresRoutes');
+const cinemaHallsRouter = require('./src/routes/cinemaHallsRoutes');
+const screeningsRouter = require('./src/routes/screeningsRoutes');
+const reviewsRouter = require('./src/routes/reviewsRoutes');
+const seatsRouter = require('./src/routes/seatsRoutes');
+const reservationsRouter = require('./src/routes/reservationsRoutes');
 
 mongoose.connect('mongodb+srv://andrea:paperino@progettoweb.fz4bm.mongodb.net/?retryWrites=true&w=majority&appName=ProgettoWeb');
 
 const app = express();
 app.use(express.json());
 
-app.use('/movies', movieRouter);
+app.use('/movies', moviesRouter);
+app.use('/users', usersRouter);
+app.use('/genres', genresRouter);
+app.use('/cinemaHalls', cinemaHallsRouter);
+app.use('/screenings', screeningsRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/seats', seatsRouter);
+app.use('/reservations', reservationsRouter);
 
-app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+
+
+app.listen(3001, () => {
+    console.log('Server listening on port 3001');
 });

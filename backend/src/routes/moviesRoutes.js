@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/movieController');
+const controller = require('../controllers/moviesController');
 
 router.route('/')
-    .get(controller.listMovies)
+    .get(controller.moviesList)
     .post(controller.createMovie);
 
 router.route('/:id')

@@ -1,13 +1,21 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const movieSchema = new mongoose.Schema({
-    title: String,
+    title: { type: String, unique: true },
     year: Number,
     rated: String,
     released: Date,
     runtime: Number,
     countries: [String],
-    genres: [String],
+    genres: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genres' }],
+        validate: {
+            validator: function (array) {
+                return array.every(id => mongoose.Types.ObjectId.isValid(id));
+            },
+            message: 'All genres IDs must be present in genres schema'
+        }
+    },
     director: String,
     writers: [String],
     actors: [String],
@@ -26,6 +34,6 @@ const movieSchema = new mongoose.Schema({
     type: String
 });
 
-const movieModel = mongoose.model('Movie', movieSchema)
+const moviesModel = mongoose.model('Movie', movieSchema);
 
-module.exports = { movieModel }
+module.exports = { moviesModel };

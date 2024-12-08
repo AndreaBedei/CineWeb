@@ -1,7 +1,7 @@
-const { movieModel } = require('../models/moviesModel');
+const { moviesModel } = require('../models/moviesModel');
 
-exports.listMovies = (req, res) => {
-    movieModel.find()
+exports.moviesList = (req, res) => {
+    moviesModel.find()
         .then(doc => {
             res.json(doc);
         })
@@ -11,7 +11,7 @@ exports.listMovies = (req, res) => {
 }
 
 exports.readMovie = (req, res) => {
-    movieModel.findById(req.params.id)
+    moviesModel.findById(req.params.id)
         .then(doc => {
             if (!doc) {
                 return res.status(404).send('Movie not found');
@@ -24,7 +24,7 @@ exports.readMovie = (req, res) => {
 }
 
 exports.createMovie = (req, res) => {
-    const movie = new movieModel(req.body);
+    const movie = new moviesModel(req.body);
     movie.save()
         .then(doc => {
             res.json(doc);
@@ -35,7 +35,7 @@ exports.createMovie = (req, res) => {
 }
 
 exports.updateMovie = (req, res) => {
-    movieModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    moviesModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
         .then(doc => {
             if (!doc) {
                 return res.status(404).send('Movie not found');
@@ -48,7 +48,7 @@ exports.updateMovie = (req, res) => {
 }
 
 exports.deleteMovie = (req, res) => {
-    movieModel.findByIdAndDelete(req.params.id)
+    moviesModel.findByIdAndDelete(req.params.id)
         .then(doc => {
             if (!doc) {
                 return res.status(404).send('Movie not found');
@@ -67,7 +67,7 @@ exports.findMoviesByActorAndYearRange = (req, res) => {
         return res.status(400).send('Missing query parameters');
     }
 
-    movieModel.find()
+    moviesModel.find()
         .where('actors').equals(actor)
         .where('year').gte(startYear).lte(endYear)
         .then(docs => {
