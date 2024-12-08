@@ -1,17 +1,61 @@
 <script setup lang="ts">
 
-type Colors = ["red", "green"]
+type Colors = ["red", "green", "primary", "secondary"]
 type Color = Colors[number]
 
-const palette : {[key in Color]: {col: string, disabledCol: string}} =
+const palette : {[key in Color]: {bgCol: string, disabledBgCol: string, borderCol: string, disabledBorderCol: string}} =
 {
+    /*
+        "col": {
+            full: {
+                enabled: {
+                    bg: string,
+                    border: string,
+                    font: string,
+                },
+                disabled: {
+                    bg: string,
+                    border: string,
+                    font: string,
+                }
+            },
+            outline: {
+                enabled: {
+                    bg: string,
+                    border: string,
+                    font: string,
+                },
+                disabled: {
+                    bg: string,
+                    border: string,
+                    font: string,
+                }
+            }
+        }
+    */
     "red": {
-        col: "red-500",
-        disabledCol: "red-300"
+        bgCol: "bg-red-500",
+        disabledBgCol: "bg-red-300",
+        borderCol: "border-red-500",
+        disabledBorderCol: "border-red-300"
     },
     "green": {
-        col: "green-500",
-        disabledCol: "green-300"
+        bgCol: "bg-green-500",
+        disabledBgCol: "bg-green-300",
+        borderCol: "border-green-500",
+        disabledBorderCol: "border-green-300"
+    },
+    "primary": {
+        bgCol: "bg-primary",
+        disabledBgCol: "bg-primary-medium",
+        borderCol: "border-primary",
+        disabledBorderCol: "border-primary-medium"
+    },
+    "secondary": {
+        bgCol: "bg-secondary",
+        disabledBgCol: "bg-secondary-light",
+        borderCol: "border-secondary",
+        disabledBorderCol: "border-secondary-light"
     }
 }
 
@@ -19,12 +63,14 @@ const props = withDefaults(
     defineProps<{
         content: string,
         color: Color,
-        primary: boolean,
+        size: "small" | "regular",
+        outlineOnly: boolean,
         rounded: boolean,
         disabled: boolean,
         bold: boolean
     }>(),
     {
+        size: "regular",
         primary: true,
         rounded: true,
         disabled: false,
@@ -32,25 +78,30 @@ const props = withDefaults(
     }
 )
 
-function getCol() {
-    return props.disabled ? palette[props.color].disabledCol : palette[props.color].col
+function getSize() {
+    switch (props.size) {
+        case "regular":
+            return "px-5 py-3"
+        case "small":
+            return "px-2 py-1 text-sm"
+    }
 }
 
 function getBgCol() {
-    return "bg-" + (props.primary ? getCol() : "white")
+    return props.outlineOnly ? "bg-white" : (props.disabled ? palette[props.color].disabledBgCol : palette[props.color].bgCol)
 }
 
 function getBorderCol() {
-    return "border-" + getCol()
+    return props.disabled ? palette[props.color].disabledBorderCol : palette[props.color].borderCol
 }
 
 function getFontCol() {
-    return props.primary ? 'text-white' : props.disabled ? 'text-slate-600' : 'text-black'
+    return props.outlineOnly ? props.disabled ? 'text-slate-600' : 'text-black' : 'text-white'
 }
 </script>
 
 <template>
-    <button :disabled="disabled" class="p-3 transition-colors border-solid border-2" :class="[{'rounded-full' : rounded}, getBgCol(), getBorderCol(), getFontCol(), {'font-bold' : bold}]">
+    <button :disabled="disabled" class="transition-colors border-solid border-2" :class="[getSize() ,{'rounded-full' : rounded}, getBgCol(), getBorderCol(), getFontCol(), {'font-bold' : bold}]">
         {{ content }}
     </button>
 </template>

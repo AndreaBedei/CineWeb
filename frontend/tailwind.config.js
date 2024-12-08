@@ -9,13 +9,14 @@ export default {
       colors: {
         primary: {
           light: '#f2f7fc', // Azzurro chiaro (contrast ratio: 4.5:1 con bianco)
+          medium: '#83bffc',
           DEFAULT: '#0066cc', // Azzurro medio (contrast ratio: 7:1 con bianco)
           dark: '#003366', // Azzurro scuro (contrast ratio: 12:1 con bianco)
         },
         secondary: {
-          light: '#f6e4c8', 
-          DEFAULT: '#cc7a00', 
-          dark: '#b36b00', 
+          light: '#f6e4c8',
+          DEFAULT: '#cc7a00',
+          dark: '#b36b00',
         },
         neutral: {
           light: '#F4F4F4', // Grigio chiaro (contrast ratio: 4.5:1 con nero)

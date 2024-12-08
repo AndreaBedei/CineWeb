@@ -8,11 +8,15 @@ const meta = {
     tags: ['autodocs'],
     argTypes: {
         color: {
-            options: ["red", "green"]
+            options: ["red", "green", "primary", "secondary"]
+        },
+        size: {
+            options: ["small", "regular"]
         }
     },
     args: {
-        primary: true,
+        size: "regular",
+        outlineOnly: true,
         rounded: true,
         disabled: false,
         bold: false
@@ -40,7 +44,7 @@ export const PrimaryDisabled: Story = {
 export const Secondary: Story = {
     args: {
         content: "Bottone",
-        primary: false,
+        outlineOnly: false,
         color: "red"
     },
 }
@@ -48,7 +52,7 @@ export const Secondary: Story = {
 export const SecondaryDisabled: Story = {
     args: {
         content: "Bottone",
-        primary: false,
+        outlineOnly: false,
         color: "red",
         disabled: true
     },
