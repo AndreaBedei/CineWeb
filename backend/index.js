@@ -9,6 +9,7 @@ const screeningsRouter = require('./src/routes/screeningsRoutes');
 const reviewsRouter = require('./src/routes/reviewsRoutes');
 const seatsRouter = require('./src/routes/seatsRoutes');
 const reservationsRouter = require('./src/routes/reservationsRoutes');
+const imagesRouter = require('./src/routes/imagesRoutes');
 
 mongoose.connect('mongodb+srv://andrea:paperino@progettoweb.fz4bm.mongodb.net/?retryWrites=true&w=majority&appName=ProgettoWeb');
 
@@ -30,6 +31,7 @@ app.use('/screenings', screeningsRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/seats', seatsRouter);
 app.use('/reservations', reservationsRouter);
+app.use('/image', imagesRouter);
 
 
 
