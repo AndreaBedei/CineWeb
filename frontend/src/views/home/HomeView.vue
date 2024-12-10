@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UploadInput from '@/components/UploadInput.vue';
 import Carousel from './MovieCarousel.vue';
 
 const newReleases = [
@@ -40,7 +39,6 @@ const horrorMovies = [
     <Carousel title="Nuove uscite" :movies="newReleases" />
     <Carousel title="Di categoria Comico" :movies="comedyMovies" />
     <Carousel title="Di categoria Horror" :movies="horrorMovies" />
-    <UploadInput />
   </div>
 </template>
 
