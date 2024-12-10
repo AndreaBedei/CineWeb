@@ -1,6 +1,23 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import CryptoJS from 'crypto-js';
+import axios from 'axios'; 
 import BaseInput from '../../../components/BaseInput.vue';
+import Modal from "../../../components/PageModal.vue";
+
+const showModal = ref(false);
+const modalTitle = ref('');
+const modalMessage = ref('');
+
+function showPasswordMismatchModal(title: string, message: string) {
+  modalTitle.value = title;
+  modalMessage.value = message;
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
 
 const form = ref({
   name: '',
@@ -10,8 +27,26 @@ const form = ref({
   password: '',
 });
 
-function handleSubmit() {
-  console.log('Submitted form:', form.value);
+function hashPassword(password: string, salt: string) : string {
+    const saltedPassword = password + salt;
+    return CryptoJS.SHA512(saltedPassword).toString(CryptoJS.enc.Hex);
+}
+
+async function handleSubmit() {
+  try {
+    const emailCheck = await axios.get('http://localhost:3001/users/email?email=' + form.value.email);
+    if (emailCheck.data.length === 0) {
+      showPasswordMismatchModal('Errore', "Mail non registrata");
+      return;      
+    }
+    const salt = emailCheck.data[0].salt;
+    const hashPassw = hashPassword(form.value.password, salt);
+    await axios.post('http://localhost:3001/users/email?email=' + form.value.email, { password: hashPassw});
+    // TODO Avviare la sessione
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+      showPasswordMismatchModal('Errore di autenticazione', "Errore: " + error.response.data);
+  }
 }
 </script>
 
@@ -26,6 +61,12 @@ function handleSubmit() {
       Entra
     </button>
   </form>
+  <Modal
+      v-if="showModal"
+      :title="modalTitle"
+      :message="modalMessage"
+      @closeModal="closeModal"
+    />
 </template>
 
 <style scoped></style>

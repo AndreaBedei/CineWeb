@@ -16,7 +16,9 @@
     "tailwind": "npx tailwindcss -i ./src/assets/css/input.css -o ./src/assets/css/output.css --watch"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "cineweb": "file:",
+    "crypto-js": "^4.2.0",
     "mongoose": "^8.8.4",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",

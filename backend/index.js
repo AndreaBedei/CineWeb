@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 const moviesRouter = require('./src/routes/moviesRoutes');
 const usersRouter = require('./src/routes/usersRoutes');
 const genresRouter = require('./src/routes/genresRoutes');
@@ -12,6 +13,13 @@ const reservationsRouter = require('./src/routes/reservationsRoutes');
 mongoose.connect('mongodb+srv://andrea:paperino@progettoweb.fz4bm.mongodb.net/?retryWrites=true&w=majority&appName=ProgettoWeb');
 
 const app = express();
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+}));
+
 app.use(express.json());
 
 app.use('/movies', moviesRouter);

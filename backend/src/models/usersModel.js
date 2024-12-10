@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     birthdate: Date,
     email: { type: String, unique: true },
     password: String,
+    salt: String,
     isAdmin: Boolean,
     favoriteGenres: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genres' }],
