@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const cinemaHallSchema = new mongoose.Schema({
     name: { type: String, unique: true, required: true },
+    cinema: String,
     numberOfRows: {
         type: Number,
         min: 1

@@ -11,7 +11,4 @@ router.route('/:id')
     .put(controller.updateMovie)
     .delete(controller.deleteMovie);
 
-router.route('/search')
-    .get(controller.findMoviesByActorAndYearRange);
-
 module.exports = router;

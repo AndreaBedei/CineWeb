@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
             },
             message: 'Un utente può avere al massimo 5 generi preferiti'
         }
-    }
+    },
+    profilePicture: String
 });
 
 const usersModel = mongoose.model('User', userSchema);
