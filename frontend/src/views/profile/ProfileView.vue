@@ -1,0 +1,148 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import SimpleButton from '@/components/SimpleButton.vue'
+import Modal from './ModifyModal.vue'
+
+// Stato per gestire la visibilità del modale
+const isModalVisible = ref(false);
+
+// Funzione per aprire il modale
+function openModal() {
+  isModalVisible.value = true;
+}
+
+// Funzione per chiudere il modale
+function closeModal() {
+  isModalVisible.value = false;
+}
+
+// Funzione per gestire l'invio del modulo
+function handleFormSubmit(formData: FormData) {
+  console.log('Dati inviati:', Object.fromEntries(formData.entries()));
+  closeModal();
+}
+
+// Props o dati passati per il controllo
+const isCurrentUser = ref(true); // Simula se l'utente visualizzato è quello loggato
+const username = ref("Mario Rossi");
+const name = ref("Mario");
+const surname = ref("Rossi");
+const interests = ref(["Cinema", "Musica", "Tecnologia"]);
+
+// Dati fittizi per tabelle
+const userTickets = ref([
+  { film: "Avatar 2", time: "20:30", hall: "3", seat: "B12" },
+  { film: "Dune", time: "18:00", hall: "1", seat: "A10" },
+]);
+
+const pastFilms = ref([
+  { film: "Inception", time: "15:00", hall: "2", seat: "C3" },
+  { film: "Interstellar", time: "17:45", hall: "4", seat: "D5" },
+]);
+</script>
+
+<template>
+  <div class="p-4 space-y-6 w-screen">
+    <h1 class="text-2xl font-bold text-center">Profilo Utente</h1>
+    <div class="bg-gray-100 p-4 rounded-lg shadow flex flex-col lg:flex-row items-center lg:items-start">
+      <img
+        src="http://localhost:3001/img/profile/profile.webp"
+        alt="Foto Utente"
+        class="w-24 h-24 rounded-full object-cover mb-4 lg:mb-0 lg:mr-4"
+      />
+      <div class="flex-1">
+        <h2 class="text-xl font-semibold">{{ username }}</h2>
+        <p class="text-gray-600">
+          Interessi: <span v-for="(interest, index) in interests" :key="index">{{ interest + " " }}</span>
+        </p>
+      </div>
+      <div v-if="isCurrentUser" class="flex flex-col space-y-2 mt-4 lg:mt-0 lg:ml-4">
+        <SimpleButton
+          content="Modifica"
+          color="primary"
+          :outlineOnly="false"
+          :rounded="true"
+          size="small"
+          bold
+          :disabled="false"
+          @click="openModal"
+        />
+        <SimpleButton
+          content="Vedi Notifiche"
+          color="secondary"
+          :outlineOnly="false"
+          :rounded="true"
+          size="small"
+          bold
+          :disabled="false"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div v-if="isCurrentUser" class="bg-gray-100 p-4 rounded-lg shadow">
+      <h3 class="text-lg font-semibold mb-4">I tuoi biglietti</h3>
+      <table class="w-full text-left border-collapse">
+        <thead>
+            <tr>
+                <th id="film" class="border-b p-2">Film</th>
+                <th id="time" class="border-b p-2">Orario</th>
+                <th id="hall" class="border-b p-2">Sala</th>
+                <th id="seat" class="border-b p-2">Posto</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(ticket, index) in userTickets" :key="index">
+          <td headers="film" class="border-b p-2">{{ ticket.film }}</td>
+          <td headers="time" class="border-b p-2">{{ ticket.time }}</td>
+          <td headers="hall" class="border-b p-2">{{ ticket.hall }}</td>
+          <td headers="seat" class="border-b p-2">{{ ticket.seat }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div :class="{'col-span-2': !isCurrentUser, 'col-span-1': isCurrentUser}" class="bg-gray-100 p-4 rounded-lg shadow">
+      <h3 class="text-lg font-semibold mb-4">Film visti in passato</h3>
+      <table class="w-full text-left border-collapse">
+        <thead>
+            <tr>
+                <th id="film" class="border-b p-2">Film</th>
+                <th id="hall" class="border-b p-2">Sala</th>
+                <th id="time" class="border-b p-2">Orario</th>
+                <th id="seat" class="border-b p-2">Posto</th>
+                <th v-if="isCurrentUser" id="action" class="border-b p-2">Recensione</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(film, index) in pastFilms" :key="index">
+                <td headers="film" class="border-b p-2">{{ film.film }}</td>
+                <td headers="hall" class="border-b p-2">{{ film.hall }}</td>
+                <td headers="time" class="border-b p-2">{{ film.time }}</td>
+                <td headers="seat" class="border-b p-2">{{ film.seat }}</td>
+                <td v-if="isCurrentUser" headers="action" class="border-b p-2">
+                    <SimpleButton
+                    content="Recensisci"
+                    color="green"
+                    :outlineOnly="false"
+                    :rounded="true"
+                    size="small"
+                    bold
+                    :disabled="false"
+                    />
+                </td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+  <Modal
+      v-if="isModalVisible"
+      title="Modifica Profilo"
+      :name="name"
+      :surname="surname"      
+      @closeModal="closeModal"
+      @submitForm="handleFormSubmit"
+    />
+</template>
