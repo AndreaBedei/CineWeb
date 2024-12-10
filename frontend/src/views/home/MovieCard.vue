@@ -22,13 +22,15 @@ defineProps({
 <template>
   <a
     :href="link"
-    class="w-56 flex-shrink-0 p-2 block hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg"
+    class="w-56 flex-shrink-0 p-2 block hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg select-none"
+    draggable="false"
   >
     <section class="bg-white shadow-md rounded-lg overflow-hidden">
       <img
         :src="image"
         :alt="title"
         class="h-52 w-full object-contain bg-gray-100"
+        draggable="false"
       />
       <div class="p-3">
         <h3 class="text-lg font-semibold truncate" :title="title">{{ title }}</h3>

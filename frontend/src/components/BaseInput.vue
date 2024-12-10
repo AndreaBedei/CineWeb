@@ -24,7 +24,7 @@ function updateValue(value: string | Date) {
       :type="type"
       :value="modelValue"
       @input="updateValue($event.target.value)"
-      class="w-full p-3 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary"
+      class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary"
       required
     />
   </div>

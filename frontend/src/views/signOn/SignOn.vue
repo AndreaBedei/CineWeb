@@ -19,10 +19,12 @@ function resetView() {
 </script>
 
 <template>
-    <div class="bg-secondary-light flex flex-col flex-grow items-center ">
-        <h1 class="text-4xl font-bold text-primary-dark mt-6 mb-8">Benvenuto</h1>
-        
-        <div class="flex flex-col lg:flex-row items-center lg:items-start lg:justify-center lg:gap-16 w-full max-w-4xl px-4">
+    <div class="bg-secondary-light flex flex-col flex-grow items-center">
+        <div class="flex w-full mx-10">
+            <h1 class="flex-grow text-4xl font-bold text-primary-dark mt-6 mx-6 pb-2 w-full text-center border-b-solid border-b-1 border-b-black">Benvenuto</h1>
+        </div>
+
+        <div class="flex my-auto gap-20 lg:gap-10 flex-col lg:flex-row items-center w-full max-w-4xl px-4 py-10">
           <div class="flex justify-center items-center w-full lg:w-1/2">
             <img
             src="../../assets/img/icon.svg"
@@ -31,8 +33,8 @@ function resetView() {
             aria-label="Logo del sito"
             />
           </div>
-  
-          <div v-if="!currentView" class="flex flex-col space-y-4 w-full lg:w-1/2 pt-20 ">
+
+          <div v-if="!currentView" class="flex flex-col space-y-4 w-2/3 lg:w-1/2">
             <button
               @click="showLogin"
               class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark focus:ring-2 focus:ring-primary"

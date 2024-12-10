@@ -3,7 +3,10 @@
 type Colors = ["red", "green", "primary", "secondary"]
 type Color = Colors[number]
 
-const palette : {[key in Color]: {bgCol: string, disabledBgCol: string, borderCol: string, disabledBorderCol: string}} =
+type ColorStructure = { bg: string, border: string, font: string, bgHover: string, borderHover: string }
+type EnabledStructure = { enabled: ColorStructure, disabled: ColorStructure }
+
+const palette : {[key in Color]: { full: EnabledStructure, outline: EnabledStructure }} =
 {
     /*
         "col": {
@@ -34,28 +37,140 @@ const palette : {[key in Color]: {bgCol: string, disabledBgCol: string, borderCo
         }
     */
     "red": {
-        bgCol: "bg-red-500",
-        disabledBgCol: "bg-red-300",
-        borderCol: "border-red-500",
-        disabledBorderCol: "border-red-300"
+        full: {
+            enabled: {
+                bg: "bg-red-500",
+                bgHover: "hover:bg-red-950",
+                font: "text-white",
+                border: "border-red-500",
+                borderHover: "hover:border-red-950"
+            },
+            disabled: {
+                bg: "bg-red-300",
+                bgHover: "hover:bg-red-300",
+                font: "text-white",
+                border: "border-red-300",
+                borderHover: "hover:border-red-300"
+            }
+        },
+        outline: {
+            enabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-black",
+                border: "border-red-500",
+                borderHover: "hover:border-red-950"
+            },
+            disabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-slate-600",
+                border: "border-red-300",
+                borderHover: "hover:border-red-300"
+            }
+        }
     },
     "green": {
-        bgCol: "bg-green-500",
-        disabledBgCol: "bg-green-300",
-        borderCol: "border-green-500",
-        disabledBorderCol: "border-green-300"
+        full: {
+            enabled: {
+                bg: "bg-green-500",
+                bgHover: "hover:bg-green-950",
+                font: "text-white",
+                border: "border-green-500",
+                borderHover: "hover:border-green-950"
+            },
+            disabled: {
+                bg: "bg-green-300",
+                bgHover: "hover:bg-green-300",
+                font: "text-white",
+                border: "bg-green-300",
+                borderHover: "hover:border-v-300"
+            }
+        },
+        outline: {
+            enabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-black",
+                border: "border-green-500",
+                borderHover: "hover:border-green-950"
+            },
+            disabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-slate-600",
+                border: "border-green-300",
+                borderHover: "hover:border-green-300"
+            }
+        }
     },
     "primary": {
-        bgCol: "bg-primary",
-        disabledBgCol: "bg-primary-medium",
-        borderCol: "border-primary",
-        disabledBorderCol: "border-primary-medium"
+        full: {
+            enabled: {
+                bg: "bg-primary",
+                bgHover: "hover:bg-primary-dark",
+                font: "text-white",
+                border: "border-primary",
+                borderHover: "hover:border-primary-dark"
+            },
+            disabled: {
+                bg: "bg-primary-medium",
+                bgHover: "hover:bg-primary-medium",
+                font: "text-white",
+                border: "border-primary-medium",
+                borderHover: "hover:border-primary-medium"
+            }
+        },
+        outline: {
+            enabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-black",
+                border: "border-primary",
+                borderHover: "hover:border-primary-dark"
+            },
+            disabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-slate-600",
+                border: "border-primary-medium",
+                borderHover: "hover:border-primary-medium"
+            }
+        }
     },
     "secondary": {
-        bgCol: "bg-secondary",
-        disabledBgCol: "bg-secondary-light",
-        borderCol: "border-secondary",
-        disabledBorderCol: "border-secondary-light"
+        full: {
+            enabled: {
+                bg: "bg-secondary",
+                bgHover: "hover:bg-secondary-dark",
+                font: "text-white",
+                border: "border-secondary",
+                borderHover: "hover:border-secondary-dark"
+            },
+            disabled: {
+                bg: "bg-secondary-light",
+                bgHover: "hover:bg-secondary-light",
+                font: "text-white",
+                border: "border-secondary-light",
+                borderHover: "hover:border-secondary-light"
+            }
+        },
+        outline: {
+            enabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-black",
+                border: "border-secondary",
+                borderHover: "hover:border-secondary-dark"
+            },
+            disabled: {
+                bg: "bg-white",
+                bgHover: "hover:bg-white",
+                font: "text-slate-600",
+                border: "border-secondary-light",
+                borderHover: "hover:border-secondary-light"
+            }
+        }
     }
 }
 
@@ -63,16 +178,16 @@ const props = withDefaults(
     defineProps<{
         content: string,
         color: Color,
-        size: "small" | "regular",
-        outlineOnly: boolean,
-        rounded: boolean,
-        disabled: boolean,
-        bold: boolean
+        size?: "small" | "regular",
+        outlineOnly?: boolean,
+        rounding?: "none" | "small" | "full",
+        disabled?: boolean,
+        bold?: boolean
     }>(),
     {
         size: "regular",
-        primary: true,
-        rounded: true,
+        outlineOnly: false,
+        rounding: "none",
         disabled: false,
         bold: false
     }
@@ -87,21 +202,26 @@ function getSize() {
     }
 }
 
-function getBgCol() {
-    return props.outlineOnly ? "bg-white" : (props.disabled ? palette[props.color].disabledBgCol : palette[props.color].bgCol)
+function getRounding() {
+    switch (props.rounding) {
+        case 'none':
+            return null;
+        case 'small':
+            return "rounded-lg"
+        case 'full':
+            return "rounded-full"
+    }
 }
 
-function getBorderCol() {
-    return props.disabled ? palette[props.color].disabledBorderCol : palette[props.color].borderCol
-}
-
-function getFontCol() {
-    return props.outlineOnly ? props.disabled ? 'text-slate-600' : 'text-black' : 'text-white'
+function getRightPalette() {
+    return palette[props.color][props.outlineOnly ? "outline" : "full"][props.disabled ? "disabled" : "enabled"]
 }
 </script>
 
 <template>
-    <button :disabled="disabled" class="transition-colors border-solid border-2" :class="[getSize() ,{'rounded-full' : rounded}, getBgCol(), getBorderCol(), getFontCol(), {'font-bold' : bold}]">
+    <button :disabled="disabled" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
+        <!-- <slot></slot> -->
+        <!-- FIXME: uncomment and remove content -->
         {{ content }}
     </button>
 </template>

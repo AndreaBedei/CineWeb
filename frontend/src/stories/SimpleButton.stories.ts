@@ -12,14 +12,13 @@ const meta = {
         },
         size: {
             options: ["small", "regular"]
+        },
+        rounding: {
+            options: ["none", "small", "full"]
         }
     },
     args: {
-        size: "regular",
-        outlineOnly: true,
-        rounded: true,
-        disabled: false,
-        bold: false
+        rounding: "small",
     }
 } satisfies Meta<typeof SimpleButton>
 
@@ -29,14 +28,14 @@ type Story = StoryObj<typeof meta>
 export const Primary: Story = {
     args: {
         content: "Bottone",
-        color: "red"
+        color: "primary"
     },
 }
 
 export const PrimaryDisabled: Story = {
     args: {
         content: "Bottone",
-        color: "red",
+        color: "primary",
         disabled: true
     },
 }
@@ -45,7 +44,7 @@ export const Secondary: Story = {
     args: {
         content: "Bottone",
         outlineOnly: false,
-        color: "red"
+        color: "secondary"
     },
 }
 
@@ -53,7 +52,7 @@ export const SecondaryDisabled: Story = {
     args: {
         content: "Bottone",
         outlineOnly: false,
-        color: "red",
+        color: "secondary",
         disabled: true
     },
 }
