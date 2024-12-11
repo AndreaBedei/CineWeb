@@ -59,21 +59,3 @@ exports.deleteMovie = (req, res) => {
             res.status(500).send(err);
         });
 }
-
-exports.findMoviesByActorAndYearRange = (req, res) => {
-    const { actor, startYear, endYear } = req.query;
-
-    if (!actor || !startYear || !endYear) {
-        return res.status(400).send('Missing query parameters');
-    }
-
-    moviesModel.find()
-        .where('actors').equals(actor)
-        .where('year').gte(startYear).lte(endYear)
-        .then(docs => {
-            res.json(docs);
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
-}

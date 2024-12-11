@@ -25,7 +25,7 @@ function updateValue(value: string | Date) {
       :value="modelValue"
       @input="updateValue($event.target.value)"
       class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary"
-      required
+      :required="require"
     />
   </div>
 </template>

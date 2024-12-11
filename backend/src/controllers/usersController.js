@@ -85,7 +85,7 @@ exports.findAdmins = (req, res) => {
 }
 
 exports.findEmail = (req, res) => {
-    const email = req.query.email; // Ottieni l'email dalla query string
+    const email = req.query.email; 
 
     usersModel.find()
         .where('email').equals(email)

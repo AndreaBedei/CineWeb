@@ -59,3 +59,18 @@ exports.deleteCinemaHall = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+exports.getCinemaHallsByCinema = (req, res) => {
+    const cinemaName = req.params.cinema; // Ottieni il nome del cinema dai parametri della richiesta
+
+    cinemaHallsModel.find({ cinema: cinemaName }) // Filtra per il campo "cinema"
+        .then(docs => {
+            if (!docs || docs.length === 0) {
+                return res.status(404).send('No cinema halls found for the specified cinema');
+            }
+            res.json(docs);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
