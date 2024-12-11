@@ -52,17 +52,23 @@ exports.createUser = async (req, res) => {
 }
 
 exports.updateUser = (req, res) => {
+    // Assicurati che 'favoriteGenres' venga convertito da stringa JSON ad array
+    if (req.body.favoriteGenres) {
+      req.body.favoriteGenres = JSON.parse(req.body.favoriteGenres);
+    }
+    console.log(req.body);
+  
     usersModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then(doc => {
-            if (!doc) {
-                return res.status(404).send('User not found');
-            }
-            res.json(doc);
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
-}
+      .then(doc => {
+        if (!doc) {
+          return res.status(404).send('User not found');
+        }
+        res.json(doc);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  };
 
 exports.deleteUser = (req, res) => {
     usersModel.findByIdAndDelete(req.params.id)

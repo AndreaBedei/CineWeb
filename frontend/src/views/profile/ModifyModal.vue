@@ -1,126 +1,208 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
 import BaseInput from '@/components/BaseInput.vue';
+import axios from 'axios';
 
 const props = defineProps<{
-  title: string;
-  name: string;
-  surname: string;
+    title: string;
+    name: string;
+    surname: string;
+    interests: { _id: string; name: string }[];
 }>();
 
-const emit = defineEmits(['closeModal', 'submitForm']);
-
-// Stato per gli input
-import { ref } from 'vue';
 const newName = ref(props.name);
 const newSurname = ref(props.surname);
 const msgUser = ref('');
-const img = ref<File | null>(null);
+const selectedFile = ref<File | null>(null);
+const selectedInterests = ref(props.interests.map((interest) => ({ _id: interest._id, name: interest.name })));
+const availableInterests = ref([]);
 
-function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files.length > 0) {
-    img.value = target.files[0];
-  } else {
-    img.value = null;
-  }
+const emit = defineEmits(['closeModal', 'submitForm']);
+
+
+async function getInterests() {
+    try {
+        const response = await axios.get(`http://localhost:3001/genres/`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+getInterests().then((data) => {
+    if (data) {
+        availableInterests.value = data.map((interest: { _id: string; name: string }) => ({ _id: interest._id, name: interest.name }));
+    }
+});
+const newInterest = ref();
+const maxInterests = 5;
+
+function addInterest() {
+    if (newInterest.value && selectedInterests.value.length < maxInterests) {
+        selectedInterests.value.push(newInterest.value);
+        newInterest.value = '';
+    }
+}
+
+function removeInterest(index: number) {
+    selectedInterests.value.splice(index, 1);
 }
 
 function handleSubmit() {
+    const form = ref({
+        name: newName.value,
+        surname: newSurname.value,
+        favoriteGenres: JSON.stringify(selectedInterests.value.map((interest) => interest._id)),
+    });
+    if (selectedFile.value) {
+        uploadImage(selectedFile.value).then((data) => {
+            form.value.profilePicture = data;
+            emit('submitForm', form);
+            emit('closeModal');
+        });
+    } else {
+        emit('submitForm', form);
+        emit('closeModal');
+    }
+}
 
-  const formData = new FormData();
-  formData.append('nome', newName.value);
-  formData.append('cognome', newSurname.value);
-  if (img.value) {
-    formData.append('immagine', img.value);
-  }
+function handleFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        selectedFile.value = target.files[0];
+    } else {
+        selectedFile.value = null;
+    }
+    console.log(selectedFile.value);
+}
 
-  emit('submitForm', formData);
-  emit('closeModal');
+// Carica il file al server
+async function uploadImage() {
+
+    // Creazione del FormData
+    const formData = new FormData();
+    formData.append('image', selectedFile.value);
+
+    try {
+        const response = await fetch('http://localhost:3001/image/uploadprofile', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.imagePath; // Restituisce i dati dalla risposta se necessario
+        } else {
+            const error = await response.text();
+            console.error('Errore dal server:', error);
+        }
+    } catch (error) {
+        console.error('Errore durante il caricamento:', error);
+    }
 }
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    aria-labelledby="modal-title"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div
-      class="bg-white rounded-lg shadow-lg max-w-md w-full p-6"
-      role="document"
-    >
-      <h4
-        id="modal-title"
-        class="text-lg font-semibold text-primary-dark mb-4"
-      >
-        {{ props.title }}
-      </h4>
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6" role="document">
+            <h4 id="modal-title" class="text-lg font-semibold text-primary-dark mb-4">
+                {{ props.title }}
+            </h4>
 
-      <div v-if="msgUser" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert" aria-label="true">
-        <strong class="font-bold">Errore:</strong>
-        <span class="block sm:inline">{{ msgUser }}</span>
-        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-          <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" @click="msgUser = ''">
-            <title>Close</title>
-            <path d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>
-          </svg>
-        </span>
-      </div>
+            <div v-if="msgUser" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                role="alert" aria-label="true">
+                <strong class="font-bold">Errore:</strong>
+                <span class="block sm:inline">{{ msgUser }}</span>
+                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20" @click="msgUser = ''">
+                        <title>Close</title>
+                        <path
+                            d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z" />
+                    </svg>
+                </span>
+            </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <BaseInput
-          id="nome"
-          label="Nome*"
-          v-model="newName"
-          require
-        />
+            <form @submit.prevent="handleSubmit" class="space-y-4">
+                <BaseInput id="nome" label="Nome*" v-model="newName" require />
 
-        <BaseInput
-          id="cognome"
-          label="Cognome*"
-          v-model="newSurname"
-          require
-        />
+                <BaseInput id="cognome" label="Cognome*" v-model="newSurname" require />
 
-        <div class="mb-4">
-          <label for="immagine" class="block text-primary-dark font-semibold mb-2">
-            Immagine profilo
-          </label>
-          <input
-            id="immagine"
-            type="file"
-            accept="image/*"
-            @change="handleFileChange"
-            class="w-full p-3 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary"
-          />
+                <div class="mb-4">
+                    <label for="immagine" class="block text-primary-dark font-semibold mb-2">
+                        Immagine profilo
+                    </label>
+                    <input id="immagine" type="file" accept="image/*" @change="handleFileChange"
+                        class="w-full p-3 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary" />
+                </div>
+
+
+                <section>
+                    <p class="block text-primary-dark font-semibold mb-2">
+                        I tuoi interessi (max {{ maxInterests }})
+                    </p>
+
+                    <div class="space-y-2" role="list" aria-label="Lista degli interessi selezionati">
+                        <div v-for="(interest, index) in selectedInterests" :key="index"
+                            class="flex items-center justify-between bg-primary-light text-primary-dark p-2 rounded-lg"
+                            role="listitem">
+                            <span>{{ interest.name }}</span>
+                            <button type="button" @click="removeInterest(index)"
+                                class="text-red-500 hover:text-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none"
+                                aria-label="Rimuovi interesse {{ interest.name }}">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mt-4">
+                        <label for="newInterest" class="sr-only">Seleziona un interesse</label>
+                        <select id="newInterest" v-model="newInterest"
+                            class="w-full p-3 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary"
+                            aria-describedby="interest-help">
+                            <option value="" disabled>Seleziona un interesse</option>
+                            <option v-for="interest in availableInterests" :key="interest._id" :value="interest"
+                                :disabled="selectedInterests.some(selected => selected._id === interest._id)">
+                                {{ interest.name }}
+                            </option>
+                        </select>
+
+                        <button type="button" @click="addInterest"
+                            :disabled="!newInterest || selectedInterests.length >= maxInterests"
+                            class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                            aria-describedby="interest-help">
+                            Aggiungi
+                        </button>
+                    </div>
+
+                    <p id="interest-help" class="text-sm text-neutral-dark mt-2">
+                        Puoi aggiungere fino a {{ maxInterests }} interessi. Al momento ne hai
+                        {{ selectedInterests.length }}.
+                    </p>
+                </section>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" @click="emit('closeModal')"
+                        class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary-dark focus:ring-2 focus:ring-secondary focus:outline-none"
+                        aria-label="Chiudi modale">
+                        Chiudi
+                    </button>
+
+                    <button type="submit"
+                        class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:outline-none"
+                        aria-label="Salva informazioni">
+                        Salva
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div class="flex justify-end space-x-2">
-          <button
-            type="button"
-            @click="emit('closeModal')"
-            class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary-dark focus:ring-2 focus:ring-secondary focus:outline-none"
-            aria-label="Chiudi modale"
-          >
-            Chiudi
-          </button>
-
-          <button
-            type="submit"
-            class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:outline-none"
-            aria-label="Salva informazioni"
-          >
-            Salva
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
 </template>
 
 <style scoped>
 body.modal-open {
-  overflow: hidden;
+    overflow: hidden;
 }
 </style>

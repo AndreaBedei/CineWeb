@@ -3,45 +3,59 @@ import { ref } from 'vue';
 import SimpleButton from '@/components/SimpleButton.vue'
 import Modal from './ModifyModal.vue'
 import PasswordModal from './PasswordModal.vue'
+import ModalOk from '@/components/PageModal.vue'
 import axios from 'axios';
+
+interface Interest {
+  _id: string;
+  name: string;
+}
 
 const id = "6759566a35d32d551c8bb5e5";
 
 async function getUserData() {
   try {
     const response = await axios.get(`http://localhost:3001/users/${id}`);
-    return response.data;
+    const data = response.data;
+    if (data) {
+      userData.value = data;
+      mail.value = data.email;
+      name.value = data.name;
+      surname.value = data.surname;
+      interests.value = data.favoriteGenres;
+      image.value = data.profilePicture;
+  }
   } catch (error) {
     console.error(error);
     return null;
   }
 }
 
-const userData = ref(null);
+getUserData();
 
-getUserData().then((data) => {
-  if (data) {
-    userData.value = data;
-    mail.value = data.email;
-    name.value = data.name;
-    surname.value = data.surname;
-    interests.value = data.favoriteGenres;
-    image.value = data.profilePicture;
-  }
-});
+
 
 // Props o dati passati per il controllo
+const userData = ref(null);
 const isCurrentUser = ref(true); // Simula se l'utente visualizzato è quello loggato
 const mail = ref("");
 const name = ref("");
 const surname = ref("");
 const image = ref("profile.webp");
+const interests = ref<Interest[]>([]);
+const showModal = ref(false);
+const modalTitle = ref('');
+const modalMessage = ref('');
 
-interface Interest {
-  name: string;
+function showCheckModal(title: string, message: string) {
+    modalTitle.value = title;
+    modalMessage.value = message;
+    showModal.value = true;
 }
 
-const interests = ref<Interest[]>([]);
+function closeModal() {
+    showModal.value = false;
+}
 
 // Stato per gestire la visibilità del modale
 const isModalVisibleProfile = ref(false);
@@ -67,10 +81,16 @@ function closeModalPassword() {
 }
 
 // Funzione per gestire l'invio del modulo
-function handleFormSubmit(formData: FormData) {
-  console.log('Dati inviati:', Object.fromEntries(formData.entries()));
-  closeModalProfile();
-  closeModalPassword();
+async function handleFormSubmit(form: unknown) {
+  try {
+    await axios.put(`http://localhost:3001/users/${id}`, form.value);
+    showCheckModal('Conferma', "I dati sono stati aggiornati come richiesto!");
+    closeModalProfile();
+    closeModalPassword();
+  } catch (error) {
+    showCheckModal('Errore', "I dati non sono stati aggiornati! Contattare l'assistenza col seguente errore: " + error);
+  }
+  getUserData();
 }
 
 // Dati fittizi per tabelle
@@ -200,7 +220,8 @@ const pastFilms = ref([
       v-if="isModalVisibleProfile"
       title="Modifica Profilo"
       :name="name"
-      :surname="surname"      
+      :surname="surname"
+      :interests="interests"      
       @closeModal="closeModalProfile"
       @submitForm="handleFormSubmit"
     />
@@ -210,4 +231,5 @@ const pastFilms = ref([
       @closeModal="closeModalPassword"
       @submitForm="handleFormSubmit"
     />
+  <ModalOk v-if="showModal" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
 </template>

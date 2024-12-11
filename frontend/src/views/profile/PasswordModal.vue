@@ -16,20 +16,16 @@ const msgUser = ref('');
 
 
 function handleSubmit() {
-  const formData = new FormData();
   if (oldPwd.value !== '') {
     if (newPwd.value !== newPwdCk.value) {
       msgUser.value = 'La nuova password e la conferma non coincidono.';
       return;
     }
-    formData.append('oldpwd', oldPwd.value);
-    formData.append('newpwd', newPwd.value);
-    formData.append('newpwdck', newPwdCk.value);
   } else if(newPwd.value !== '' || newPwdCk.value !== '') {
     msgUser.value = 'Inserire la vecchia password per modificare la password.';
     return;
   }
-  emit('submitForm', formData);
+  emit('submitForm', ref({ password: newPwd.value }));
   emit('closeModal');
 }
 </script>
