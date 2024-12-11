@@ -2,6 +2,38 @@
 import { ref } from 'vue';
 import SimpleButton from '@/components/SimpleButton.vue'
 import Modal from './ModifyModal.vue'
+import axios from 'axios';
+
+const id = "6759566a35d32d551c8bb5e5";
+
+async function getUserData() {
+  try {
+    const response = await axios.get(`http://localhost:3001/users/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+const userData = ref(null);
+
+getUserData().then((data) => {
+  if (data) {
+    userData.value = data;
+    mail.value = data.email;
+    name.value = data.name;
+    surname.value = data.surname;
+    interests.value = data.favoriteGenres;
+  }
+});
+
+// Props o dati passati per il controllo
+const isCurrentUser = ref(true); // Simula se l'utente visualizzato è quello loggato
+const mail = ref("");
+const name = ref("");
+const surname = ref("");
+const interests = ref([]);
 
 // Stato per gestire la visibilità del modale
 const isModalVisible = ref(false);
@@ -21,13 +53,6 @@ function handleFormSubmit(formData: FormData) {
   console.log('Dati inviati:', Object.fromEntries(formData.entries()));
   closeModal();
 }
-
-// Props o dati passati per il controllo
-const isCurrentUser = ref(true); // Simula se l'utente visualizzato è quello loggato
-const username = ref("Mario Rossi");
-const name = ref("Mario");
-const surname = ref("Rossi");
-const interests = ref(["Cinema", "Musica", "Tecnologia"]);
 
 // Dati fittizi per tabelle
 const userTickets = ref([
@@ -51,7 +76,10 @@ const pastFilms = ref([
         class="w-24 h-24 rounded-full object-cover mb-4 lg:mb-0 lg:mr-4"
       />
       <div class="flex-1">
-        <h2 class="text-xl font-semibold">{{ username }}</h2>
+        <h2 class="text-xl font-semibold">{{ name }} {{ surname }}</h2>
+        <p class="text-gray-600">
+          Mail: {{ mail }}
+        </p>
         <p class="text-gray-600">
           Interessi: <span v-for="(interest, index) in interests" :key="index">{{ interest + " " }}</span>
         </p>

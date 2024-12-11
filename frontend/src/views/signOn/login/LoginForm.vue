@@ -41,8 +41,9 @@ async function handleSubmit() {
         }
         const salt = emailCheck.data[0].salt;
         const hashPassw = hashPassword(form.value.password, salt);
-        await axios.post('http://localhost:3001/users/email?email=' + form.value.email, { password: hashPassw });
+        const ret = await axios.post('http://localhost:3001/users/email?email=' + form.value.email, { password: hashPassw });
         // TODO Avviare la sessione (https://pinia.vuejs.org/introduction.html)
+        console.log(ret.data);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

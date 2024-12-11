@@ -11,6 +11,6 @@ router.route('/:id')
     .put(controller.updateCinemaHall)
     .delete(controller.deleteCinemaHall);
 
-router.get('/cinemaHalls/cinema/:cinema', cinemaHallsController.getCinemaHallsByCinema);
+router.get('/cinemaHalls/cinema/:cinema', controller.getCinemaHallsByCinema);
 
 module.exports = router;
