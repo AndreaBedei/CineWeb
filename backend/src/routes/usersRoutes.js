@@ -18,4 +18,6 @@ router.route('/:id')
 router.route('/admins')
     .get(controller.findAdmins)
 
+router.get('/users/:id/interests', getUserInterests);
+
 module.exports = router;

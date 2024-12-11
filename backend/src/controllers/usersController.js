@@ -112,3 +112,17 @@ exports.authenticateUser = (req, res) => {
             res.status(500).send(err);
         });
 }
+
+exports.getUserInterests = (req, res) => {
+    usersModel.findById(req.params.id)
+        .populate('favoriteGenres') 
+        .then(user => {
+            if (!user) {
+                return res.status(404).send('User not found');
+            }
+            res.json(user.favoriteGenres); 
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};

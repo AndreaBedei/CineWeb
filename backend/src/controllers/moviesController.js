@@ -59,3 +59,13 @@ exports.deleteMovie = (req, res) => {
             res.status(500).send(err);
         });
 }
+
+exports.availableMovies = (req, res) => {
+    moviesModel.find({ isAvailable: true })
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
