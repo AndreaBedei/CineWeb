@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import CryptoJS from 'crypto-js';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import BaseInput from '../../../components/BaseInput.vue';
 import Modal from "../../../components/PageModal.vue";
 

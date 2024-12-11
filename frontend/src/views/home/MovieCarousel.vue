@@ -20,7 +20,6 @@ const currentCardIndex = ref(0)
 const observer: Ref<IntersectionObserver | null> = ref(null)
 const showLeftButton = ref(false)
 const showRightButton = ref(false)
-const scrolling = ref(false)
 
 onMounted(() => {
     const options = {
