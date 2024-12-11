@@ -11,4 +11,6 @@ router.route('/:id')
     .put(controller.updateMovie)
     .delete(controller.deleteMovie);
 
+router.get('/available-movies', availableMovies);
+
 module.exports = router;

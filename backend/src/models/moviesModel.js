@@ -11,6 +11,7 @@ const movieSchema = new mongoose.Schema({
             message: 'All genres IDs must be present in genres schema'
         }
     },
+    isAvailable: { type: Boolean, default: true },
     poster: String
 });
 
