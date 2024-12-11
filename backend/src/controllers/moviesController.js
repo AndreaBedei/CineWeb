@@ -69,3 +69,22 @@ exports.availableMovies = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+exports.availableMoviesByGenre = (req, res) => {
+    const genreId = req.params.genreId;
+ 
+    moviesModel.find({
+        genres: genreId,
+        isAvailable: true
+    })
+    .populate('genres', 'name')
+    .then(movies => {
+        if (movies.length === 0) {
+            return res.status(404).send('No movies found for the specified genre');
+        }
+        res.json(movies);
+    })
+    .catch(err => {
+        res.status(500).send(err);
+    });
+};

@@ -3,37 +3,32 @@ import BaseInput from '@/components/BaseInput.vue';
 
 const props = defineProps<{
   title: string;
-  name: string;
-  surname: string;
 }>();
 
 const emit = defineEmits(['closeModal', 'submitForm']);
 
 // Stato per gli input
 import { ref } from 'vue';
-const newName = ref(props.name);
-const newSurname = ref(props.surname);
+const oldPwd = ref('');
+const newPwd = ref('');
+const newPwdCk = ref('');
 const msgUser = ref('');
-const img = ref<File | null>(null);
 
-function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files.length > 0) {
-    img.value = target.files[0];
-  } else {
-    img.value = null;
-  }
-}
 
 function handleSubmit() {
-
   const formData = new FormData();
-  formData.append('nome', newName.value);
-  formData.append('cognome', newSurname.value);
-  if (img.value) {
-    formData.append('immagine', img.value);
+  if (oldPwd.value !== '') {
+    if (newPwd.value !== newPwdCk.value) {
+      msgUser.value = 'La nuova password e la conferma non coincidono.';
+      return;
+    }
+    formData.append('oldpwd', oldPwd.value);
+    formData.append('newpwd', newPwd.value);
+    formData.append('newpwdck', newPwdCk.value);
+  } else if(newPwd.value !== '' || newPwdCk.value !== '') {
+    msgUser.value = 'Inserire la vecchia password per modificare la password.';
+    return;
   }
-
   emit('submitForm', formData);
   emit('closeModal');
 }
@@ -70,31 +65,28 @@ function handleSubmit() {
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <BaseInput
-          id="nome"
-          label="Nome*"
-          v-model="newName"
+          id="oldpwd"
+          label="Vecchia password*"
+          type="password"
+          v-model="oldPwd"
           require
         />
 
         <BaseInput
-          id="cognome"
-          label="Cognome*"
-          v-model="newSurname"
+          id="newpwd"
+          label="Nuova password*"
+          type="password"
+          v-model="newPwd"
           require
         />
 
-        <div class="mb-4">
-          <label for="immagine" class="block text-primary-dark font-semibold mb-2">
-            Immagine profilo
-          </label>
-          <input
-            id="immagine"
-            type="file"
-            accept="image/*"
-            @change="handleFileChange"
-            class="w-full p-3 border border-primary-light rounded-lg focus:ring-2 focus:ring-primary"
-          />
-        </div>
+        <BaseInput
+          id="newpwdck"
+          label="Conferma nuova password*"
+          type="password"
+          v-model="newPwdCk"
+          require
+        />
 
         <div class="flex justify-end space-x-2">
           <button
