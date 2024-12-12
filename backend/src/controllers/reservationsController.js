@@ -1,4 +1,5 @@
 const { reservationsModel } = require('../models/reservationsModel');
+const mongoose = require('mongoose');
 
 exports.reservationsList = (req, res) => {
     reservationsModel.find()
@@ -64,10 +65,11 @@ exports.deleteReservation = (req, res) => {
 exports.findReservationsByUser = (req, res) => {
     const userId = req.params.userId;
 
-    reservationsModel.find({ user: userId })
+    reservationsModel.find()
+        .where('user').equals(userId)
         .sort({ reservationDate: -1 })
         .then(docs => {
-            res.json(docs);
+            return res.json(docs);
         })
         .catch(err => {
             res.status(500).send(err);
@@ -90,16 +92,16 @@ exports.findReservationsByScreening = (req, res) => {
 exports.getPastReservationsByUser = (req, res) => {
     const userId = req.params.userId;
 
-    reservationsModel.find({
-        user: userId,
-        reservationDate: { $lt: Date.now() } 
-    })
+    reservationsModel.find({ $and: [
+        {user: userId},
+        {reservationDate: { $lt: new Date() }} 
+    ]})
     .sort({ reservationDate: -1 }) 
     .then(docs => {
         if (docs.length === 0) {
             return res.status(404).send('No past reservations found for this user');
         }
-        res.json(docs);
+        return res.json(docs);
     })
     .catch(err => {
         res.status(500).send(err);
@@ -109,19 +111,18 @@ exports.getPastReservationsByUser = (req, res) => {
 exports.getFutureReservationsByUser = (req, res) => {
     const userId = req.params.userId;
 
-    reservationsModel.find({
-        user: userId,
-        reservationDate: { $gt: Date.now() } 
-    })
+    reservationsModel.find({ $and: [
+        {user: userId},
+        {reservationDate: { $gt: new Date() }} 
+    ]})
     .sort({ reservationDate: 1 }) 
     .then(docs => {
         if (docs.length === 0) {
             return res.status(404).send('No future reservations found for this user');
         }
-        res.json(docs);
+        return res.json(docs);
     })
     .catch(err => {
         res.status(500).send(err);
     });
 };
-
