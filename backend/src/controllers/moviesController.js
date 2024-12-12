@@ -61,7 +61,8 @@ exports.deleteMovie = (req, res) => {
 }
 
 exports.availableMovies = (req, res) => {
-    moviesModel.find({ isAvailable: true })
+    moviesModel.find()
+        .where('isAvailable').equals(true)
         .then(doc => {
             res.json(doc);
         })
@@ -69,6 +70,16 @@ exports.availableMovies = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+exports.moviesList2 = (req, res) => {
+    moviesModel.find()
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            res.send(err);
+        });
+}
 
 exports.availableMoviesByGenre = (req, res) => {
     const genreId = req.params.genreId;
