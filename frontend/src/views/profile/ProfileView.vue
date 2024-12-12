@@ -227,7 +227,8 @@ const pastFilms = ref([
     />
   <PasswordModal
       v-if="isModalVisiblePassword"
-      title="Modifica Password"   
+      title="Modifica Password"
+      :id="id"   
       @closeModal="closeModalPassword"
       @submitForm="handleFormSubmit"
     />

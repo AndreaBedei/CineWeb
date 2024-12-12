@@ -12,6 +12,7 @@ router.route('/email')
 
 router.route('/:id')
     .get(controller.getUserByID)
+    .post(controller.authenticateUserById)
     .put(controller.updateUser)
     .delete(controller.deleteUser);
 

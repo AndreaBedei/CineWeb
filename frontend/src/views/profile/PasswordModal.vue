@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import BaseInput from '@/components/BaseInput.vue';
+import CryptoJS from 'crypto-js';
+import axios from 'axios';
 
 const props = defineProps<{
   title: string;
+  id: string;
 }>();
 
 const emit = defineEmits(['closeModal', 'submitForm']);
@@ -14,8 +17,12 @@ const newPwd = ref('');
 const newPwdCk = ref('');
 const msgUser = ref('');
 
+function hashPassword(password: string, salt: string): string {
+    const saltedPassword = password + salt;
+    return CryptoJS.SHA512(saltedPassword).toString(CryptoJS.enc.Hex);
+}
 
-function handleSubmit() {
+async function handleSubmit() {
   if (oldPwd.value !== '') {
     if (newPwd.value !== newPwdCk.value) {
       msgUser.value = 'La nuova password e la conferma non coincidono.';
@@ -25,8 +32,20 @@ function handleSubmit() {
     msgUser.value = 'Inserire la vecchia password per modificare la password.';
     return;
   }
-  emit('submitForm', ref({ password: newPwd.value }));
-  emit('closeModal');
+
+  const user = await axios.get(`http://localhost:3001/users/${props.id}`);
+  const salt = user.data.salt;
+  const hashPassw = hashPassword(oldPwd.value, salt);
+  console.log(hashPassw);
+  axios.post(`http://localhost:3001/users/${props.id}`, { password: hashPassw })
+  .then(() => {
+    const hashPasswNew = hashPassword(newPwd.value, salt);
+    emit('submitForm', ref({ password: hashPasswNew }));
+    emit('closeModal');
+  })
+  .catch((err) => {
+    msgUser.value = " " + err.response.data;
+  });
 }
 </script>
 

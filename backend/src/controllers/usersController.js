@@ -19,8 +19,6 @@ exports.getUserByID = (req, res) => {
                 return res.status(404).send('User not found');
             }
             doc.password = undefined;
-            doc.salt = undefined;
-            console.log(doc);
             res.json(doc);
         })
         .catch(err => {
@@ -117,6 +115,20 @@ exports.authenticateUser = (req, res) => {
             const user = docs[0];
             if (req.body.password === user.password) {
                 res.json(user._id);
+            } else {
+                res.status(401).send('Password incorretta');
+            }
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+}
+
+exports.authenticateUserById = (req, res) => {
+    usersModel.findById(req.params.id)
+        .then(user => {
+            if (req.body.password === user.password) {
+                res.json("Ok");
             } else {
                 res.status(401).send('Password incorretta');
             }
