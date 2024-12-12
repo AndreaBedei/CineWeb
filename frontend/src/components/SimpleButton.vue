@@ -183,6 +183,7 @@ const props = withDefaults(
         rounding?: "none" | "small" | "full",
         disabled?: boolean,
         bold?: boolean
+        handleClick?: () => void
     }>(),
     {
         size: "regular",
@@ -216,10 +217,11 @@ function getRounding() {
 function getRightPalette() {
     return palette[props.color][props.outlineOnly ? "outline" : "full"][props.disabled ? "disabled" : "enabled"]
 }
+
 </script>
 
 <template>
-    <button :disabled="disabled" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
+    <button :disabled="disabled" :onclick="handleClick" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
         <!-- <slot></slot> -->
         <!-- FIXME: uncomment and remove content -->
         {{ content }}

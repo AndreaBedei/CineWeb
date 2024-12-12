@@ -3,6 +3,13 @@ import { ref } from 'vue';
 import BaseInput from '../../../components/BaseInput.vue';
 import Modal from "../../../components/PageModal.vue";
 import { useUserStore } from '@/views/stores/user';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+function goToHome() {
+  router.push('/');
+}
 
 const showModal = ref(false);
 const modalTitle = ref('');
@@ -38,7 +45,10 @@ async function handleSubmit() {
             default:
                 showPasswordMismatchModal('Errore di autenticazione', "Errore: " + res.error?.response?.data);
         }
+    }else{
+        goToHome();
     }
+
 }
 </script>
 

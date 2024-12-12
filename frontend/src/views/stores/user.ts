@@ -52,8 +52,8 @@ export const useUserStore = defineStore('user', {
                 const hashPassw = hashPassword(password, salt);
                 const ret = await axios.post('http://localhost:3001/users/email?email=' + email, { password: hashPassw });
 
-                loadData(ret.data.id);
-                this.userId = ret.data.id;
+                loadData(ret.data);
+                this.userId = ret.data;
             }
             catch (error) {
                 console.error(error);
