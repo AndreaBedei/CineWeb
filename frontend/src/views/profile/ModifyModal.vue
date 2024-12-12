@@ -74,7 +74,6 @@ function handleFileChange(event: Event) {
     } else {
         selectedFile.value = null;
     }
-    console.log(selectedFile.value);
 }
 
 // Carica il file al server

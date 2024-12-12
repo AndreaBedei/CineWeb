@@ -36,7 +36,6 @@ async function handleSubmit() {
   const user = await axios.get(`http://localhost:3001/users/${props.id}`);
   const salt = user.data.salt;
   const hashPassw = hashPassword(oldPwd.value, salt);
-  console.log(hashPassw);
   axios.post(`http://localhost:3001/users/${props.id}`, { password: hashPassw })
   .then(() => {
     const hashPasswNew = hashPassword(newPwd.value, salt);

@@ -32,7 +32,7 @@ const reviewSchema = new mongoose.Schema({
     },
     reviewDate: {
         type: Date,
-        default: Date.now  
+        default: () => new Date()
     }
 });
 

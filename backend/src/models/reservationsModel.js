@@ -38,7 +38,7 @@ const reservationSchema = new mongoose.Schema({
     },
     reservationDate: {
         type: Date,
-        default: Date.now
+        default: () => new Date()
     }
 });
 
