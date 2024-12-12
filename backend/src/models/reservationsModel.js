@@ -26,7 +26,7 @@ const reservationSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: function (array) {
-                return array.length > 0; // Assicurarsi che ci siano posti prenotati
+                return array.length > 0; 
             },
             message: 'No seat selected'
         }

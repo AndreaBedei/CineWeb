@@ -17,7 +17,10 @@ router.route('/top-rated')
 router.route('/user/:userId')
     .get(controller.getReviewsByUser);
 
-router.route('/screening/:screeningId')
-    .get(controller.getReviewsByScreening);
+router.route('/screening/:movieId')
+    .get(controller.getReviewsByMovie);
+
+router.route('/average-rating/:movieId')
+    .get(controller.getAverageRatingByMovie);
 
 module.exports = router;

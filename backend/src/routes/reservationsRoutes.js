@@ -14,6 +14,12 @@ router.route('/:id')
 router.route('/user/:userId')
     .get(controller.findReservationsByUser);
 
+router.route('/user/:userId/past')
+    .get(controller.getPastReservationsByUser);
+
+router.route('/user/:userId/future')
+    .get(controller.getFutureReservationsByUser);
+
 router.route('/screening/:screeningId')
     .get(controller.findReservationsByScreening);
 

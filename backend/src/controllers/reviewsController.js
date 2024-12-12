@@ -38,14 +38,14 @@ exports.getReviewsByUser = (req, res) => {
         });
 };
 
-exports.getReviewsByScreening = (req, res) => {
-    const screeningId = req.params.screeningId;
+exports.getReviewsByMovie = (req, res) => {
+    const movieId = req.params.moviegId;
 
-    reviewsModel.find({ screening: screeningId })
+    reviewsModel.find({ movie: movieId })
         .sort({ reviewDate: -1 }) 
         .then(docs => {
             if (docs.length === 0) {
-                return res.status(404).send('No reviews found for this screening');
+                return res.status(404).send('No reviews found for this movie');
             }
             res.json(docs);
         })
@@ -102,4 +102,25 @@ exports.deleteReview = (req, res) => {
         .catch(err => {
             res.status(500).send(err);
         });
+};
+
+exports.getAverageRatingByMovie = (req, res) => {
+    const movieId = req.params.movieId;
+
+    reviewsModel.aggregate([
+        { $match: { movie: mongoose.Types.ObjectId(movieId) } }, 
+        { $group: { 
+            _id: "$movie", 
+            averageRating: { $avg: "$rating" } 
+        } }
+    ])
+    .then(result => {
+        if (result.length === 0) {
+            res.json({ averageRating: "/" });
+        }
+        res.json({ averageRating: result[0].averageRating });
+    })
+    .catch(err => {
+        res.status(500).send(err);
+    });
 };
