@@ -30,7 +30,6 @@
     
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
             uploadStatus.value = { success: true, message: data.message };
         } else {
             const error = await response.json();

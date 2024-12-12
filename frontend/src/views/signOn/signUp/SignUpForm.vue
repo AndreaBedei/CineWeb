@@ -45,7 +45,6 @@ async function handleSubmit() {
   form.value.passwordCheck = ''; 
   try {
     const emailCheck = await axios.get('http://localhost:3001/users/email?email=' + form.value.email);
-    console.log(emailCheck);
     if (emailCheck.data.length > 0) {
       showPasswordMismatchModal('Email già registrata', "L'email inserita è già registrata. Inserisci un'altra email.");
       return;

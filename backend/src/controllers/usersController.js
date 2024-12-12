@@ -54,7 +54,6 @@ exports.updateUser = (req, res) => {
     if (req.body.favoriteGenres) {
       req.body.favoriteGenres = JSON.parse(req.body.favoriteGenres);
     }
-    console.log(req.body);
   
     usersModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
       .then(doc => {
