@@ -2,8 +2,11 @@
 import { ref } from 'vue';
 import Carousel from './MovieCarousel.vue';
 import axios from 'axios';
+import { useUserStore } from '../stores/user';
 
-const id = "6759566a35d32d551c8bb5e5";
+const user = useUserStore();
+const id = user.userId;
+console.log(id);
 
 const newReleases = ref([]);
 const comedyMovies = ref([]);

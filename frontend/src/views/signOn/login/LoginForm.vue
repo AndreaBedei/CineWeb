@@ -1,13 +1,21 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import CryptoJS from 'crypto-js';
-import axios, { AxiosError } from 'axios';
 import BaseInput from '../../../components/BaseInput.vue';
 import Modal from "../../../components/PageModal.vue";
+import { useUserStore } from '@/views/stores/user';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+function goToHome() {
+  router.push('/');
+}
 
 const showModal = ref(false);
 const modalTitle = ref('');
 const modalMessage = ref('');
+
+const user = useUserStore();
 
 function showPasswordMismatchModal(title: string, message: string) {
     modalTitle.value = title;
@@ -27,29 +35,20 @@ const form = ref({
     password: '',
 });
 
-function hashPassword(password: string, salt: string): string {
-    const saltedPassword = password + salt;
-    return CryptoJS.SHA512(saltedPassword).toString(CryptoJS.enc.Hex);
-}
-
 async function handleSubmit() {
-    try {
-        const emailCheck = await axios.get('http://localhost:3001/users/email?email=' + form.value.email);
-        if (emailCheck.data.length === 0) {
-            showPasswordMismatchModal('Errore', "Mail non registrata");
-            return;
+
+    const res = await user.login(form.value.email, form.value.password);
+    if (!res.success) {
+        switch (res.errorNum) {
+            case 0:
+                showPasswordMismatchModal('Errore', "Mail non registrata");
+            default:
+                showPasswordMismatchModal('Errore di autenticazione', "Errore: " + res.error?.response?.data);
         }
-        const salt = emailCheck.data[0].salt;
-        const hashPassw = hashPassword(form.value.password, salt);
-        const ret = await axios.post('http://localhost:3001/users/email?email=' + form.value.email, { password: hashPassw });
-        // TODO Avviare la sessione (https://pinia.vuejs.org/introduction.html)
-        console.log(ret.data);
-
-
-    } catch (error: unknown) {
-        const err = error as AxiosError;
-        showPasswordMismatchModal('Errore di autenticazione', "Errore: " + err.response?.data);
+    }else{
+        goToHome();
     }
+
 }
 </script>
 
