@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref, useTemplateRef, type PropType, type Ref } from 'vue';
+import { onMounted, onUpdated, ref, useTemplateRef, type Ref } from 'vue';
 import MovieCard from './MovieCard.vue';
 
 // Props accettate dal componente
 const props = defineProps({
-    title: {
-        type: String,
-        required: true,
-    },
-    movies: {
-        type: Array as PropType<Array<{ image: string; title: string; rating: number }>>,
-        required: true,
-    },
+    title: String,
+    movies: Array
 });
 
 const container = useTemplateRef("carouselRef")
@@ -20,6 +14,7 @@ const currentCardIndex = ref(0)
 const observer: Ref<IntersectionObserver | null> = ref(null)
 const showLeftButton = ref(false)
 const showRightButton = ref(false)
+console.log(props.movies)
 
 onMounted(() => {
     const options = {
@@ -82,8 +77,8 @@ function scroll(direction: 'left' | 'right') {
         </header>
         <div class="relative group">
             <div class="flex overflow-x-auto gap-1 no-scrollbar scroll-smooth" ref="carouselRef">
-                <MovieCard v-for="(movie, index) in props.movies" ref="cards" :key="index" :image="movie.image"
-                    :title="movie.title" :rating="movie.rating" />
+                <MovieCard v-for="(movie, index) in props.movies" ref="cards" :key="index" :image="movie.poster"
+                    :title="movie.title" :rating="0" />
             </div>
             <button v-if="showLeftButton"
                 class="absolute top-1/2 left-6 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-10 h-10 hidden group-hover:block"

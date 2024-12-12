@@ -27,7 +27,7 @@ defineProps({
   >
     <section class="bg-white shadow-md rounded-lg overflow-hidden">
       <img
-        :src="image"
+        :src="`http://localhost:3001/img/poster/${image}`"
         :alt="title"
         class="h-52 w-full object-contain bg-gray-100"
         draggable="false"

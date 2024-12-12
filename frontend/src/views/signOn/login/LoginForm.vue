@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import CryptoJS from 'crypto-js';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import BaseInput from '../../../components/BaseInput.vue';
 import Modal from "../../../components/PageModal.vue";
 
@@ -45,9 +45,10 @@ async function handleSubmit() {
         // TODO Avviare la sessione (https://pinia.vuejs.org/introduction.html)
         console.log(ret.data);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        showPasswordMismatchModal('Errore di autenticazione', "Errore: " + error.response.data);
+
+    } catch (error: unknown) {
+        const err = error as AxiosError;
+        showPasswordMismatchModal('Errore di autenticazione', "Errore: " + err.response?.data);
     }
 }
 </script>

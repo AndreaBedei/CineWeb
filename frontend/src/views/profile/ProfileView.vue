@@ -2,56 +2,95 @@
 import { ref } from 'vue';
 import SimpleButton from '@/components/SimpleButton.vue'
 import Modal from './ModifyModal.vue'
+import PasswordModal from './PasswordModal.vue'
+import ModalOk from '@/components/PageModal.vue'
 import axios from 'axios';
+
+interface Interest {
+  _id: string;
+  name: string;
+}
 
 const id = "6759566a35d32d551c8bb5e5";
 
 async function getUserData() {
   try {
     const response = await axios.get(`http://localhost:3001/users/${id}`);
-    return response.data;
+    const data = response.data;
+    if (data) {
+      userData.value = data;
+      mail.value = data.email;
+      name.value = data.name;
+      surname.value = data.surname;
+      interests.value = data.favoriteGenres;
+      image.value = data.profilePicture;
+  }
   } catch (error) {
     console.error(error);
     return null;
   }
 }
 
-const userData = ref(null);
+getUserData();
 
-getUserData().then((data) => {
-  if (data) {
-    userData.value = data;
-    mail.value = data.email;
-    name.value = data.name;
-    surname.value = data.surname;
-    interests.value = data.favoriteGenres;
-  }
-});
+
 
 // Props o dati passati per il controllo
+const userData = ref(null);
 const isCurrentUser = ref(true); // Simula se l'utente visualizzato è quello loggato
 const mail = ref("");
 const name = ref("");
 const surname = ref("");
-const interests = ref([]);
+const image = ref("profile.webp");
+const interests = ref<Interest[]>([]);
+const showModal = ref(false);
+const modalTitle = ref('');
+const modalMessage = ref('');
+
+function showCheckModal(title: string, message: string) {
+    modalTitle.value = title;
+    modalMessage.value = message;
+    showModal.value = true;
+}
+
+function closeModal() {
+    showModal.value = false;
+}
 
 // Stato per gestire la visibilità del modale
-const isModalVisible = ref(false);
+const isModalVisibleProfile = ref(false);
+const isModalVisiblePassword = ref(false);
 
 // Funzione per aprire il modale
-function openModal() {
-  isModalVisible.value = true;
+function openModalProfile() {
+  isModalVisibleProfile.value = true;
+}
+
+// Funzione per aprire il modale
+function openModalPassword() {
+  isModalVisiblePassword.value = true;
 }
 
 // Funzione per chiudere il modale
-function closeModal() {
-  isModalVisible.value = false;
+function closeModalProfile() {
+  isModalVisibleProfile.value = false;
+}
+
+function closeModalPassword() {
+  isModalVisiblePassword.value = false;
 }
 
 // Funzione per gestire l'invio del modulo
-function handleFormSubmit(formData: FormData) {
-  console.log('Dati inviati:', Object.fromEntries(formData.entries()));
-  closeModal();
+async function handleFormSubmit(form: unknown) {
+  try {
+    await axios.put(`http://localhost:3001/users/${id}`, form.value);
+    showCheckModal('Conferma', "I dati sono stati aggiornati come richiesto!");
+    closeModalProfile();
+    closeModalPassword();
+  } catch (error) {
+    showCheckModal('Errore', "I dati non sono stati aggiornati! Contattare l'assistenza col seguente errore: " + error);
+  }
+  getUserData();
 }
 
 // Dati fittizi per tabelle
@@ -71,7 +110,7 @@ const pastFilms = ref([
     <h1 class="text-2xl font-bold text-center">Profilo Utente</h1>
     <div class="bg-gray-100 p-4 rounded-lg shadow flex flex-col lg:flex-row items-center lg:items-start">
       <img
-        src="http://localhost:3001/img/profile/profile.webp"
+        :src="`http://localhost:3001/img/profile/${image}`"
         alt="Foto Utente"
         class="w-24 h-24 rounded-full object-cover mb-4 lg:mb-0 lg:mr-4"
       />
@@ -81,20 +120,32 @@ const pastFilms = ref([
           Mail: {{ mail }}
         </p>
         <p class="text-gray-600">
-          Interessi: <span v-for="(interest, index) in interests" :key="index">{{ interest + " " }}</span>
+          Interessi: <span v-for="(interest, index) in interests" :key="index">{{ interest.name + " " }}</span>
         </p>
       </div>
       <div v-if="isCurrentUser" class="flex flex-col space-y-2 mt-4 lg:mt-0 lg:ml-4">
         <SimpleButton
-          content="Modifica"
+          content="Modifica informazioni"
           color="primary"
           :outlineOnly="false"
           :rounded="true"
           size="small"
           bold
           :disabled="false"
-          @click="openModal"
+          @click="openModalProfile"
         />
+
+        <SimpleButton
+          content="Modifica password"
+          color="primary"
+          :outlineOnly="false"
+          :rounded="true"
+          size="small"
+          bold
+          :disabled="false"
+          @click="openModalPassword"
+        />
+
         <SimpleButton
           content="Vedi Notifiche"
           color="secondary"
@@ -166,11 +217,20 @@ const pastFilms = ref([
     </div>
   </div>
   <Modal
-      v-if="isModalVisible"
+      v-if="isModalVisibleProfile"
       title="Modifica Profilo"
       :name="name"
-      :surname="surname"      
-      @closeModal="closeModal"
+      :surname="surname"
+      :interests="interests"      
+      @closeModal="closeModalProfile"
       @submitForm="handleFormSubmit"
     />
+  <PasswordModal
+      v-if="isModalVisiblePassword"
+      title="Modifica Password"
+      :id="id"   
+      @closeModal="closeModalPassword"
+      @submitForm="handleFormSubmit"
+    />
+  <ModalOk v-if="showModal" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
 </template>

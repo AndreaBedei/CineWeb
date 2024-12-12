@@ -17,9 +17,9 @@ mongoose.connect('mongodb+srv://andrea:paperino@progettoweb.fz4bm.mongodb.net/?r
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:5173",
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
+    origin: '*', // URL della tua applicazione frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metodi consentiti
+    allowedHeaders: ['Content-Type', 'Authorization'], // Headers consentiti
 }));
 
 app.use(express.json());

@@ -19,8 +19,6 @@ exports.getUserByID = (req, res) => {
                 return res.status(404).send('User not found');
             }
             doc.password = undefined;
-            doc.salt = undefined;
-            console.log(doc);
             res.json(doc);
         })
         .catch(err => {
@@ -52,17 +50,23 @@ exports.createUser = async (req, res) => {
 }
 
 exports.updateUser = (req, res) => {
+    // Assicurati che 'favoriteGenres' venga convertito da stringa JSON ad array
+    if (req.body.favoriteGenres) {
+      req.body.favoriteGenres = JSON.parse(req.body.favoriteGenres);
+    }
+    console.log(req.body);
+  
     usersModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then(doc => {
-            if (!doc) {
-                return res.status(404).send('User not found');
-            }
-            res.json(doc);
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
-}
+      .then(doc => {
+        if (!doc) {
+          return res.status(404).send('User not found');
+        }
+        res.json(doc);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  };
 
 exports.deleteUser = (req, res) => {
     usersModel.findByIdAndDelete(req.params.id)
@@ -111,6 +115,20 @@ exports.authenticateUser = (req, res) => {
             const user = docs[0];
             if (req.body.password === user.password) {
                 res.json(user._id);
+            } else {
+                res.status(401).send('Password incorretta');
+            }
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+}
+
+exports.authenticateUserById = (req, res) => {
+    usersModel.findById(req.params.id)
+        .then(user => {
+            if (req.body.password === user.password) {
+                res.json("Ok");
             } else {
                 res.status(401).send('Password incorretta');
             }
