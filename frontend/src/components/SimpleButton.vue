@@ -190,7 +190,8 @@ const props = withDefaults(
         outlineOnly: false,
         rounding: "none",
         disabled: false,
-        bold: false
+        bold: false,
+        handleClick: () => {}
     }
 )
 

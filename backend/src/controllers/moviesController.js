@@ -83,19 +83,13 @@ exports.moviesList2 = (req, res) => {
 
 exports.availableMoviesByGenre = (req, res) => {
     const genreId = req.params.genreId;
- 
-    moviesModel.find({
-        genres: genreId,
-        isAvailable: true
-    })
-    .populate('genres', 'name')
-    .then(movies => {
-        if (movies.length === 0) {
-            return res.status(404).send('No movies found for the specified genre');
-        }
-        res.json(movies);
-    })
-    .catch(err => {
-        res.status(500).send(err);
-    });
+    moviesModel.find()
+        .where('genres').in([genreId])
+        .where('isAvailable').equals(true)
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
 };

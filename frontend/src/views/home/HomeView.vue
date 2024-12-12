@@ -1,59 +1,69 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Carousel from './MovieCarousel.vue';
+import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
 import { useUserStore } from '../stores/user';
+import router from '@/router';
 
 const user = useUserStore();
-const id = user.userId;
-console.log(id);
+const userInterests = ref(user.interests); // Interesse dell'utente
+const movieCarousels = ref<{ title: string; movies: unknown[] }[]>([]); // Array per i caroselli
 
-const newReleases = ref([]);
-const comedyMovies = ref([]);
-const horrorMovies = ref([]);
-
-axios.get(`http://localhost:3001/movies/available`)
-  .then(response => {
-    const data = response.data;
-    if (data) {
-      newReleases.value = data;
+const fetchMoviesByInterest = async (interestId: string, interestName: string) => {
+  try {
+    const response = await axios.get(`http://localhost:3001/movies/genre/${interestId}`);
+    if (response.data) {
+      if (response.data.length > 0) {
+        movieCarousels.value.push({
+          title: `Di categoria ${interestName}`,
+          movies: response.data,
+        });
+      }
     }
-  })
-  .catch(error => {
-    console.error(error);
-  });
+  } catch (error) {
+    console.error(`Errore nel caricamento dei film per l'interesse ${interestName}`, error);
+  }
+};
 
+const fetchMovies = async () => {
+  try {
+    // Nuove uscite
+    const newReleasesResponse = await axios.get('http://localhost:3001/movies/available');
+    if (newReleasesResponse.data) {
+      movieCarousels.value.push({
+        title: 'Nuove uscite',
+        movies: newReleasesResponse.data,
+      });
+    }
 
-// // Simile richiesta per comedyMovies e horrorMovies
-// axios.get(`http://localhost:3001/movies/comedy`)
-//   .then(response => {
-//     const data = response.data;
-//     if (data) {
-//       comedyMovies.value = data;
-//     }
-//   })
-//   .catch(error => {
-//     console.error(error);
-//   });
+    // Carica film per ciascun interesse
+    for (const interest of userInterests.value) {
+      await fetchMoviesByInterest(interest._id, interest.name);
+    }
+  } catch (error) {
+    console.error('Errore nel caricamento dei film', error);
+  }
+};
 
-// axios.get(`http://localhost:3001/movies/horror`)
-//   .then(response => {
-//     const data = response.data;
-//     if (data) {
-//       horrorMovies.value = data;
-//     }
-//   })
-//   .catch(error => {
-//     console.error(error);
-//   });
+function goToProfile() {
+  router.push('/profile');
+}
+
+onMounted(() => {
+  fetchMovies();
+});
 </script>
 
 <template>
   <div class="p-4 w-full bg-secondary-light">
     <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
-    <Carousel v-if="newReleases.length" title="Nuove uscite" :movies="newReleases" />
-    <Carousel v-if="comedyMovies.length" title="Di categoria Comico" :movies="comedyMovies" />
-    <Carousel v-if="horrorMovies.length" title="Di categoria Horror" :movies="horrorMovies" />
+    <div v-for="carousel in movieCarousels" :key="carousel.title">
+      <Carousel :title="carousel.title" :movies="carousel.movies" />
+    </div>
+    <SimpleButton v-if="userInterests.values.length == 0" content="Cambia interessi" color="secondary" rounding="small"
+      :handle-click="goToProfile"></SimpleButton>
   </div>
 </template>
 
+<style scoped></style>
