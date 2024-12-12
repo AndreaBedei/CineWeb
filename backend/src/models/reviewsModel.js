@@ -11,14 +11,14 @@ const reviewSchema = new mongoose.Schema({
             message: 'Invalid user ID'
         }
     },
-    screening: {
+    movie: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Screening',
+        ref: 'Movie',
         validate: {
             validator: function (id) {
                 return mongoose.Types.ObjectId.isValid(id);
             },
-            message: 'Invalid screening ID'
+            message: 'Invalid movie ID'
         }
     },
     text: {

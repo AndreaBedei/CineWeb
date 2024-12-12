@@ -35,8 +35,6 @@ app.use('/reservations', reservationsRouter);
 app.use('/image', imagesRouter);
 app.use('/img', express.static(path.join(__dirname, 'img')));
 
-
-
 app.listen(3001, () => {
     console.log('Server listening on port 3001');
 });
