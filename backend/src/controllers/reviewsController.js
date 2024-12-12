@@ -1,4 +1,5 @@
 const { reviewsModel } = require('../models/reviewsModel');
+const mongoose = require('mongoose');
 
 exports.getAllReviews = (req, res) => {
     reviewsModel.find()
@@ -105,10 +106,11 @@ exports.deleteReview = (req, res) => {
 };
 
 exports.getAverageRatingByMovie = (req, res) => {
+    /**@type {string} */
     const movieId = req.params.movieId;
 
     reviewsModel.aggregate([
-        { $match: { movie: mongoose.Types.ObjectId(movieId) } }, 
+        { $match: { movie: {$eq : movieId}} }, 
         { $group: { 
             _id: "$movie", 
             averageRating: { $avg: "$rating" } 
@@ -116,9 +118,9 @@ exports.getAverageRatingByMovie = (req, res) => {
     ])
     .then(result => {
         if (result.length === 0) {
-            res.json({ averageRating: "/" });
+            return res.json({ averageRating: "-" });
         }
-        res.json({ averageRating: result[0].averageRating });
+        return res.json({ averageRating: result[0].averageRating });
     })
     .catch(err => {
         res.status(500).send(err);
