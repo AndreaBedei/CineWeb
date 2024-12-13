@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUpdated } from 'vue';
+import { ref, onMounted, onUpdated, watch } from 'vue';
 import Carousel from './MovieCarousel.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
@@ -7,7 +7,6 @@ import { useUserStore } from '../stores/user';
 import router from '@/router';
 
 const user = useUserStore();
-// const userInterests = ref(user.interests); // Interesse dell'utente
 const movieCarousels = ref<{ title: string; movies: unknown[] }[]>([]); // Array per i caroselli
 
 const loaded = ref(false);
@@ -29,6 +28,7 @@ const fetchMoviesByInterest = async (interestId: string, interestName: string) =
 };
 
 const fetchMovies = async () => {
+  movieCarousels.value = [];
   try {
     // Nuove uscite
     const newReleasesResponse = await axios.get('http://localhost:3001/movies/available');
@@ -66,6 +66,13 @@ onMounted(() => {
 
 onUpdated(() => {
   if (!loaded.value && user.ready) {
+    fetchMovies();
+    loaded.value = true;
+  }
+});
+
+watch(user, () => {
+  if (user.ready) {
     fetchMovies();
     loaded.value = true;
   }

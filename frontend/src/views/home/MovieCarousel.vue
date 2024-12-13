@@ -84,7 +84,7 @@ function scroll(direction: 'left' | 'right') {
         <div class="relative group">
             <div class="flex overflow-x-auto gap-1 no-scrollbar scroll-smooth" ref="carouselRef">
                 <MovieCard v-for="(movie, index) in props.movies" ref="cards" :key="index" :image="movie.poster"
-                    :title="movie.title" :rating="movie.rating" />
+                    :title="movie.title" :rating="movie.rating" :movieid="movie._id" />
             </div>
             <button v-if="showLeftButton"
                 class="absolute top-1/2 left-6 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-10 h-10 hidden group-hover:block"

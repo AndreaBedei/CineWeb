@@ -5,6 +5,7 @@ import Modal from './ModifyModal.vue'
 import PasswordModal from './PasswordModal.vue'
 import ModalOk from '@/components/PageModal.vue'
 import axios from 'axios';
+import { useUserStore } from '../stores/user';
 
 interface Interest {
     _id: string;
@@ -12,6 +13,7 @@ interface Interest {
 }
 
 const id = "6759566a35d32d551c8bb5e5";
+const userStore = useUserStore();
 
 async function getUserData() {
     try {
@@ -89,6 +91,7 @@ async function handleFormSubmit(form: unknown) {
         showCheckModal('Conferma', "I dati sono stati aggiornati come richiesto!");
         closeModalProfile();
         closeModalPassword();
+        await userStore.refresh()
     } catch (error) {
         showCheckModal('Errore', "I dati non sono stati aggiornati! Contattare l'assistenza col seguente errore: " + error);
     }
