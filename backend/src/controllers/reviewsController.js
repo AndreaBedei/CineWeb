@@ -106,11 +106,9 @@ exports.deleteReview = (req, res) => {
 };
 
 exports.getAverageRatingByMovie = (req, res) => {
-    /**@type {string} */
     const movieId = req.params.movieId;
-
     reviewsModel.aggregate([
-        { $match: { movie: {$eq : movieId}} }, 
+        { $match: { movie: mongoose.Types.ObjectId.createFromHexString(movieId)} }, 
         { $group: { 
             _id: "$movie", 
             averageRating: { $avg: "$rating" } 
@@ -118,9 +116,9 @@ exports.getAverageRatingByMovie = (req, res) => {
     ])
     .then(result => {
         if (result.length === 0) {
-            return res.json({ averageRating: "-" });
+            return res.json({ averageRating: "No Recensioni" });
         }
-        return res.json({ averageRating: result[0].averageRating });
+        return res.json({ averageRating: result[0].averageRating.toString() });
     })
     .catch(err => {
         res.status(500).send(err);

@@ -13,6 +13,6 @@ const cinemaHallSchema = new mongoose.Schema({
     },
 });
 
-const cinemaHallsModel = mongoose.model('CinemaHall', cinemaHallSchema);
+const cinemaHallsModel = mongoose.model('CinemaHall', cinemaHallSchema, "cinemaHalls");
 
 module.exports = { cinemaHallsModel };

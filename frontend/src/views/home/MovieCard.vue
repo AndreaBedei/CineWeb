@@ -9,8 +9,8 @@ defineProps({
     required: true,
   },
   rating: {
-    type: Number,
-    default: 0,
+    type: String,
+    default: "0",
   },
   link: {
     type: String,
@@ -34,7 +34,7 @@ defineProps({
       />
       <div class="p-3">
         <h3 class="text-lg font-semibold truncate" :title="title">{{ title }}</h3>
-        <p class="text-sm text-gray-500 mt-1">Voto: {{ rating.toFixed(1) }}</p>
+        <p class="text-sm text-gray-500 mt-1">Voto: {{ rating }}</p>
       </div>
     </section>
   </a>

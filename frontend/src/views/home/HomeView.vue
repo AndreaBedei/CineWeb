@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUpdated } from 'vue';
 import Carousel from './MovieCarousel.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
@@ -7,8 +7,10 @@ import { useUserStore } from '../stores/user';
 import router from '@/router';
 
 const user = useUserStore();
-const userInterests = ref(user.interests); // Interesse dell'utente
+// const userInterests = ref(user.interests); // Interesse dell'utente
 const movieCarousels = ref<{ title: string; movies: unknown[] }[]>([]); // Array per i caroselli
+
+const loaded = ref(false);
 
 const fetchMoviesByInterest = async (interestId: string, interestName: string) => {
   try {
@@ -37,8 +39,12 @@ const fetchMovies = async () => {
       });
     }
 
+    console.log(user.userId);
+    console.log(user.name);
+    console.log(user.interests);
+
     // Carica film per ciascun interesse
-    for (const interest of userInterests.value) {
+    for (const interest of user.interests) {
       await fetchMoviesByInterest(interest._id, interest.name);
     }
   } catch (error) {
@@ -51,7 +57,18 @@ function goToProfile() {
 }
 
 onMounted(() => {
-  fetchMovies();
+  if (user.ready) {
+    fetchMovies();
+    loaded.value = true;
+  }
+});
+
+
+onUpdated(() => {
+  if (!loaded.value && user.ready) {
+    fetchMovies();
+    loaded.value = true;
+  }
 });
 </script>
 
@@ -61,7 +78,7 @@ onMounted(() => {
     <div v-for="carousel in movieCarousels" :key="carousel.title">
       <Carousel :title="carousel.title" :movies="carousel.movies" />
     </div>
-    <SimpleButton v-if="userInterests.values.length == 0" content="Cambia interessi" color="secondary" rounding="small"
+    <SimpleButton v-if="user.interests.length == 0" content="Cambia interessi" color="secondary" rounding="small"
       :handle-click="goToProfile"></SimpleButton>
   </div>
 </template>

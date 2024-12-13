@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUpdated, ref, useTemplateRef, type Ref } from 'vue';
 import MovieCard from './MovieCard.vue';
+import axios from 'axios';
 
 // Props accettate dal componente
 const props = defineProps({
@@ -47,6 +48,12 @@ onMounted(() => {
         observer.value.observe(cards.value![0]!.$el);
         observer.value.observe(cards.value![cards.value!.length - 1]!.$el);
     }
+
+    props.movies!.forEach((movie: any) => {
+        axios.get('http://localhost:3001/reviews/average-rating/'+movie._id).then((response) => {
+            movie.rating = response.data.averageRating
+        });
+    })
 })
 
 onUpdated(() => {
@@ -77,7 +84,7 @@ function scroll(direction: 'left' | 'right') {
         <div class="relative group">
             <div class="flex overflow-x-auto gap-1 no-scrollbar scroll-smooth" ref="carouselRef">
                 <MovieCard v-for="(movie, index) in props.movies" ref="cards" :key="index" :image="movie.poster"
-                    :title="movie.title" :rating="0" />
+                    :title="movie.title" :rating="movie.rating" />
             </div>
             <button v-if="showLeftButton"
                 class="absolute top-1/2 left-6 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-10 h-10 hidden group-hover:block"
