@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user', () => {
     const surname = ref("");
     const profileImg = ref("");
     const interests = ref([] as Interest[]);
+    const ready = ref(false);
 
     async function _loadData(userId: string) {
         const response = await axios.get(`http://localhost:3001/users/${userId}`);
@@ -26,6 +27,7 @@ export const useUserStore = defineStore('user', () => {
             surname.value = data.surname;
             interests.value = data.favoriteGenres;
             profileImg.value = data.profilePicture;
+            ready.value = true;
         }
     }
 
@@ -45,8 +47,9 @@ export const useUserStore = defineStore('user', () => {
             const hashPassw = _hashPassword(password, salt);
             const ret = await axios.post('http://localhost:3001/users/email?email=' + email, { password: hashPassw });
 
-            _loadData(ret.data);
+            await _loadData(ret.data);
             userId.value = ret.data;
+            localStorage.setItem('userId', ret.data);
         }
         catch (error) {
             console.error(error);
@@ -63,11 +66,29 @@ export const useUserStore = defineStore('user', () => {
         surname.value = "";
         profileImg.value = "";
         interests.value = [];
+        ready.value = false;
+
+        localStorage.removeItem('userId');
     }
 
     async function refresh() {
-        await _loadData(userId.value);
+        if (userId.value !== "") {
+            await _loadData(userId.value);
+        }
     }
 
-    return { userId, username, email, name, surname, profileImg, interests, login, logout, refresh }
+    async function tryLogin() {
+        if (userId.value === "") {
+            const storedUserId = localStorage.getItem('userId');
+            if (!storedUserId) {
+                return false;
+            } else {
+                userId.value = storedUserId;
+                await _loadData(userId.value);
+            }
+        }
+        return true;
+    } 
+
+    return { userId, username, email, name, surname, profileImg, interests, ready, login, logout, refresh, tryLogin }
 })
