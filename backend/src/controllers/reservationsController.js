@@ -19,6 +19,7 @@ exports.reservationsList = (req, res) => {
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
                 screening: {
+                    ...doc.screening,
                     cinemaHall: `${doc.screening.cinemaHall.name} - ${doc.screening.cinemaHall.cinema}`
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
@@ -119,6 +120,7 @@ exports.findReservationsByUser = (req, res) => {
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
                 screening: {
+                    ...doc.screening,
                     cinemaHall: `${doc.screening.cinemaHall.name} - ${doc.screening.cinemaHall.cinema}`
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
@@ -150,6 +152,7 @@ exports.findReservationsByScreening = (req, res) => {
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
                 screening: {
+                    ...doc.screening,
                     cinemaHall: `${doc.screening.cinemaHall.name} - ${doc.screening.cinemaHall.cinema}`
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
@@ -189,6 +192,7 @@ exports.getPastReservationsByUser = (req, res) => {
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
                 screening: {
+                    ...doc.screening,
                     cinemaHall: `${doc.screening.cinemaHall.name} - ${doc.screening.cinemaHall.cinema}`
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
@@ -228,6 +232,7 @@ exports.getFutureReservationsByUser = (req, res) => {
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
                 screening: {
+                    ...doc.screening,
                     cinemaHall: `${doc.screening.cinemaHall.name} - ${doc.screening.cinemaHall.cinema}`
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)

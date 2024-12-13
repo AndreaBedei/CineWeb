@@ -56,7 +56,7 @@ function handleSubmit() {
         favoriteGenres: JSON.stringify(selectedInterests.value.map((interest) => interest._id)),
     });
     if (selectedFile.value) {
-        uploadImage(selectedFile.value).then((data) => {
+        uploadImage(selectedFile.value).then(async (data) => {
             form.value.profilePicture = data;
             emit('submitForm', form);
             emit('closeModal');

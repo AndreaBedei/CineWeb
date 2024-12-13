@@ -1,0 +1,112 @@
+<script setup lang="ts">
+import { defineProps, ref, onMounted } from 'vue';
+import axios from 'axios';
+import SimpleButton from '@/components/SimpleButton.vue';
+
+const props = defineProps({
+  movie: {
+    type: Object,
+    required: true,
+  },
+});
+
+const movieDetails = ref(null);
+
+onMounted(() => {
+  fetchMovieDetails(props.movie.title); // Supponendo che l'oggetto `movie` contenga il campo `title`
+});
+
+async function fetchMovieDetails(title: string) {
+  try {
+    const response = await axios.get(`http://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=e2b4e2eb`);
+    console.log(response.data);
+    movieDetails.value = response.data;
+  } catch (error) {
+    console.error('Errore nel recupero dei dettagli del film:', error);
+  }
+}
+</script>
+
+
+<template>
+    <section class="flex flex-col md:flex-row gap-8 items-start bg-gray-50 p-6 rounded-lg shadow-lg">
+      <!-- Poster -->
+      <div class="flex-shrink-0 w-48">
+        <img
+          :src="`http://localhost:3001/img/poster/${movie.poster}`"
+          alt="Copertina di {{ movieDetails?.Title }}"
+          class="w-full rounded-lg shadow-md"
+        />
+      </div>
+  
+      <!-- Dettagli del film -->
+      <div class="flex-1 space-y-6">
+        <!-- Titolo -->
+        <h1 class="text-4xl font-bold text-primary-dark border-b pb-2">
+          {{ movieDetails?.Title }}
+        </h1>
+  
+        <!-- Caratteristiche -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Informazioni principali -->
+          <div class="space-y-2">
+            <p class="text-gray-600">
+              <span class="font-semibold">Anno:</span> {{ movieDetails?.Year }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-semibold">Durata:</span> {{ movieDetails?.Runtime }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-semibold">Genere:</span>
+              <span
+                class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-2 py-1 rounded-lg"
+                v-for="genre in movieDetails?.Genre.split(', ')"
+                :key="genre"
+              >
+                {{ genre }}
+              </span>
+            </p>
+          </div>
+  
+          <!-- Staff e lingua -->
+          <div class="space-y-2">
+            <p class="text-gray-600">
+              <span class="font-semibold">Regista:</span> {{ movieDetails?.Director }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-semibold">Scrittore:</span> {{ movieDetails?.Writer }}
+            </p>
+            <p class="text-gray-600">
+              <span class="font-semibold">Lingua:</span> {{ movieDetails?.Language }}
+            </p>
+          </div>
+        </div>
+  
+        <!-- Trama -->
+        <div>
+          <h2 class="text-lg font-semibold text-primary-dark mb-2">Trama</h2>
+          <p class="text-gray-700">{{ movieDetails?.Plot }}</p>
+        </div>
+  
+        <!-- Valutazioni -->
+        <div>
+          <h2 class="text-lg font-semibold text-primary-dark mb-2">Valutazioni</h2>
+          <ul class="flex flex-wrap gap-2">
+            <li
+              v-for="rating in movieDetails?.Ratings"
+              :key="rating.Source"
+              class="bg-green-100 text-green-800 px-3 py-1 rounded-lg text-sm font-medium"
+            >
+              {{ rating.Source }}: {{ rating.Value }}
+            </li>
+          </ul>
+        </div>
+  
+        <div class="flex justify-end">
+          <SimpleButton content="Acquista biglietto" color="primary" rounding="small" size="regular"></SimpleButton>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  
