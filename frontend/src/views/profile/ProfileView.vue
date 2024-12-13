@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import SimpleButton from '@/components/SimpleButton.vue'
 import Modal from './ModifyModal.vue'
 import PasswordModal from './PasswordModal.vue'
@@ -32,9 +32,6 @@ async function getUserData() {
         return null;
     }
 }
-
-getUserData();
-
 
 
 // Props o dati passati per il controllo
@@ -98,11 +95,21 @@ async function handleFormSubmit(form: unknown) {
     getUserData();
 }
 
-// pastReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/past`)).data;
-// console.log(pastReservation.value);
-// futureReservation.value = await axios.get(`http://localhost:3001/reservations/user/${id}/future`);
+onMounted(async () => {
+    getUserData();
+    pastReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/past`)).data;
+    futureReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/future`)).data;
+});
 
 
+const formatDate = (date: string | number | Date) => {
+    const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Intl.DateTimeFormat('it-IT', options).format(new Date(date));
+};
+
+function goToFilm() {
+    
+}
 </script>
 
 <template>
@@ -141,17 +148,19 @@ async function handleFormSubmit(form: unknown) {
                         <tr>
                             <th id="film" class="border-b p-2">Film</th>
                             <th id="time" class="border-b p-2">Orario</th>
+                            <th id="cinema" class="border-b p-2">Cinema</th>
                             <th id="hall" class="border-b p-2">Sala</th>
                             <th id="seat" class="border-b p-2">Posto</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- <tr v-for="(ticket) in pastReservation.value">
-                            <td headers="film" class="border-b p-2">{{ ticket.film }}</td>
-                            <td headers="time" class="border-b p-2">{{ ticket.time }}</td>
-                            <td headers="hall" class="border-b p-2">{{ ticket.hall }}</td>
-                            <td headers="seat" class="border-b p-2">{{ ticket.seat }}</td>
-                        </tr> -->
+                        <tr v-for="ticket in futureReservation" :key="ticket._id">
+                            <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
+                            <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate) }}</td>
+                            <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>
+                            <td headers="hall" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.name }}</td>
+                            <td headers="seat" class="border-b p-2">{{ ticket.seats.join(', ') }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -163,23 +172,23 @@ async function handleFormSubmit(form: unknown) {
                     <thead>
                         <tr>
                             <th id="film" class="border-b p-2">Film</th>
-                            <th id="hall" class="border-b p-2">Sala</th>
                             <th id="time" class="border-b p-2">Orario</th>
-                            <th id="seat" class="border-b p-2">Posto</th>
+                            <th id="cinema" class="border-b p-2">Cinema</th>
                             <th v-if="isCurrentUser" id="action" class="border-b p-2">Recensione</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- <tr v-for="(film, index) in pastFilms" :key="index">
-                            <td headers="film" class="border-b p-2">{{ film.film }}</td>
-                            <td headers="hall" class="border-b p-2">{{ film.hall }}</td>
-                            <td headers="time" class="border-b p-2">{{ film.time }}</td>
-                            <td headers="seat" class="border-b p-2">{{ film.seat }}</td>
+                        <tr v-for="ticket in pastReservation" :key="ticket._id">
+                            <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
+                            <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate) }}</td>
+                            <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>
                             <td v-if="isCurrentUser" headers="action" class="border-b p-2">
-                                <SimpleButton content="Recensisci" color="green" :outlineOnly="false" :rounded="true"
-                                    size="small" bold :disabled="false" />
+                                <router-link :to="{ path: `/movie`, query: { id: ticket.screening._doc.movie._id} }" class="block">
+                                    <SimpleButton content="Recensisci" color="green" :outlineOnly="false" :rounded="true"
+                                        size="small" bold :disabled="false" />
+                                </router-link>
                             </td>
-                        </tr> -->
+                        </tr>
                     </tbody>
                 </table>
             </div>

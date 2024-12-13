@@ -6,14 +6,14 @@ router.route('/')
     .get(controller.reservationsList)
     .post(controller.createReservation);
     
-router.route('/user/:userId')
-    .get(controller.findReservationsByUser);
-
 router.route('/user/:userId/past')
     .get(controller.getPastReservationsByUser);
 
 router.route('/user/:userId/future')
     .get(controller.getFutureReservationsByUser);
+
+router.route('/user/:userId')
+    .get(controller.findReservationsByUser);
 
 router.route('/screening/:screeningId')
     .get(controller.findReservationsByScreening);
