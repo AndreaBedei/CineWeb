@@ -46,6 +46,8 @@ const interests = ref<Interest[]>([]);
 const showModal = ref(false);
 const modalTitle = ref('');
 const modalMessage = ref('');
+const pastReservation = ref([]);
+const futureReservation = ref([]);
 
 function showCheckModal(title: string, message: string) {
     modalTitle.value = title;
@@ -93,16 +95,11 @@ async function handleFormSubmit(form: unknown) {
     getUserData();
 }
 
-// Dati fittizi per tabelle
-const userTickets = ref([
-    { film: "Avatar 2", time: "20:30", hall: "3", seat: "B12" },
-    { film: "Dune", time: "18:00", hall: "1", seat: "A10" },
-]);
+// pastReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/past`)).data;
+// console.log(pastReservation.value);
+// futureReservation.value = await axios.get(`http://localhost:3001/reservations/user/${id}/future`);
 
-const pastFilms = ref([
-    { film: "Inception", time: "15:00", hall: "2", seat: "C3" },
-    { film: "Interstellar", time: "17:45", hall: "4", seat: "D5" },
-]);
+
 </script>
 
 <template>
@@ -146,12 +143,12 @@ const pastFilms = ref([
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(ticket, index) in userTickets" :key="index">
+                        <!-- <tr v-for="(ticket) in pastReservation.value">
                             <td headers="film" class="border-b p-2">{{ ticket.film }}</td>
                             <td headers="time" class="border-b p-2">{{ ticket.time }}</td>
                             <td headers="hall" class="border-b p-2">{{ ticket.hall }}</td>
                             <td headers="seat" class="border-b p-2">{{ ticket.seat }}</td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
@@ -170,7 +167,7 @@ const pastFilms = ref([
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(film, index) in pastFilms" :key="index">
+                        <!-- <tr v-for="(film, index) in pastFilms" :key="index">
                             <td headers="film" class="border-b p-2">{{ film.film }}</td>
                             <td headers="hall" class="border-b p-2">{{ film.hall }}</td>
                             <td headers="time" class="border-b p-2">{{ film.time }}</td>
@@ -179,7 +176,7 @@ const pastFilms = ref([
                                 <SimpleButton content="Recensisci" color="green" :outlineOnly="false" :rounded="true"
                                     size="small" bold :disabled="false" />
                             </td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
