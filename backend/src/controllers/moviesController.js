@@ -71,16 +71,6 @@ exports.availableMovies = (req, res) => {
         });
 };
 
-exports.moviesList2 = (req, res) => {
-    moviesModel.find()
-        .then(doc => {
-            res.json(doc);
-        })
-        .catch(err => {
-            res.send(err);
-        });
-}
-
 exports.availableMoviesByGenre = (req, res) => {
     const genreId = req.params.genreId;
     moviesModel.find()

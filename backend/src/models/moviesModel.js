@@ -12,6 +12,7 @@ const movieSchema = new mongoose.Schema({
         }
     },
     isAvailable: { type: Boolean, default: true },
+    trailerLink: String,
     poster: String
 });
 
