@@ -5,7 +5,6 @@ const controller = require('../controllers/reservationsController');
 router.route('/')
     .get(controller.reservationsList)
     .post(controller.createReservation);
-
     
 router.route('/user/:userId')
     .get(controller.findReservationsByUser);
