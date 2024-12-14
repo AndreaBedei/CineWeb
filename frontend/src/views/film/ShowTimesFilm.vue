@@ -1,23 +1,67 @@
 <script setup lang="ts">
 const props = defineProps({
   showtimes: {
-    type: Array,
+    type: Object,
     required: true,
   },
 });
 
-console.log(props.showtimes);
+function formatDate(date: string): string {
+  const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
+  return new Date(date).toLocaleDateString(undefined, options);
+}
+
+function isFutureDate(date: string): boolean {
+  const screeningDate = new Date(date);
+  const currentDate = new Date();
+  return screeningDate > currentDate;
+}
 </script>
 
 <template>
-  <div class="mb-8">
-    <h2 class="text-xl font-bold mb-4">Orari</h2>
-    <ul class="divide-y divide-gray-300">
-      <li v-for="showtime in showtimes" :key="showtime.id" class="py-2">
-        <p>
-          <strong>Cinema:</strong> {{ showtime.cinema }} - <strong>Sala:</strong> {{ showtime.room }} - <strong>Orario:</strong> {{ showtime.time }}
-        </p>
-      </li>
-    </ul>
-  </div>
+  <section class="mt-8 bg-gray-50 p-6 rounded-lg shadow-lg">
+    <header class="px-4 py-2">
+      <h2 class="text-3xl font-bold text-primary-dark">Orari</h2>
+    </header>
+    <!-- Per ogni cinema -->
+    <section v-for="(screenings, cinema) in props.showtimes" :key="cinema" class="p-4">
+      <header>
+        <h3 class="text-2xl font-bold text-primary-dark border-b pb-2 mb-4">{{ cinema }}</h3>
+      </header>
+
+      <!-- Tabella -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-gray-700 border-collapse border border-gray-300">
+          <thead class="bg-gray-100">
+            <tr>
+              <th :id="'room' + cinema" scope="col" class="py-2 px-4 font-semibold">Sala</th>
+              <th :id="'price' + cinema" scope="col" class="py-2 px-4 font-semibold">Prezzo (€)</th>
+              <th :id="'date' + cinema" scope="col" class="py-2 px-4 font-semibold">Orario</th>
+              <th :id="'action' + cinema" scope="col" class="py-2 px-4 font-semibold text-center">Prenota</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="screening in screenings" 
+              :key="screening.screeningId" 
+              class="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+            >
+              <td :headers="'room' + cinema" class="py-2 px-4">{{ screening.cinemaHallName }}</td>
+              <td :headers="'price' + cinema" class="py-2 px-4">{{ screening.ticketPrice.toFixed(2) }}</td>
+              <td :headers="'date' + cinema" class="py-2 px-4">{{ formatDate(screening.screeningDate) }}</td>
+              <td :headers="'action' + cinema" class="py-2 px-4 text-center">
+                <button 
+                  v-if="isFutureDate(screening.screeningDate)"
+                    class="px-2 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:px-4 md:py-2 md:text-sm"
+                  @click="alert(`Hai selezionato la proiezione ${screening.screeningId}`)"
+                >
+                  Prenota
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
 </template>

@@ -39,7 +39,7 @@ async function fetchMovieDetails(title: string) {
 
   <section v-else class="flex flex-col md:flex-row gap-8 items-start bg-gray-50 p-6 rounded-lg shadow-lg">
     <!-- Poster -->
-    <div class="flex-shrink-0 w-48">
+    <div class="flex-shrink-0 w-48 mx-auto">
       <img :src="`http://localhost:3001/img/poster/${movie.poster}`" alt="Copertina di {{ movieDetails?.Title }}"
         class="w-full rounded-lg shadow-md" />
     </div>
@@ -99,10 +99,6 @@ async function fetchMovieDetails(title: string) {
             {{ rating.Source }}: {{ rating.Value }}
           </li>
         </ul>
-      </div>
-
-      <div class="flex justify-end">
-        <SimpleButton content="Acquista biglietto" color="primary" rounding="small" size="regular"></SimpleButton>
       </div>
     </div>
   </section>
