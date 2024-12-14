@@ -107,9 +107,6 @@ const formatDate = (date: string | number | Date) => {
     return new Intl.DateTimeFormat('it-IT', options).format(new Date(date));
 };
 
-function goToFilm() {
-    
-}
 </script>
 
 <template>
