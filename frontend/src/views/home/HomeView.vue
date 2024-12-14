@@ -5,11 +5,13 @@ import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
 import { useUserStore } from '../stores/user';
 import router from '@/router';
+import AddMovieModal from './AddMovieModal.vue';
 
 const user = useUserStore();
 const movieCarousels = ref<{ title: string; movies: unknown[] }[]>([]); // Array per i caroselli
 
 const loaded = ref(false);
+const modalFilm = ref(false);
 
 const fetchMoviesByInterest = async (interestId: string, interestName: string) => {
   try {
@@ -39,10 +41,6 @@ const fetchMovies = async () => {
       });
     }
 
-    console.log(user.userId);
-    console.log(user.name);
-    console.log(user.interests);
-
     // Carica film per ciascun interesse
     for (const interest of user.interests) {
       await fetchMoviesByInterest(interest._id, interest.name);
@@ -54,6 +52,14 @@ const fetchMovies = async () => {
 
 function goToProfile() {
   router.push('/profile');
+}
+
+function openModalAddMovie() {
+  modalFilm.value = true;
+}
+
+function closeModal() {
+  modalFilm.value = false;
 }
 
 onMounted(() => {
@@ -82,11 +88,14 @@ watch(user, () => {
 <template>
   <div class="p-4 w-full bg-secondary-light">
     <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
+    <div>
+      <SimpleButton v-if="user.isAdmin" content="Aggiungi film" color="primary" rounding="small" :handle-click="openModalAddMovie" />
+      <AddMovieModal v-if="user.isAdmin && modalFilm" @close="closeModal" />
+    </div>
     <div v-for="carousel in movieCarousels" :key="carousel.title">
       <Carousel :title="carousel.title" :movies="carousel.movies" />
     </div>
-    <SimpleButton v-if="user.interests.length == 0" content="Cambia interessi" color="secondary" rounding="small"
-      :handle-click="goToProfile"></SimpleButton>
+    <SimpleButton v-if="user.interests.length == 0" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
   </div>
 </template>
 

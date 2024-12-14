@@ -4,6 +4,7 @@ import PrivacyView from '@/views/privacy/PrivacyView.vue'
 import SignOn from '@/views/signOn/SignOn.vue'
 import ProfileView from '@/views/profile/ProfileView.vue'
 import FilmView from '@/views/film/FilmView.vue'
+import AddMovieRoomView from '@/views/add_movie_room/AddMovieRoomView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
             path: '/movie',
             name: 'movie',
             component: FilmView
+        },
+        {
+            path: '/addmovieroom',
+            name: 'addmovieroom',
+            component: AddMovieRoomView
         }
     ],
 })

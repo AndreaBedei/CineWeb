@@ -19,7 +19,7 @@ watch(router.currentRoute, async (to) => {
 
 <template>
     <PageHeader></PageHeader>
-    <main class="flex flex-grow">
+    <main class="flex flex-grow bg-secondary-light">
         <RouterView />
     </main>
     <PageFooter></PageFooter>

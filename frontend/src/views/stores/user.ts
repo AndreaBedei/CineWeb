@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user', () => {
     const surname = ref("");
     const profileImg = ref("");
     const interests = ref([] as Interest[]);
+    const isAdmin = ref(false);
     const ready = ref(false);
 
     async function _loadData(userId: string) {
@@ -27,6 +28,7 @@ export const useUserStore = defineStore('user', () => {
             surname.value = data.surname;
             interests.value = data.favoriteGenres;
             profileImg.value = data.profilePicture;
+            isAdmin.value = data.isAdmin;
             ready.value = true;
         }
     }
@@ -66,6 +68,7 @@ export const useUserStore = defineStore('user', () => {
         surname.value = "";
         profileImg.value = "";
         interests.value = [];
+        isAdmin.value = false;
         ready.value = false;
 
         localStorage.removeItem('userId');
@@ -90,5 +93,5 @@ export const useUserStore = defineStore('user', () => {
         return true;
     } 
 
-    return { userId, username, email, name, surname, profileImg, interests, ready, login, logout, refresh, tryLogin }
+    return { userId, username, email, name, surname, profileImg, interests, isAdmin, ready, login, logout, refresh, tryLogin }
 })
