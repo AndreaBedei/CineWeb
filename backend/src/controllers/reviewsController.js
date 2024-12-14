@@ -48,6 +48,10 @@ exports.getReviewsByMovie = (req, res) => {
     const movieId = req.params.movieId;
 
     reviewsModel.find({ movie: movieId })
+        .populate({
+            path: 'user',
+            select: '-password -salt' // Escludi password e salt
+        })
         .sort({ reviewDate: -1 }) 
         .then(docs => {
             if (docs.length === 0) {

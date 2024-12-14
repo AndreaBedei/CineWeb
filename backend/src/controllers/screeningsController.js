@@ -80,7 +80,6 @@ exports.findScreeningsByMovie = async (req, res) => {
             return res.status(200);
         }
 
-        // Raggruppiamo i risultati per cinema
         const groupedByCinema = screenings.reduce((acc, screening) => {
             const cinemaName = screening.cinemaHall.cinema || 'Unknown Cinema';
             if (!acc[cinemaName]) {
