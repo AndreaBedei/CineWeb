@@ -2,12 +2,16 @@
 const props = defineProps<{
   reviews: {
     _id: number;
-    user: string;
+    user: {
+      name: string;
+      profilePicture: string;
+      surname: string;
+    };
     rating: number;
     text: string;
+    reviewDate: string;
   }[];
 }>();
-
 </script>
 
 <template>
@@ -17,12 +21,12 @@ const props = defineProps<{
     <ul class="divide-y divide-gray-300">
       <li v-for="review in props.reviews" :key="review._id" class="py-4 flex gap-4">
         <img
-          :src="review.user.image"
+          :src="`http://localhost:3001/img/profile/${review.user.profilePicture}`"
           alt="Immagine utente"
           class="w-12 h-12 rounded-full object-cover"
         />
         <div>
-          <h3 class="font-semibold">{{ review.user }}</h3>
+          <h3 class="font-semibold">{{ review.user.name }} {{ review.user.surname }}</h3>
           <p class="text-sm text-gray-500">Voto: {{ review.rating }}</p>
           <p>{{ review.text }}</p>
         </div>

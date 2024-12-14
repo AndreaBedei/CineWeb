@@ -72,8 +72,8 @@ function formatDate(date: string): string {
         <BaseInput id="review-date" label="Data" type="text" v-model="date" :read="true" />
         <BaseInput id="rating" label="Voto al film" type="number" v-model="rating" :require="true" :range="{ min: 1, max: 5, step: 1 }" />
       </div>
-      <label for="message">Recensione</label>
-      <textarea id="message" v-model="message" class="w-full h-32 border border-slate-300 focus:ring-2 focus:ring-primary rounded-lg p-3 mt-4" placeholder="Scrivi qui la tua recensione"></textarea>
+      <label for="message" class="block text-primary-dark font-semibold mt-2">Recensione</label>
+      <textarea id="message" v-model="message" class="w-full h-32 border border-slate-300 focus:ring-2 focus:ring-primary rounded-lg p-3 mt-2" placeholder="Scrivi qui la tua recensione"></textarea>
 
       <div class="flex justify-end">
         <button type="submit" class="bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark mt-4">
