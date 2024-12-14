@@ -6,7 +6,7 @@ router.route('/')
     .get(controller.getAllReviews)
     .post(controller.createReview);
     
-    router.route('/:id')
+router.route('/:id')
     .get(controller.readReview)
     .put(controller.updateReview)
     .delete(controller.deleteReview);
