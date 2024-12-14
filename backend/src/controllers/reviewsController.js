@@ -27,6 +27,10 @@ exports.getReviewsByUser = (req, res) => {
     const userId = req.params.userId;
 
     reviewsModel.find({ user: userId })
+        .populate({
+            path: 'user',
+            select: '-password -salt' // Escludi password e salt
+        })
         .sort({ reviewDate: -1 }) 
         .then(docs => {
             if (docs.length === 0) {
@@ -39,8 +43,9 @@ exports.getReviewsByUser = (req, res) => {
         });
 };
 
+
 exports.getReviewsByMovie = (req, res) => {
-    const movieId = req.params.moviegId;
+    const movieId = req.params.movieId;
 
     reviewsModel.find({ movie: movieId })
         .sort({ reviewDate: -1 }) 
@@ -123,4 +128,20 @@ exports.getAverageRatingByMovie = (req, res) => {
     .catch(err => {
         res.status(500).send(err);
     });
+};
+
+exports.getReviewByUserAndMovie = (req, res) => {
+    const userId = req.params.userId;
+    const movieId = req.params.movieId;
+
+    reviewsModel.findOne({ user: userId, movie: movieId })
+        .then(doc => {
+            if (!doc) {
+                return res.status(404).send('No review found for this user and movie');
+            }
+            res.json(doc);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
 };

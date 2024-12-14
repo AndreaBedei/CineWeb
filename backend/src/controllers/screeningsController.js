@@ -68,19 +68,39 @@ exports.deleteScreening = (req, res) => {
         });
 }
 
-exports.findScreeningsByMovie = (req, res) => {
-    screeningsModel.find({ movie: req.params.movieId })
-        .populate('cinemaHall', 'name')
-        .then(docs => {
-            if (docs.length === 0) {
-                return res.status(404).send('No screenings found for this movie');
+exports.findScreeningsByMovie = async (req, res) => {
+    try {
+        const screenings = await screeningsModel.find({ movie: req.params.movieId })
+            .populate({
+                path: 'cinemaHall',
+                select: 'name cinema'
+            });
+
+        if (screenings.length === 0) {
+            return res.status(404).send('No screenings found for this movie');
+        }
+
+        // Raggruppiamo i risultati per cinema
+        const groupedByCinema = screenings.reduce((acc, screening) => {
+            const cinemaName = screening.cinemaHall.cinema || 'Unknown Cinema';
+            if (!acc[cinemaName]) {
+                acc[cinemaName] = [];
             }
-            res.json(docs);
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
-}
+            acc[cinemaName].push({
+                screeningId: screening._id,
+                cinemaHallName: screening.cinemaHall.name,
+                ticketPrice: screening.ticketPrice,
+                screeningDate: screening.screeningDate
+            });
+            return acc;
+        }, {});
+
+        res.json(groupedByCinema);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
 
 exports.findScreeningsByDate = (req, res) => {
     const { date } = req.query;
