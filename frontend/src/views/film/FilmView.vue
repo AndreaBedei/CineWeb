@@ -14,7 +14,6 @@ const movieId = route.query.id;; // Sostituisci con un ID dinamico
 const movie = ref(null);
 const reviews = ref([]);
 const showtimes = ref([]);
-const user = useUserStore();
 
 const fetchMovieDetails = async () => {
   try {
@@ -36,7 +35,7 @@ const fetchShowtimes = async () => {
 
 const fetchReviews = async () => {
   try {
-    const response = await axios.get(`http://localhost:3001/reviews/user/${user.userId}/movie/${movieId}`);
+    const response = await axios.get(`http://localhost:3001/reviews/screening/${movieId}`);
     reviews.value = response.data;
   } catch (error) {
     console.error('Errore nel caricamento delle recensioni', error);
@@ -46,7 +45,7 @@ const fetchReviews = async () => {
 onMounted(() => {
   fetchMovieDetails();
   fetchShowtimes();
-  //fetchReviews();
+  fetchReviews();
 });
 </script>
 
@@ -56,6 +55,6 @@ onMounted(() => {
     <Showtimes v-if="showtimes" :showtimes="showtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm />
-    <!--<ReviewList v-if="reviews.length" :reviews="reviews" /> -->
+    <ReviewList v-if="reviews" :reviews="reviews" />
   </div>
 </template>

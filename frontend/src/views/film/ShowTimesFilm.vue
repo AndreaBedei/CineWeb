@@ -23,45 +23,64 @@ function isFutureDate(date: string): boolean {
     <header class="px-4 py-2">
       <h2 class="text-3xl font-bold text-primary-dark">Orari</h2>
     </header>
-    <!-- Per ogni cinema -->
-    <section v-for="(screenings, cinema) in props.showtimes" :key="cinema" class="p-4">
-      <header>
-        <h3 class="text-2xl font-bold text-primary-dark border-b pb-2 mb-4">{{ cinema }}</h3>
-      </header>
 
-      <!-- Tabella -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-gray-700 border-collapse border border-gray-300">
-          <thead class="bg-gray-100">
-            <tr>
-              <th :id="'room' + cinema" scope="col" class="py-2 px-4 font-semibold">Sala</th>
-              <th :id="'price' + cinema" scope="col" class="py-2 px-4 font-semibold">Prezzo (€)</th>
-              <th :id="'date' + cinema" scope="col" class="py-2 px-4 font-semibold">Orario</th>
-              <th :id="'action' + cinema" scope="col" class="py-2 px-4 font-semibold text-center">Prenota</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="screening in screenings" 
-              :key="screening.screeningId" 
-              class="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
-            >
-              <td :headers="'room' + cinema" class="py-2 px-4">{{ screening.cinemaHallName }}</td>
-              <td :headers="'price' + cinema" class="py-2 px-4">{{ screening.ticketPrice.toFixed(2) }}</td>
-              <td :headers="'date' + cinema" class="py-2 px-4">{{ formatDate(screening.screeningDate) }}</td>
-              <td :headers="'action' + cinema" class="py-2 px-4 text-center">
-                <button 
-                  v-if="isFutureDate(screening.screeningDate)"
-                    class="px-2 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:px-4 md:py-2 md:text-sm"
-                  @click="alert(`Hai selezionato la proiezione ${screening.screeningId}`)"
-                >
+    <section v-if="Object.keys(props.showtimes).length === 0">
+      <p class="text-lg text-gray-700 font-medium">
+        Non ci sono orari disponibili per questo film
+      </p>
+    </section>
+
+    <section v-else>
+      <section v-for="(screenings, cinema) in props.showtimes" :key="cinema" class="p-4">
+        <header>
+          <h3 class="text-2xl font-bold text-primary-dark border-b pb-2 mb-4">
+            {{ cinema }}
+          </h3>
+        </header>
+
+        <!-- Tabella -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-700 border-collapse border border-gray-300">
+            <thead class="bg-gray-100">
+              <tr>
+                <th :id="'room' + cinema" scope="col" class="py-2 px-4 font-semibold">
+                  Sala
+                </th>
+                <th :id="'price' + cinema" scope="col" class="py-2 px-4 font-semibold">
+                  Prezzo (€)
+                </th>
+                <th :id="'date' + cinema" scope="col" class="py-2 px-4 font-semibold">
+                  Orario
+                </th>
+                <th :id="'action' + cinema" scope="col" class="py-2 px-4 font-semibold text-center">
                   Prenota
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="screening in screenings" :key="screening.screeningId"
+                class="odd:bg-white even:bg-gray-50 hover:bg-gray-200">
+                <td :headers="'room' + cinema" class="py-2 px-4">
+                  {{ screening.cinemaHallName }}
+                </td>
+                <td :headers="'price' + cinema" class="py-2 px-4">
+                  {{ screening.ticketPrice.toFixed(2) }}
+                </td>
+                <td :headers="'date' + cinema" class="py-2 px-4">
+                  {{ formatDate(screening.screeningDate) }}
+                </td>
+                <td :headers="'action' + cinema" class="py-2 px-4 text-center">
+                  <button v-if="isFutureDate(screening.screeningDate)"
+                    class="px-2 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:px-4 md:py-2 md:text-sm"
+                    @click="alert(`Hai selezionato la proiezione ${screening.screeningId}`)">
+                    Prenota
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </section>
   </section>
 </template>

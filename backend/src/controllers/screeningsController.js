@@ -77,7 +77,7 @@ exports.findScreeningsByMovie = async (req, res) => {
             });
 
         if (screenings.length === 0) {
-            return res.status(404).send('No screenings found for this movie');
+            return res.status(200);
         }
 
         // Raggruppiamo i risultati per cinema

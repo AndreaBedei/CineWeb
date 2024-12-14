@@ -16,10 +16,12 @@ const props = withDefaults(
         type?: InputTypeHTMLAttribute,
         modelValue: string | Date,
         require?: boolean,
+        read?: boolean,
         placeholder?: string,
         inputSize?: "fit" | "max",
         layout?: "row" | "column",
         range?: { min: number, max: number, step: number }
+
     }>(),
     {
         type: "text",
@@ -45,11 +47,13 @@ function updateValue(value: string) {
             {{ label }}
         </label>
         <input :id="id" :type="type" :value="modelValue" @input="updateValue(($event.target as HTMLInputElement).value)" :placeholder="placeholder"
-            :class="inputSize == 'fit' ? 'h-fit p-1 rounded-md' : 'p-3 rounded-lg'"
+            :class="[inputSize == 'fit' ? 'h-fit p-1 rounded-md' : 'p-3 rounded-lg', props.read ? 'bg-gray-200' : '']"
             class="w-full border border-slate-300 focus:ring-2 focus:ring-primary" :required="props.require"
             :min="type == 'number' ? range?.min : undefined"
             :max="type == 'number' ? range?.max : undefined"
-            :step="type == 'number' ? range?.step : undefined"/>
+            :step="type == 'number' ? range?.step : undefined"
+            :readonly="props.read"    
+        />
     </div>
 </template>
 

@@ -137,7 +137,7 @@ exports.getReviewByUserAndMovie = (req, res) => {
     reviewsModel.findOne({ user: userId, movie: movieId })
         .then(doc => {
             if (!doc) {
-                return res.status(404).send('No review found for this user and movie');
+                return res.status(200);
             }
             res.json(doc);
         })
