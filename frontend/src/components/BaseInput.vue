@@ -1,36 +1,56 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+import type { InputTypeHTMLAttribute } from 'vue';
 
-defineProps({
-  id: { type: String, required: true },
-  label: { type: String, required: true },
-  type: { type: String, default: 'text' },
-  modelValue: { type: [String, Date], required: true },
-  require: { type: Boolean, default: false },
-  read: { type: Boolean, default: false },
-});
+// defineProps({
+//   id: { type: String, required: true },
+//   label: { type: String, required: true },
+//   type: { type: String, default: 'text' },
+//   modelValue: { type: [String, Date], required: true },
+//   require: { type: Boolean, default: false },
+// });
 
-const emit = defineEmits(['update:modelValue']);
+const props = withDefaults(
+    defineProps<{
+        id: string,
+        label: string,
+        type?: InputTypeHTMLAttribute,
+        modelValue: string | Date,
+        require?: boolean,
+        placeholder?: string,
+        inputSize?: "fit" | "max",
+        layout?: "row" | "column",
+        range?: { min: number, max: number, step: number }
+    }>(),
+    {
+        type: "text",
+        require: false,
+        placeholder: "",
+        inputSize: "max",
+        layout: "column"
+    }
+)
 
-function updateValue(value: string | Date) {
-  emit('update:modelValue', value);
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: string): void
+}>()
+
+function updateValue(value: string) {
+    emit('update:modelValue', value);
 }
 </script>
 
 <template>
-  <div class="mb-4">
-    <label :for="id" class="block text-primary-dark font-semibold mb-2">
-      {{ label }}
-    </label>
-    <input
-      :id="id"
-      :type="type"
-      :value="modelValue"
-      @input="updateValue($event.target?.value)"
-      :class="['w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary', { 'bg-gray-300': read }]"
-      :required="require"
-      :readonly="read"
-    />
-  </div>
+    <div class="flex flex-grow gap-2" :class="layout == 'column' ? 'flex-col' : 'items-center'">
+        <label :for="id" class="block text-primary-dark font-semibold">
+            {{ label }}
+        </label>
+        <input :id="id" :type="type" :value="modelValue" @input="updateValue(($event.target as HTMLInputElement).value)" :placeholder="placeholder"
+            :class="inputSize == 'fit' ? 'h-fit p-1 rounded-md' : 'p-3 rounded-lg'"
+            class="w-full border border-slate-300 focus:ring-2 focus:ring-primary" :required="props.require"
+            :min="type == 'number' ? range?.min : undefined"
+            :max="type == 'number' ? range?.max : undefined"
+            :step="type == 'number' ? range?.step : undefined"/>
+    </div>
 </template>
 
 <style scoped></style>

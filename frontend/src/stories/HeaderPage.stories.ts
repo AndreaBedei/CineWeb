@@ -12,13 +12,9 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const LoggedIn: Story = {
-    args: {
-        logged: true
-    },
+
 }
 
 export const LoggedOut: Story = {
-    args: {
-        logged: false
-    },
+
 }
