@@ -1,10 +1,12 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   showtimes: {
     type: Array,
     required: true,
   },
 });
+
+console.log(props.showtimes);
 </script>
 
 <template>
