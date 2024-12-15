@@ -82,9 +82,9 @@ console.log(props.movie)
           </p>
           <p class="text-gray-600">
             <span class="font-semibold">Genere:</span>
-            <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-2 py-1 rounded-lg"
-              v-for="genre in movieDetails?.Genre.split(', ')" :key="genre">
-              {{ genre }}
+            <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-2 py-1 mx-1 rounded-lg"
+              v-for="genre in props.movie.genres" :key="genre">
+              {{ genre.name }}
             </span>
           </p>
         </div>

@@ -129,7 +129,7 @@ exports.authenticateUserById = (req, res) => {
             if (req.body.password === user.password) {
                 res.json("Ok");
             } else {
-                res.status(401).send('Password incorretta');
+                res.status(401).send('Password precedente non corretta');
             }
         })
         .catch(err => {

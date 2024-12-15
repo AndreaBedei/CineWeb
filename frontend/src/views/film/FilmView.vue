@@ -7,7 +7,6 @@ import ReviewForm from './ReviewForm.vue';
 import ReviewList from './ReviewList.vue';
 import { useRoute } from 'vue-router';
 import IFrameComponent from './IFrameComponent.vue';
-import { useUserStore } from '../stores/user';
 
 const route = useRoute();
 const movieId = route.query.id;; // Sostituisci con un ID dinamico

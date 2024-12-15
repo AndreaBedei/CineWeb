@@ -15,8 +15,8 @@ const newName = ref(props.name);
 const newSurname = ref(props.surname);
 const msgUser = ref('');
 const selectedFile = ref<File | null>(null);
-const selectedInterests = ref(props.interests.map((interest) => ({ _id: interest._id, name: interest.name })));
-const availableInterests = ref([]);
+const selectedInterests = ref<{ _id: string; name: string }[]>(props.interests.map((interest) => ({ _id: interest._id, name: interest.name })));
+const availableInterests = ref<{ _id: string; name: string }[]>([]);
 
 const emit = defineEmits(['closeModal', 'submitForm']);
 
@@ -51,18 +51,24 @@ function removeInterest(index: number) {
 }
 
 function handleSubmit() {
-    const form = ref({
-        name: newName.value,
-        surname: newSurname.value,
-        favoriteGenres: JSON.stringify(selectedInterests.value.map((interest) => interest._id)),
-    });
     if (selectedFile.value) {
-        uploadImage(selectedFile.value).then(async (data) => {
+        const form = ref({
+            name: newName.value,
+            surname: newSurname.value,
+            favoriteGenres: JSON.stringify(selectedInterests.value.map((interest) => interest._id)),
+            profilePicture: ''
+        });
+        uploadImage().then(async (data) => {
             form.value.profilePicture = data;
             emit('submitForm', form);
             emit('closeModal');
         });
     } else {
+        const form = ref({
+            name: newName.value,
+            surname: newSurname.value,
+            favoriteGenres: JSON.stringify(selectedInterests.value.map((interest) => interest._id)),
+        });
         emit('submitForm', form);
         emit('closeModal');
     }
@@ -82,7 +88,9 @@ async function uploadImage() {
 
     // Creazione del FormData
     const formData = new FormData();
-    formData.append('image', selectedFile.value);
+    if (selectedFile.value) {
+        formData.append('image', selectedFile.value);
+    }
 
     try {
         const response = await fetch('http://localhost:3001/image/uploadprofile', {

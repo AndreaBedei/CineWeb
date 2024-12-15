@@ -45,8 +45,26 @@ const interests = ref<Interest[]>([]);
 const showModal = ref(false);
 const modalTitle = ref('');
 const modalMessage = ref('');
-const pastReservation = ref([]);
-const futureReservation = ref([]);
+interface Ticket {
+    _id: string;
+    screening: {
+        _doc: {
+            movie: {
+                title: string;
+                _id: string;
+            };
+            screeningDate: string | number | Date;
+            cinemaHall: {
+                cinema: string;
+                name: string;
+            };
+        };
+    };
+    seats: string[];
+}
+
+const pastReservation = ref<Ticket[]>([]);
+const futureReservation = ref<Ticket[]>([]);
 
 function showCheckModal(title: string, message: string) {
     modalTitle.value = title;
@@ -82,7 +100,7 @@ function closeModalPassword() {
 }
 
 // Funzione per gestire l'invio del modulo
-async function handleFormSubmit(form: unknown) {
+async function handleFormSubmit(form: { value: { email: string; name: string; surname: string; favoriteGenres: Interest[]; profilePicture: string } }) {
     try {
         await axios.put(`http://localhost:3001/users/${id}`, form.value);
         showCheckModal('Conferma', "I dati sono stati aggiornati come richiesto!");
@@ -150,13 +168,18 @@ const formatDate = (date: string | number | Date) => {
                             <th id="seat" class="border-b p-2">Posto</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="Object.keys(futureReservation).length !== 0">
                         <tr v-for="ticket in futureReservation" :key="ticket._id">
                             <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
                             <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate) }}</td>
                             <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>
                             <td headers="hall" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.name }}</td>
                             <td headers="seat" class="border-b p-2">{{ ticket.seats.join(', ') }}</td>
+                        </tr>
+                    </tbody>
+                    <tbody v-else>
+                        <tr>
+                            <td headers="film time cinema action" class="border-b p-2 text-center" colspan="5">Nessuna prenotazione futura</td>
                         </tr>
                     </tbody>
                 </table>
@@ -174,7 +197,7 @@ const formatDate = (date: string | number | Date) => {
                             <th v-if="isCurrentUser" id="action" class="border-b p-2">Recensione</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="Object.keys(pastReservation).length !== 0">
                         <tr v-for="ticket in pastReservation" :key="ticket._id">
                             <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
                             <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate) }}</td>
@@ -185,6 +208,11 @@ const formatDate = (date: string | number | Date) => {
                                         size="small" bold :disabled="false" />
                                 </router-link>
                             </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-else>
+                        <tr>
+                            <td headers="film time cinema action" class="border-b p-2 text-center" colspan="4">Nessun film visto in passato</td>
                         </tr>
                     </tbody>
                 </table>

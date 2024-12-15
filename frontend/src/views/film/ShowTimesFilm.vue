@@ -71,8 +71,7 @@ function isFutureDate(date: string): boolean {
                 </td>
                 <td :headers="'action' + cinema" class="py-2 px-4 text-center">
                   <button v-if="isFutureDate(screening.screeningDate)"
-                    class="px-2 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:px-4 md:py-2 md:text-sm"
-                    @click="alert(`Hai selezionato la proiezione ${screening.screeningId}`)">
+                    class="px-2 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:px-4 md:py-2 md:text-sm">
                     Prenota
                   </button>
                 </td>

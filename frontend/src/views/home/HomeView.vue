@@ -8,7 +8,14 @@ import router from '@/router';
 import AddMovieModal from './AddMovieModal.vue';
 
 const user = useUserStore();
-const movieCarousels = ref<{ title: string; movies: unknown[] }[]>([]); // Array per i caroselli
+interface Movie {
+  _id: string;
+  title: string;
+  poster: string;
+  rating?: number;
+}
+
+const movieCarousels = ref<{ title: string; movies: Movie[] }[]>([]); // Array per i caroselli
 
 const loaded = ref(false);
 const modalFilm = ref(false);
@@ -58,7 +65,10 @@ function openModalAddMovie() {
   modalFilm.value = true;
 }
 
-function closeModal() {
+function closeModal(update: boolean) {
+  if (update){
+    fetchMovies();
+  }
   modalFilm.value = false;
 }
 

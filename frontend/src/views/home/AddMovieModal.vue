@@ -48,7 +48,6 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
             const response = await fetch('http://localhost:3001/genres');
             if (response.ok) {
                 genres.value = await response.json();
-                console.log(genres.value);
             } else {
                 console.error('Errore nel recupero dei generi.');
             }
@@ -79,17 +78,12 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
         }
 
         try {
-            console.log({
-                title: name.value,
-                trailerLink: trailer.value,
-                duration: duration.value.toString(),
-                genres: selectedGenres.value
-            });
             const response = await axios.post('http://localhost:3001/movies', {
                 title: name.value,
                 trailerLink: trailer.value,
                 duration: duration.value.toString(),
-                genres: selectedGenres.value
+                genres: selectedGenres.value,
+                poster: image.value,
             });
 
             if (response.status === 201) {
@@ -103,7 +97,7 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
             msgUser.value = "Errore di connessione durante l'aggiunta del film.";
         }
 
-        emit('close');
+        emit('close', true);
     }
 
     const emit = defineEmits(['close', 'save']);
@@ -114,7 +108,7 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
     }
 
     function closeModal() {
-        emit('close');
+        emit('close', false);
     }
 
 </script>
@@ -147,11 +141,9 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
                 </section>
 
                 <!-- Categorie -->
-                <div class="mb-4">
-                    <label for="categorie-film" class="block text-primary-dark font-semibold mb-2">
-                        Categorie
-                    </label>
-                    <div id="categorie-film" class="grid gap-4 grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                <section class="mb-4">
+                    <h3 class="block text-primary-dark font-semibold mb-2 mt-2">Categorie</h3>
+                    <div class="grid gap-4 grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         <div v-for="genre in genres" :key="genre._id" class="flex items-center space-x-2">
                             <input type="checkbox" :id="'genre-' + genre._id" :value="genre._id"
                                 v-model="selectedGenres"
@@ -161,7 +153,7 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
                             </label>
                         </div>
                     </div>
-                </div>
+                </section>
                 <!-- Bottoni -->
                 <div class="flex justify-end space-x-4">
                     <SimpleButton content="Annulla" color="red" :handleClick="closeModal" rounding="small" />

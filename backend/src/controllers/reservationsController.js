@@ -187,7 +187,7 @@ exports.getPastReservationsByUser = (req, res) => {
         .sort({ reservationDate: -1 })
         .then(docs => {
             if (docs.length === 0) {
-                return res.status(404).send('No past reservations found for this user');
+                return res.status(200);
             }
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
@@ -227,7 +227,7 @@ exports.getFutureReservationsByUser = (req, res) => {
         .sort({ reservationDate: 1 })
         .then(docs => {
             if (docs.length === 0) {
-                return res.status(404).send('No future reservations found for this user');
+                return res.status(200);
             }
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
