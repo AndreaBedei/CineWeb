@@ -36,7 +36,7 @@ async function uploadImage() {
     if (response.ok) {
       const data = await response.json();
       uploadStatus.value = { success: true, message: data.message };
-      emit("fileUploaded");
+      emit("fileUploaded", data.imagePath);
     } else {
       const error = await response.json();
       uploadStatus.value = { success: false, message: error.message || 'Errore durante il caricamento.' };

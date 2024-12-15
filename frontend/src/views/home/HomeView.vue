@@ -88,7 +88,7 @@ watch(user, () => {
 <template>
   <div class="p-4 w-full bg-secondary-light">
     <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
-    <div>
+    <div class="flex justify-end">
       <SimpleButton v-if="user.isAdmin" content="Aggiungi film" color="primary" rounding="small" :handle-click="openModalAddMovie" />
       <AddMovieModal v-if="user.isAdmin && modalFilm" @close="closeModal" />
     </div>

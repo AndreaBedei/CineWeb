@@ -35,8 +35,9 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
     const name = ref(props.name);
     const trailer = ref(props.trailer);
     const duration = ref(props.duration);
-    const genres = ref<{ id: number; name: string }[]>([]);
+    const genres = ref<{ _id: number; name: string }[]>([]);
     const selectedGenres = ref<string[]>([]);
+    const image = ref("");
     const msgUser = ref("");
     const upload = ref(false);
     const check = ref(false);
@@ -47,6 +48,7 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
             const response = await fetch('http://localhost:3001/genres');
             if (response.ok) {
                 genres.value = await response.json();
+                console.log(genres.value);
             } else {
                 console.error('Errore nel recupero dei generi.');
             }
@@ -75,12 +77,39 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
             check.value = false;
             return;
         }
+
+        try {
+            console.log({
+                title: name.value,
+                trailerLink: trailer.value,
+                duration: duration.value.toString(),
+                genres: selectedGenres.value
+            });
+            const response = await axios.post('http://localhost:3001/movies', {
+                title: name.value,
+                trailerLink: trailer.value,
+                duration: duration.value.toString(),
+                genres: selectedGenres.value
+            });
+
+            if (response.status === 201) {
+                msgUser.value = "Film aggiunto con successo!";
+                emit('save');
+            } else {
+                msgUser.value = "Errore durante l'aggiunta del film.";
+            }
+        } catch (error) {
+            console.error('Errore di connessione:', error);
+            msgUser.value = "Errore di connessione durante l'aggiunta del film.";
+        }
+
         emit('close');
     }
 
     const emit = defineEmits(['close', 'save']);
 
-    function handleFileUploaded() {
+    function handleFileUploaded(name: string) {
+        image.value = name;
         upload.value = true;
     }
 
@@ -101,7 +130,7 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
             </header>
             <ErrorAlert v-if="msgUser" :message="msgUser" @clear="msgUser = ''" />
             <LoadingAlert v-if="check" />
-            <form>
+            <form @submit.prevent="handleSubmit">
                 <!-- Nome -->
                 <BaseInput id="nome-film" label="Nome del film" v-model="name" :require="true" />
 
@@ -123,23 +152,22 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
                         Categorie
                     </label>
                     <div id="categorie-film" class="grid gap-4 grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                        <div v-for="genre in genres" :key="genre.id" class="flex items-center space-x-2">
-                            <input type="checkbox" :id="'genre-' + genre.id" :value="genre.name"
+                        <div v-for="genre in genres" :key="genre._id" class="flex items-center space-x-2">
+                            <input type="checkbox" :id="'genre-' + genre._id" :value="genre._id"
                                 v-model="selectedGenres"
                                 class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
-                            <label :for="'genre-' + genre.id" class="text-sm font-medium text-gray-700">
+                            <label :for="'genre-' + genre._id" class="text-sm font-medium text-gray-700">
                                 {{ genre.name }}
                             </label>
                         </div>
                     </div>
                 </div>
-
                 <!-- Bottoni -->
+                <div class="flex justify-end space-x-4">
+                    <SimpleButton content="Annulla" color="red" :handleClick="closeModal" rounding="small" />
+                    <SimpleButton content="Salva" color="green" rounding="small" type="submit" />
+                </div>
             </form>
-            <div class="flex justify-end space-x-4">
-                <SimpleButton content="Annulla" color="red" :handleClick="closeModal" rounding="small" />
-                <SimpleButton content="Salva" color="green" rounding="small" :handleClick="handleSubmit" />
-            </div>
         </div>
     </div>
 </template>
