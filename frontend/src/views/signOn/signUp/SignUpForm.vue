@@ -77,7 +77,7 @@ async function handleSubmit() {
     <BaseInput id="passwordCheck" label="Conferma Password" type="password" v-model="form.passwordCheck" require />
     <button
       type="submit"
-      class="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      class="w-full bg-primary text-white py-3 rounded-lg mt-3 hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:ring-offset-2"
     >
       Registrati
     </button>

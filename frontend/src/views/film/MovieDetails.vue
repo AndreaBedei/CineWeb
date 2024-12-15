@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { defineProps, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
-import SimpleButton from "@/components/SimpleButton.vue";
 
 const props = defineProps({
   movie: {
@@ -10,7 +9,19 @@ const props = defineProps({
   },
 });
 
-const movieDetails = ref(null);
+interface MovieDetails {
+  Title: string;
+  Year: string;
+  Runtime: string;
+  Genre: string;
+  Director: string;
+  Writer: string;
+  Language: string;
+  Plot: string;
+  Ratings: { Source: string; Value: string }[];
+}
+
+const movieDetails = ref<MovieDetails | null>(null);
 const isLoading = ref(true); // Variabile per tracciare lo stato del caricamento
 
 onMounted(() => {
@@ -22,14 +33,22 @@ async function fetchMovieDetails(title: string) {
     const response = await axios.get(
       `http://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=e2b4e2eb`
     );
-    console.log(response.data);
+    const translate = await axios.get(
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=it&dt=t&q=${encodeURIComponent(
+        response.data.Plot
+      )}`
+    );
     movieDetails.value = response.data;
+    if (movieDetails.value) {
+      movieDetails.value.Plot = translate.data[0][0][0];
+    }
   } catch (error) {
     console.error("Errore nel recupero dei dettagli del film:", error);
   } finally {
     isLoading.value = false; // Imposta a false quando il caricamento è completato
   }
 }
+console.log(props.movie)
 </script>
 
 <template>
