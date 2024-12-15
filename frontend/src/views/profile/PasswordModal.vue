@@ -67,7 +67,7 @@ async function handleSubmit() {
       </h4>
 
       <div v-if="msgUser" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert" aria-label="true">
-        <strong class="font-bold">Errore:</strong>
+        <strong class="font-bold">Errore: </strong>
         <span class="block sm:inline">{{ msgUser }}</span>
         <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
           <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" @click="msgUser = ''">
