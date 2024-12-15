@@ -31,3 +31,4 @@ coverage
 
 *storybook.log
 frontend/.vscode/*
+frontend/src/assets/css/output.css
