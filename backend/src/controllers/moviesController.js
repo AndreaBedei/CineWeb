@@ -3,6 +3,7 @@ const { moviesModel } = require('../models/moviesModel');
 exports.moviesList = (req, res) => {
     moviesModel.find()
         .populate('genres', 'name') 
+        .sort({ _id: -1 }) 
         .then(doc => {
             res.json(doc);
         })
@@ -69,6 +70,7 @@ exports.availableMovies = (req, res) => {
     moviesModel.find()
         .where('isAvailable').equals(true)
         .populate('genres', 'name') 
+        .sort({ _id: -1 }) 
         .then(doc => {
             res.json(doc);
         })
@@ -83,6 +85,7 @@ exports.availableMoviesByGenre = (req, res) => {
         .where('genres').in([genreId])
         .where('isAvailable').equals(true)
         .populate('genres', 'name') 
+        .sort({ _id: -1 }) 
         .then(doc => {
             res.json(doc);
         })
