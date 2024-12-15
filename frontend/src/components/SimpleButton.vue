@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ButtonHTMLAttributes } from 'vue';
+
 
 type Colors = ["red", "green", "primary", "secondary"]
 type Color = Colors[number]
@@ -8,34 +10,6 @@ type EnabledStructure = { enabled: ColorStructure, disabled: ColorStructure }
 
 const palette : {[key in Color]: { full: EnabledStructure, outline: EnabledStructure }} =
 {
-    /*
-        "col": {
-            full: {
-                enabled: {
-                    bg: string,
-                    border: string,
-                    font: string,
-                },
-                disabled: {
-                    bg: string,
-                    border: string,
-                    font: string,
-                }
-            },
-            outline: {
-                enabled: {
-                    bg: string,
-                    border: string,
-                    font: string,
-                },
-                disabled: {
-                    bg: string,
-                    border: string,
-                    font: string,
-                }
-            }
-        }
-    */
     "red": {
         full: {
             enabled: {
@@ -182,7 +156,8 @@ const props = withDefaults(
         outlineOnly?: boolean,
         rounding?: "none" | "small" | "full",
         disabled?: boolean,
-        bold?: boolean
+        bold?: boolean,
+        type?: ButtonHTMLAttributes["type"],
         handleClick?: () => void
     }>(),
     {
@@ -191,6 +166,7 @@ const props = withDefaults(
         rounding: "none",
         disabled: false,
         bold: false,
+        type: "button",
         handleClick: () => {}
     }
 )
@@ -222,7 +198,7 @@ function getRightPalette() {
 </script>
 
 <template>
-    <button :disabled="disabled" :onclick="handleClick" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
+    <button :type="type" :disabled="disabled" :onclick="handleClick" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
         <!-- <slot></slot> -->
         <!-- FIXME: uncomment and remove content -->
         {{ content }}

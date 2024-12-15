@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import type { InputTypeHTMLAttribute } from 'vue';
 
-// defineProps({
-//   id: { type: String, required: true },
-//   label: { type: String, required: true },
-//   type: { type: String, default: 'text' },
-//   modelValue: { type: [String, Date], required: true },
-//   require: { type: Boolean, default: false },
-// });
-
 const props = withDefaults(
     defineProps<{
         id: string,
@@ -52,7 +44,7 @@ function updateValue(value: string) {
             :min="type == 'number' ? range?.min : undefined"
             :max="type == 'number' ? range?.max : undefined"
             :step="type == 'number' ? range?.step : undefined"
-            :readonly="props.read"    
+            :readonly="props.read"
         />
     </div>
 </template>
