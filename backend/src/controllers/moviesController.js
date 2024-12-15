@@ -2,6 +2,7 @@ const { moviesModel } = require('../models/moviesModel');
 
 exports.moviesList = (req, res) => {
     moviesModel.find()
+        .populate('genres', 'name') 
         .then(doc => {
             res.json(doc);
         })
@@ -12,6 +13,7 @@ exports.moviesList = (req, res) => {
 
 exports.readMovie = (req, res) => {
     moviesModel.findById(req.params.id)
+        .populate('genres', 'name') 
         .then(doc => {
             if (!doc) {
                 return res.status(404).send('Movie not found');
@@ -27,7 +29,8 @@ exports.createMovie = (req, res) => {
     const movie = new moviesModel(req.body);
     movie.save()
         .then(doc => {
-            res.json(doc);
+            doc.populate('genres', 'name') 
+                .then(populatedDoc => res.json(populatedDoc));
         })
         .catch(err => {
             res.status(500).send(err);
@@ -36,6 +39,7 @@ exports.createMovie = (req, res) => {
 
 exports.updateMovie = (req, res) => {
     moviesModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        .populate('genres', 'name') 
         .then(doc => {
             if (!doc) {
                 return res.status(404).send('Movie not found');
@@ -49,6 +53,7 @@ exports.updateMovie = (req, res) => {
 
 exports.deleteMovie = (req, res) => {
     moviesModel.findByIdAndDelete(req.params.id)
+        .populate('genres', 'name') 
         .then(doc => {
             if (!doc) {
                 return res.status(404).send('Movie not found');
@@ -63,6 +68,7 @@ exports.deleteMovie = (req, res) => {
 exports.availableMovies = (req, res) => {
     moviesModel.find()
         .where('isAvailable').equals(true)
+        .populate('genres', 'name') 
         .then(doc => {
             res.json(doc);
         })
@@ -76,6 +82,7 @@ exports.availableMoviesByGenre = (req, res) => {
     moviesModel.find()
         .where('genres').in([genreId])
         .where('isAvailable').equals(true)
+        .populate('genres', 'name') 
         .then(doc => {
             res.json(doc);
         })
