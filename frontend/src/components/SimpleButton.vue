@@ -14,10 +14,10 @@ const palette : {[key in Color]: { full: EnabledStructure, outline: EnabledStruc
         full: {
             enabled: {
                 bg: "bg-red-500",
-                bgHover: "hover:bg-red-950",
+                bgHover: "hover:bg-red-700",
                 font: "text-white",
                 border: "border-red-500",
-                borderHover: "hover:border-red-950"
+                borderHover: "hover:border-red-700"
             },
             disabled: {
                 bg: "bg-red-300",
