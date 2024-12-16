@@ -17,7 +17,7 @@ const props = defineProps<{
 <template>
   <section class="mt-8 bg-gray-50 p-6 rounded-lg shadow-lg">
     <header>
-      <h2 class="text-xl font-bold mb-4">Recensioni</h2>
+      <h2 class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Recensioni</h2>
     </header>
     <section v-if="Object.keys(props.reviews).length === 0">
       <p class="text-lg text-gray-700 font-medium">

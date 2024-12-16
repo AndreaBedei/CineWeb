@@ -20,8 +20,8 @@ function isFutureDate(date: string): boolean {
 
 <template>
   <section class="mt-8 bg-gray-50 p-6 rounded-lg shadow-lg">
-    <header class="px-4 py-2">
-      <h2 class="text-3xl font-bold text-primary-dark">Orari</h2>
+    <header>
+      <h2 class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Orari</h2>
     </header>
 
     <section v-if="Object.keys(props.showtimes).length === 0">

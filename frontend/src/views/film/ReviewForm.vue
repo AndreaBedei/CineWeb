@@ -66,7 +66,7 @@ function formatDate(date: string): string {
 
 <template>
   <div class="mt-8 bg-gray-50 p-6 rounded-lg shadow-lg">
-    <h2 class="text-xl font-bold mb-4">Scrivi una recensione</h2>
+    <h2 class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Scrivi una recensione</h2>
     <form @submit.prevent="submitReview">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <BaseInput id="review-date" label="Data" type="text" v-model="date" :read="true" />
