@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import SimpleButton from "@/components/SimpleButton.vue";
+import { useUserStore } from "../stores/user";
+import ModifyMovieModal from "../home/AddMovieModal.vue";
 
 const props = defineProps({
   movie: {
@@ -23,6 +26,13 @@ interface MovieDetails {
 
 const movieDetails = ref<MovieDetails | null>(null);
 const isLoading = ref(true); // Variabile per tracciare lo stato del caricamento
+const modalFilm = ref(false);
+const genres = ref<{ _id: string; name: string }[]>(props.movie.genres);
+const title = ref(props.movie.title);
+const poster = ref(props.movie.poster);
+const trailerLink = ref(props.movie.trailerLink);
+const duration = ref(props.movie.duration);
+const user = useUserStore();
 
 onMounted(() => {
   fetchMovieDetails(props.movie.title);
@@ -48,7 +58,27 @@ async function fetchMovieDetails(title: string) {
     isLoading.value = false; // Imposta a false quando il caricamento è completato
   }
 }
-console.log(props.movie)
+
+function openModalModifyMovie() {
+  modalFilm.value = true;
+}
+
+function closeModal(update: boolean) {
+  if (update) {
+    fetchMovieDetails(props.movie.title);
+  }
+  modalFilm.value = false;
+}
+
+function updateValue(titleN: string, posterN: string, durationN: string, genresN: { _id: string; name: string }[], trailer: string) {
+  title.value = titleN;
+  poster.value = posterN;
+  duration.value = durationN;
+  genres.value = genresN;
+  trailerLink.value = trailer;
+  modalFilm.value = false;
+}
+
 </script>
 
 <template>
@@ -59,7 +89,7 @@ console.log(props.movie)
   <section v-else class="flex flex-col md:flex-row gap-8 items-start bg-gray-50 p-6 rounded-lg shadow-lg">
     <!-- Poster -->
     <div class="flex-shrink-0 w-48 mx-auto">
-      <img :src="`http://localhost:3001/img/poster/${movie.poster}`" alt="Copertina di {{ movieDetails?.Title }}"
+      <img :src="`http://localhost:3001/img/poster/${poster}`" alt="Copertina di {{ title }}"
         class="w-full rounded-lg shadow-md" />
     </div>
 
@@ -67,7 +97,7 @@ console.log(props.movie)
     <div class="flex-1 space-y-6">
       <!-- Titolo -->
       <h1 class="text-4xl font-bold text-primary-dark border-b pb-2">
-        {{ movieDetails?.Title }}
+        {{ title }}
       </h1>
 
       <!-- Caratteristiche -->
@@ -78,12 +108,12 @@ console.log(props.movie)
             <span class="font-semibold">Anno:</span> {{ movieDetails?.Year }}
           </p>
           <p class="text-gray-600">
-            <span class="font-semibold">Durata:</span> {{ movieDetails?.Runtime }}
+            <span class="font-semibold">Durata:</span> {{ duration }} minuti
           </p>
           <p class="text-gray-600">
             <span class="font-semibold">Genere:</span>
             <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-2 py-1 mx-1 rounded-lg"
-              v-for="genre in props.movie.genres" :key="genre">
+              v-for="genre in genres" :key="genre._id">
               {{ genre.name }}
             </span>
           </p>
@@ -118,7 +148,11 @@ console.log(props.movie)
             {{ rating.Source }}: {{ rating.Value }}
           </li>
         </ul>
+        <div class="flex justify-end w-full mt-4">
+          <SimpleButton v-if="user.isAdmin" content="Aggiorna dati" color="primary" rounding="small" :handle-click="openModalModifyMovie" />
+        </div>
       </div>
     </div>
   </section>
+  <ModifyMovieModal v-if="user.isAdmin && modalFilm" :movieId="movie._id" :update="true" modal-title="Modifica film" :name="title" :poster="poster" :trailerLink="trailerLink" :duration="duration" :genresO="genres" @close="closeModal" @update="updateValue" />
 </template>
