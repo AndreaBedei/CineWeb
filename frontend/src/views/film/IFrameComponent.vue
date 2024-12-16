@@ -12,7 +12,7 @@ const props = defineProps({
 <template>
   <section class="mt-8 bg-gray-50 p-6 rounded-lg shadow-lg">
     <header>
-      <h2 class="text-2xl font-semibold text-primary-dark mb-4">Guarda il Trailer</h2>
+      <h2 class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Guarda il Trailer</h2>
     </header>
 
     <div v-if="props.movie.trailerLink" class="relative w-full h-0 pb-[56.25%] mb-8">
