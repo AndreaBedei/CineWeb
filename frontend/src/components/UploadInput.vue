@@ -3,6 +3,13 @@ import { ref } from 'vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import LoadingAlert from './LoadingAlert.vue';
 
+const props = defineProps({
+  currentFile: {
+    type: String,
+    default: '',
+  },
+});
+
 // Stato per gestire il file selezionato
 const selectedFile = ref<File | null>(null);
 const uploadStatus = ref<{ success: boolean; message: string } | null>(null);
@@ -60,6 +67,9 @@ async function uploadImage() {
       <SimpleButton id="uploadButton" label="Carica poster" type="button" :modelValue="''" @click="uploadImage"
       :disabled="!selectedFile" rounding="small" size="small" content="Carica poster" color="primary" />
     </div>
+    <span v-if="props.currentFile || selectedFile" class="text-gray-600">
+        {{ selectedFile?.name || props.currentFile }}
+      </span>
     <LoadingAlert v-if="loading" />
     <div v-if="uploadStatus" class="mt-4">
       <p v-if="uploadStatus.success" class="text-green-500">
