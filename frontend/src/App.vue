@@ -18,7 +18,7 @@ watch(router.currentRoute, async (to) => {
 </script>
 
 <template>
-    <PageHeader></PageHeader>
+    <PageHeader :logged="user.userId != ''"></PageHeader>
     <main class="flex flex-grow bg-secondary-light">
         <RouterView />
     </main>

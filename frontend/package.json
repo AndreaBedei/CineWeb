@@ -16,6 +16,7 @@
     "tailwind": "npx tailwindcss -i ./src/assets/css/input.css -o ./src/assets/css/output.css --watch"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.2.0",
     "axios": "^1.7.9",
     "cineweb": "file:",
     "crypto-js": "^4.2.0",

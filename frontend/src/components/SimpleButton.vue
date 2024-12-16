@@ -150,7 +150,8 @@ const palette : {[key in Color]: { full: EnabledStructure, outline: EnabledStruc
 
 const props = withDefaults(
     defineProps<{
-        content: string,
+        title?: string,
+        content?: string,
         color: Color,
         size?: "small" | "regular",
         outlineOnly?: boolean,
@@ -198,9 +199,8 @@ function getRightPalette() {
 </script>
 
 <template>
-    <button :type="type" :disabled="disabled" :onclick="handleClick" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
-        <!-- <slot></slot> -->
-        <!-- FIXME: uncomment and remove content -->
+    <button :type="type" :title="title" :disabled="disabled" :onclick="handleClick" class="transition-colors border-solid border-2" :class="[getSize(), getRounding(), getRightPalette().bg, getRightPalette().bgHover, getRightPalette().border, getRightPalette().borderHover, getRightPalette().font, {'font-bold' : bold}]">
         {{ content }}
+        <slot v-if="content === undefined"></slot>
     </button>
 </template>
