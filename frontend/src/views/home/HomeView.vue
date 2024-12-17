@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useUserStore } from '../stores/user';
 import router from '@/router';
 import AddMovieModal from './AddMovieModal.vue';
+import PageModal from '@/components/PageModal.vue';
 
 const user = useUserStore();
 interface Movie {
@@ -19,6 +20,7 @@ const movieCarousels = ref<{ title: string; movies: Movie[] }[]>([]); // Array p
 
 const loaded = ref(false);
 const modalFilm = ref(false);
+const updateOk = ref(false);
 
 const fetchMoviesByInterest = async (interestId: string, interestName: string) => {
   try {
@@ -68,6 +70,7 @@ function openModalAddMovie() {
 function closeModal(update: boolean) {
   if (update){
     fetchMovies();
+    updateOk.value = true;
   }
   modalFilm.value = false;
 }
@@ -96,6 +99,7 @@ watch(user, () => {
 </script>
 
 <template>
+  <PageModal v-if="updateOk" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
   <div class="p-4 w-full bg-secondary-light">
     <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
     <div class="flex justify-end">

@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
 const props = defineProps<{
   reviews: {
-    _id: number;
+    _id: string;
     user: {
+      _id: string;
       name: string;
       profilePicture: string;
       surname: string;
@@ -12,6 +16,10 @@ const props = defineProps<{
     reviewDate: string;
   }[];
 }>();
+
+const goToUserProfile = (userId: string) => {
+  router.push({ name: 'profileWithId', params: { userId: userId } });
+};
 </script>
 
 <template>
@@ -28,10 +36,20 @@ const props = defineProps<{
     <section v-else>
       <ul class="divide-y divide-gray-300">
         <li v-for="review in props.reviews" :key="review._id" class="py-4 flex gap-4">
-          <img :src="`http://localhost:3001/img/profile/${review.user.profilePicture}`" alt="Immagine utente"
-            class="w-12 h-12 rounded-full object-cover" />
+          <button @click="goToUserProfile(review.user._id)"
+            class="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Vai al profilo di {{ review.user.name }}">
+            <img :src="`http://localhost:3001/img/profile/${review.user.profilePicture}`"
+              alt="Foto profilo di {{ review.user.name }}" class="w-12 h-12 rounded-full object-cover" />
+          </button>
           <div>
-            <h3 class="font-semibold">{{ review.user.name }} {{ review.user.surname }}</h3>
+            <button @click="goToUserProfile(review.user._id)"
+              class="font-semibold cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-label="Vai al profilo di {{ review.user.name }}">
+              <h3 class="inline font-semibold">
+                {{ review.user.name }} {{ review.user.surname }}
+              </h3>
+            </button>
             <p class="text-sm text-gray-500">Voto: {{ review.rating }}</p>
             <p>{{ review.text }}</p>
           </div>

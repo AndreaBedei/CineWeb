@@ -13,6 +13,7 @@ const props = withDefaults(
         inputSize?: "fit" | "max",
         layout?: "row" | "column",
         range?: { min: number, max: number, step: number }
+        
 
     }>(),
     {

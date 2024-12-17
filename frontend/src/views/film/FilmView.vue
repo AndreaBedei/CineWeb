@@ -41,6 +41,10 @@ const fetchReviews = async () => {
   }
 };
 
+function updateReviews() {
+  fetchReviews();
+}
+
 onMounted(() => {
   fetchMovieDetails();
   fetchShowtimes();
@@ -53,7 +57,7 @@ onMounted(() => {
     <MovieDetails v-if="movie" :movie="movie" />
     <Showtimes v-if="showtimes" :showtimes="showtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
-    <ReviewForm />
+    <ReviewForm @update="updateReviews"/>
     <ReviewList v-if="reviews" :reviews="reviews" />
   </div>
 </template>

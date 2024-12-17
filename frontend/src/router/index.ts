@@ -25,9 +25,10 @@ const router = createRouter({
             component: SignOn,
         },
         {
-            path: '/profile',
-            name: 'profile',
-            component: ProfileView
+            path: '/profile/:userId',
+            name: 'profileWithId',
+            component: ProfileView,
+            props: true
         },
         {
             path: '/movie',

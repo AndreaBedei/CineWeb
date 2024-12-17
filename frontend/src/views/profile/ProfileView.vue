@@ -12,8 +12,13 @@ interface Interest {
     name: string;
 }
 
-const id = "6759566a35d32d551c8bb5e5";
+const props = defineProps<{
+    userId: string;
+}>()
+
 const userStore = useUserStore();
+const userCurrentId = userStore.userId;
+const id = props.userId;
 
 async function getUserData() {
     try {
@@ -36,7 +41,7 @@ async function getUserData() {
 
 // Props o dati passati per il controllo
 const userData = ref(null);
-const isCurrentUser = ref(true); // Simula se l'utente visualizzato è quello loggato
+const isCurrentUser = ref(userCurrentId===id);
 const mail = ref("");
 const name = ref("");
 const surname = ref("");

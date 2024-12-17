@@ -22,7 +22,7 @@ function goToLoginAndOut() {
 }
 
 function goToProfile() {
-  router.push('/profile');
+  router.push(`/profile/${useUserStore().userId}`);
 }
 
 function goToHome() {

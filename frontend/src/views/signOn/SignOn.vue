@@ -3,8 +3,22 @@ import { ref } from 'vue';
 import LoginComponent from './login/LoginView.vue';
 import RegisterComponent from './signUp/SignUp.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
+import Modal from '@/components/PageModal.vue';
 
 const currentView = ref<'login' | 'register' | null>(null);
+const showModal = ref(false);
+const modalTitle = ref('');
+const modalMessage = ref('');
+
+function showMessage(title: string, message: string) {
+  modalTitle.value = title;
+  modalMessage.value = message;
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
 
 function showLogin() {
   currentView.value = 'login';
@@ -16,6 +30,11 @@ function showRegister() {
 
 function resetView() {
   currentView.value = null;
+}
+
+function closeRegister() {
+  resetView();
+  showMessage('Congratulazioni', "La registrazione è avvenuta con successo!");
 }
 </script>
 
@@ -49,7 +68,7 @@ function resetView() {
           <LoginComponent />
         </div>
         <div v-else-if="currentView === 'register'">
-          <RegisterComponent />
+          <RegisterComponent @closeRegister="closeRegister"/>
         </div>
         <SimpleButton v-if="currentView" @click="resetView" content="Torna indietro" color="secondary" size="small"
           rounding="small" class="py-2 bg-secondary text-white hover:bg-secondary-dark focus:ring-secondary">
@@ -58,6 +77,12 @@ function resetView() {
       </div>
     </div>
   </div>
+  <Modal
+      v-if="showModal"
+      :title="modalTitle"
+      :message="modalMessage"
+      @closeModal="closeModal"
+    />
 </template>
 
 <style scoped></style>

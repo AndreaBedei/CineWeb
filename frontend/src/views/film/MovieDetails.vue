@@ -4,6 +4,7 @@ import axios from "axios";
 import SimpleButton from "@/components/SimpleButton.vue";
 import { useUserStore } from "../stores/user";
 import ModifyMovieModal from "../home/AddMovieModal.vue";
+import PageModal from "@/components/PageModal.vue";
 
 const props = defineProps({
   movie: {
@@ -24,6 +25,7 @@ interface MovieDetails {
   Ratings: { Source: string; Value: string }[];
 }
 
+const updateOk = ref(false);
 const movieDetails = ref<MovieDetails | null>(null);
 const isLoading = ref(true); // Variabile per tracciare lo stato del caricamento
 const modalFilm = ref(false);
@@ -77,11 +79,13 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
   genres.value = genresN;
   trailerLink.value = trailer;
   modalFilm.value = false;
+  updateOk.value = true;
 }
 
 </script>
 
 <template>
+  <PageModal v-if="updateOk" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
   <section v-if="isLoading" class="flex items-center justify-center min-h-screen bg-gray-100">
     <p class="text-lg text-gray-700 font-medium">Caricamento...</p>
   </section>
