@@ -93,7 +93,7 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
   <section v-else class="flex flex-col md:flex-row gap-8 items-start bg-gray-50 p-6 rounded-lg shadow-lg">
     <!-- Poster -->
     <div class="flex-shrink-0 w-48 mx-auto">
-      <img :src="`http://localhost:3001/img/poster/${poster}`" alt="Copertina di {{ title }}"
+      <img :src="`http://localhost:3001/img/poster/${poster}`" :alt="'Copertina di' + title"
         class="w-full rounded-lg shadow-md" />
     </div>
 

@@ -40,7 +40,7 @@ const goToUserProfile = (userId: string) => {
             class="cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
             aria-label="Vai al profilo di {{ review.user.name }}">
             <img :src="`http://localhost:3001/img/profile/${review.user.profilePicture}`"
-              alt="Foto profilo di {{ review.user.name }}" class="w-12 h-12 rounded-full object-cover" />
+              :alt="'Foto profilo di' + review.user.name" class="w-12 h-12 rounded-full object-cover" />
           </button>
           <div>
             <button @click="goToUserProfile(review.user._id)"

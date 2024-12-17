@@ -9,7 +9,7 @@ import { useRoute } from 'vue-router';
 import IFrameComponent from './IFrameComponent.vue';
 
 const route = useRoute();
-const movieId = route.query.id;; // Sostituisci con un ID dinamico
+const movieId = route.query.id; // Sostituisci con un ID dinamico
 const movie = ref(null);
 const reviews = ref([]);
 const showtimes = ref([]);
