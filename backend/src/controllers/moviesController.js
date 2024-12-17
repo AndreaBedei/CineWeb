@@ -97,8 +97,9 @@ exports.availableMoviesByGenre = (req, res) => {
 exports.searchMoviesByTitle = (req, res) => {
     const title = req.params.title;
 
-    moviesModel.find({ title: { $regex: title, $options: 'i' } }) // Cerca ignorando maiuscole/minuscole
-        .populate('genres', 'name') // Popola i generi con il nome
+    moviesModel.find({ title: { $regex: `^${title}`, $options: 'i' } }) 
+        .populate('genres', 'name') 
+        .limit(4) 
         .then(doc => {
             res.json(doc);
         })
@@ -106,4 +107,5 @@ exports.searchMoviesByTitle = (req, res) => {
             res.status(500).send(err);
         });
 };
+
 
