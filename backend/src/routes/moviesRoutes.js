@@ -17,4 +17,8 @@ router.route('/available')
 router.route('/genre/:genreId')
     .get(controller.availableMoviesByGenre);
 
+router.route('/search/:title')
+    .get(controller.searchMoviesByTitle);
+
+
 module.exports = router;

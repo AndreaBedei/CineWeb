@@ -93,3 +93,17 @@ exports.availableMoviesByGenre = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+exports.searchMoviesByTitle = (req, res) => {
+    const title = req.params.title;
+
+    moviesModel.find({ title: { $regex: title, $options: 'i' } }) // Cerca ignorando maiuscole/minuscole
+        .populate('genres', 'name') // Popola i generi con il nome
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
+
