@@ -17,4 +17,8 @@ router.route('/movie/:movieId')
 router.route('/date')
     .get(controller.findScreeningsByDate);
 
+router.route('/:screeningId/booked-seats')
+    .get(controller.getBookedSeatsByScreening);
+
+
 module.exports = router;

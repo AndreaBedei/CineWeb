@@ -1,6 +1,8 @@
 const { screeningsModel } = require('../models/screeningsModel');
 const { moviesModel } = require('../models/moviesModel');
 const { cinemaHallsModel } = require('../models/cinemaHallsModel');
+const { reservationsModel } = require('../models/reservationsModel');
+const { seatsModel } = require('../models/seatsModel');
 
 exports.screeningsList = (req, res) => {
     screeningsModel.find()
@@ -123,3 +125,26 @@ exports.findScreeningsByDate = (req, res) => {
         res.status(500).send(err);
     });
 }
+
+exports.getBookedSeatsByScreening = async (req, res) => {
+    try {
+        const screeningId = req.params.screeningId;
+
+        const reservations = await reservationsModel.find({ screening: screeningId })
+            .populate({
+                path: 'seats',
+                select: 'row column',
+            });
+
+        if (!reservations.length) {
+            return res.status(404).json({ message: 'No seats booked for this screening' });
+        }
+
+        const bookedSeats = reservations.flatMap(reservation => reservation.seats);
+
+        res.json(bookedSeats);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
