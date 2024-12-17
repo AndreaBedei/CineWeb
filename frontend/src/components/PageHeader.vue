@@ -4,6 +4,7 @@ import SimpleButton from './SimpleButton.vue';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { ArrowLeftStartOnRectangleIcon, ArrowRightEndOnRectangleIcon, EllipsisVerticalIcon, HomeIcon, UserCircleIcon } from '@heroicons/vue/16/solid';
+import SearchBar from './SearchBar.vue';
 
 defineProps<{
     logged: boolean
@@ -40,9 +41,11 @@ function toggleExpandedMenu() {
     <div class="flex gap-2 p-2 bg-neutral-dark text-white border-b border-neutral-dark relative">
         <img src="../assets/img/icon.svg" alt="Icona CineWeb" class="w-10 h-10 sm:w-12 sm:h-12 self-center" />
 
-        <input type="text" name="searchbar" id="searchbar" placeholder="Ricerca:"
+        <SearchBar  />
+
+        <!-- <input type="search" name="searchbar" id="searchbar" placeholder="Ricerca:"
             class="w-0 flex-grow bg-neutral-dark border border-neutral-light text-neutral-light placeholder-neutral-light px-2
-                    text-sm sm:text-base focus:ring-2 focus:ring-primary-light focus:outline-none" />
+                    text-sm sm:text-base focus:ring-2 focus:ring-primary-light focus:outline-none" /> -->
 
         <div class="hidden md:flex gap-2 ms-auto">
             <SimpleButton v-if="logged" content="Profilo" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
