@@ -110,22 +110,24 @@ import dayjs from "dayjs";
 import axios from "axios";
 
 // Stato delle sale, proiezioni e modale
-const rooms = ref([
-    { id: "1", name: "Sala 1" },
-    { id: "2", name: "Sala 2" },
-    { id: "3", name: "Sala 3" },
-]);
+interface Room {
+    _id: string;
+    name: string;
+}
 
-const cinemas = ref([
-    { _id: "1", name: "Cinema 1" },
-    { _id: "2", name: "Cinema 2" },
-    { _id: "3", name: "Cinema 3" },
-]);
+const rooms = ref<Room[]>([]);
+
+interface Cinema {
+    _id: string;
+    name: string;
+}
+
+const cinemas = ref<Cinema[]>([]);
 
 const emit = defineEmits(['close']);
 
-const selectedRoom = ref("1"); // Sala selezionata
-const selectedCinema = ref("1"); // Sala selezionata
+const selectedRoom = ref(""); // Sala selezionata
+const selectedCinema = ref(""); // Sala selezionata
 const projections = ref([
     { roomId: "1", date: "2024-12-20", times: ["14:00", "17:00"] },
     { roomId: "1", date: "2024-12-21", times: ["16:00"] },
@@ -155,8 +157,8 @@ function changeRoom(id: string) {
     selectedRoom.value = id;
 }
 
-function changeCinema(id: string) {
-    selectedCinema.value = id;
+function changeCinema(name: string) {
+    selectedCinema.value = name;
 }
 
 // Cambia mese
@@ -210,9 +212,9 @@ async function getCinemas(){
     }
 }
 
-async function getRooms(newCinemaId: string){
+async function getRooms(newCinemaName: string){
     try {
-        const response = await axios.get(`http://localhost:3001/cinemaHalls/cinema/${newCinemaId}`);
+        const response = await axios.get(`http://localhost:3001/cinemaHalls/cinema/${newCinemaName}`);
         if (response.status === 200) {
             rooms.value = response.data;
         } else {
@@ -223,8 +225,8 @@ async function getRooms(newCinemaId: string){
     }
 }
 
-watch(selectedCinema, async (newCinemaId) => {
-    getRooms(newCinemaId);
+watch(selectedCinema, async (newCinemaName) => {
+    getRooms(newCinemaName);
 });
 
 
@@ -250,10 +252,10 @@ watch(isModalOpen, (isOpen) => {
 
             <div class="p-4 space-y-4">
                 <section>
-                    <label for="cinema" class="block text-sm font-medium text-gray-700">Sala</label>
-                    <select id="cinema" v-model="selectedCinema" @change="changeCinema(Number($event.target.value))"
+                    <label for="cinema" class="block text-sm font-medium text-gray-700">Cinema</label>
+                    <select id="cinema" v-model="selectedCinema" @change="changeCinema(($event.target as HTMLSelectElement).value)"
                         class="mt-1 w-full border-gray-500 rounded-md shadow-md focus:ring-primary focus:border-primary">
-                        <option v-for="cinema in cinemas" :key="cinema._id" :value="cinema._id">
+                        <option v-for="cinema in cinemas" :key="cinema._id" :value="cinema.name">
                             {{ cinema.name }}
                         </option>
                     </select>
@@ -262,9 +264,10 @@ watch(isModalOpen, (isOpen) => {
                 <!-- Selezione della sala -->
                 <section>
                     <label for="room" class="block text-sm font-medium text-gray-700">Sala</label>
-                    <select id="room" v-model="selectedRoom" @change="changeRoom(Number($event.target.value))"
-                        class="mt-1 w-full border-gray-500 rounded-md shadow-md focus:ring-primary focus:border-primary">
-                        <option v-for="room in rooms" :key="room.id" :value="room.id">
+                    <select id="room" v-model="selectedRoom" @change="changeRoom(($event.target as HTMLSelectElement).value)"
+                        class="mt-1 w-full border-gray-500 rounded-md shadow-md focus:ring-primary focus:border-primary"
+                        :disabled='selectedCinema === ""'>
+                        <option v-for="room in rooms" :key="room._id" :value="room._id">
                             {{ room.name }}
                         </option>
                     </select>
