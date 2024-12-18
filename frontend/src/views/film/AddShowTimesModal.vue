@@ -105,7 +105,7 @@ function closeModal() {
 
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import dayjs from "dayjs";
 import axios from "axios";
 
@@ -193,11 +193,15 @@ function closeModal() {
     emit('close', false);
 }
 
+onMounted(() => {
+    getCinemas();
+});
+
 async function getCinemas(){
     try {
-        const response = await axios.get(`http://localhost:3001/cinemas/${newCinemaId}/rooms`);
+        const response = await axios.get(`http://localhost:3001/cinemas`);
         if (response.status === 200) {
-            rooms.value = response.data;
+            cinemas.value = response.data.map((cinema: { _id: string; name: string }) => ({ _id: cinema._id, name: cinema.name }));
         } else {
             console.error("Errore durante il recupero delle sale.");
         }
@@ -208,7 +212,7 @@ async function getCinemas(){
 
 async function getRooms(newCinemaId: string){
     try {
-        const response = await axios.get(`http://localhost:3001/cinemas/${newCinemaId}/rooms`);
+        const response = await axios.get(`http://localhost:3001/cinemaHalls/cinema/${newCinemaId}`);
         if (response.status === 200) {
             rooms.value = response.data;
         } else {
