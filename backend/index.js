@@ -9,6 +9,7 @@ const screeningsRouter = require('./src/routes/screeningsRoutes');
 const reviewsRouter = require('./src/routes/reviewsRoutes');
 const seatsRouter = require('./src/routes/seatsRoutes');
 const reservationsRouter = require('./src/routes/reservationsRoutes');
+const cinemasRouter = require('./src/routes/cinemasRoutes');
 const imagesRouter = require('./src/routes/imagesRoutes');
 const path = require('path');
 
@@ -32,6 +33,7 @@ app.use('/screenings', screeningsRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/seats', seatsRouter);
 app.use('/reservations', reservationsRouter);
+app.use('/cinemas', cinemasRouter);
 app.use('/image', imagesRouter);
 app.use('/img', express.static(path.join(__dirname, 'img')));
 
