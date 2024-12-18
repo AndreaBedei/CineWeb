@@ -41,7 +41,7 @@ function toggleExpandedMenu() {
     <div class="flex gap-2 p-2 bg-neutral-dark text-white border-b border-neutral-dark relative">
         <img src="../assets/img/icon.svg" alt="Icona CineWeb" class="w-10 h-10 sm:w-12 sm:h-12 self-center" />
 
-        <SearchBar  />
+        <SearchBar class="flex-grow" />
 
         <!-- <input type="search" name="searchbar" id="searchbar" placeholder="Ricerca:"
             class="w-0 flex-grow bg-neutral-dark border border-neutral-light text-neutral-light placeholder-neutral-light px-2
