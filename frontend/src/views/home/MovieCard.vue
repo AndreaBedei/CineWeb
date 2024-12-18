@@ -21,7 +21,7 @@ defineProps({
 
 <template>
   <section class="w-56 flex-shrink-0 p-2 block hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg select-none">
-    <router-link :to="{ path: `/movie`, query: { id: movieid} }" class="block">
+    <router-link :to="{ path: `/movie`, query: { id: movieid},  }" class="block">
     <section class="bg-white shadow-md rounded-lg overflow-hidden">
       <img
         :src="`http://localhost:3001/img/poster/${image}`"

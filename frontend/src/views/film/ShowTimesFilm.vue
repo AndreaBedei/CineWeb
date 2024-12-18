@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useUserStore } from '../stores/user';
+import AddShowTimesModal from './AddShowTimesModal.vue';
+import SimpleButton from '@/components/SimpleButton.vue';
+
 const props = defineProps({
   showtimes: {
     type: Object,
     required: true,
   },
 });
+
+const user = useUserStore();
+const modalShowTime = ref(false);
 
 function formatDate(date: string): string {
   const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -15,6 +23,14 @@ function isFutureDate(date: string): boolean {
   const screeningDate = new Date(date);
   const currentDate = new Date();
   return screeningDate > currentDate;
+}
+
+function closeModalAddShowTimes() {
+  modalShowTime.value = false;
+}
+
+function openModalAddShowTimes() {
+  modalShowTime.value = true;
 }
 </script>
 
@@ -81,5 +97,9 @@ function isFutureDate(date: string): boolean {
         </div>
       </section>
     </section>
+    <div class="flex justify-end">
+      <SimpleButton v-if="user.isAdmin" content="Aggiungi proiezione" color="primary" rounding="small" :handle-click="openModalAddShowTimes" />
+    </div>
   </section>
+  <AddShowTimesModal v-if="modalShowTime" @close="closeModalAddShowTimes" />
 </template>

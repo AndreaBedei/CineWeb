@@ -20,6 +20,7 @@
     "axios": "^1.7.9",
     "cineweb": "file:",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
     "mongoose": "^8.8.4",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",
