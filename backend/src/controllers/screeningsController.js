@@ -148,3 +148,32 @@ exports.getBookedSeatsByScreening = async (req, res) => {
     }
 };
 
+exports.findScreeningsByCinemaHallAndDate = async (req, res) => {
+    try {
+        const { cinemaHallId, date } = req.params;
+
+        if (!cinemaHallId || !date) {
+            return res.status(400).send('Cinema hall ID and date are required');
+        }
+
+        const startDate = new Date(date);
+        const endDate = new Date(new Date(date).setDate(startDate.getDate() + 1));
+
+        const screenings = await screeningsModel.find({
+            cinemaHall: cinemaHallId,
+            screeningDate: { $gte: startDate, $lt: endDate }
+        })
+        .populate('movie') 
+        .sort({ screeningDate: 1 }); 
+
+        if (!screenings || screenings.length === 0) {
+            return res.status(404).send('No screenings found for this cinema hall on the specified date');
+        }
+
+        res.json(screenings);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+

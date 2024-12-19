@@ -20,5 +20,9 @@ router.route('/date')
 router.route('/:screeningId/booked-seats')
     .get(controller.getBookedSeatsByScreening);
 
+router.route('/cinemaHall/:cinemaHallId/date/:date')
+    .get(controller.findScreeningsByCinemaHallAndDate);
+
+
 
 module.exports = router;
