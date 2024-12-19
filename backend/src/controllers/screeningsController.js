@@ -79,7 +79,7 @@ exports.findScreeningsByMovie = async (req, res) => {
             });
 
         if (screenings.length === 0) {
-            return res.status(200);
+            return res.status(200).send("");
         }
 
         const groupedByCinema = screenings.reduce((acc, screening) => {
@@ -167,7 +167,7 @@ exports.findScreeningsByCinemaHallAndDate = async (req, res) => {
         .sort({ screeningDate: 1 }); 
 
         if (!screenings || screenings.length === 0) {
-            return res.status(404).send('No screenings found for this cinema hall on the specified date');
+            return res.status(200).send('No screenings found for this cinema hall on this date');
         }
 
         res.json(screenings);

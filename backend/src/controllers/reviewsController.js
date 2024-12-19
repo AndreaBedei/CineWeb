@@ -55,7 +55,7 @@ exports.getReviewsByMovie = (req, res) => {
         .sort({ reviewDate: -1 }) 
         .then(docs => {
             if (docs.length === 0) {
-                return res.status(200);
+                return res.status(200).send("");
             }
             res.json(docs);
         })

@@ -143,11 +143,15 @@ const selectedCinema = ref(""); // Sala selezionata
 const checkLoading = ref(false);
 const msgUserOk = ref("");
 const msgUserError = ref("");
-// const projections = ref([
-//     { roomId: "1", date: "2024-12-20", times: ["14:00", "17:00"] },
-//     { roomId: "1", date: "2024-12-21", times: ["16:00"] },
-// ]);
-const projections = ref([]); // Proiezioni per la sala selezionata
+
+interface Projection {
+    roomId: string;
+    date: string;
+    times: string[];
+    movie: string;
+}
+
+const projections = ref<Projection[]>([]); // Proiezioni per la sala selezionata
 
 const currentDate = ref(dayjs()); // Data corrente del calendario
 const selectedDate = ref(currentDate.value.format("YYYY-MM-DD")); // Usa ref per renderlo reattivo
@@ -155,6 +159,36 @@ const newProjection = ref({ hour: 8, minute: 0 }); // Orario della nuova proiezi
 const price = ref("0.0"); // Prezzo del biglietto
 
 const isModalOpen = ref(false); // Stato del modale
+
+async function getScreeningsByDate(room: string) {
+    projections.value = [];
+    try {
+        const startTime = dayjs(selectedDate.value).hour(0).minute(0).second(0).millisecond(0);
+        const response = await axios.get(`http://localhost:3001/screenings/cinemaHall/${room}/date/${startTime.toISOString()}`);
+        if (response.status === 200) {
+            projections.value = response.data.map((screening: {
+                screeningDate: string | number | Date | dayjs.Dayjs | null | undefined; movie: {
+                    title: string; duration: string;
+                }; cinemaHall: string;
+            }) => {
+                const startTime = dayjs(screening.screeningDate);
+                const endTime = startTime.add(parseInt(screening.movie?.duration, 10), 'minute');
+
+                return {
+                    roomId: room,
+                    date: startTime.format("YYYY-MM-DD"),
+                    times: [`${startTime.format("HH:mm")} - ${endTime.format("HH:mm")}`],
+                    movie: screening.movie.title,
+                };
+            });
+        } else {
+            console.error("Errore durante il recupero delle proiezioni.");
+        }
+
+    } catch (error) {
+        console.error("Errore di connessione:", error);
+    }
+}
 
 // Genera i giorni del mese
 const daysInMonth = computed(() => {
@@ -184,8 +218,6 @@ function changeMonth(direction: "prev" | "next") {
         ? currentDate.value.subtract(1, "month")
         : currentDate.value.add(1, "month");
 }
-// const endTime = startTime.add(props.movie?.duration, 'minute');
-// const timeEnd = endTime.format('HH:mm');
 
 // Aggiungi una nuova proiezione
 async function addProjection() {
@@ -256,21 +288,15 @@ async function getRooms(newCinemaName: string) {
 
 async function changeDate(day: string) {
     selectedDate.value = day;
-
-    // try {
-    // const response = await axios.get(`http://localhost:3001/cinemaHalls/cinema/${newCinemaName}`); // TODO CAMBIA PRENDENDO LE PORIEZIONI DI UN CINEMA IN UN SALA
-    //     if (response.status === 200) {
-    //         rooms.value = response.data;
-    //     } else {
-    //         console.error("Errore durante il recupero delle sale.");
-    //     }
-    // } catch (error) {
-    //     console.error("Errore di connessione:", error);
-    // }
+    getScreeningsByDate(selectedRoom.value);
 }
 
 watch(selectedCinema, async (newCinemaName) => {
     getRooms(newCinemaName);
+});
+
+watch(selectedRoom, async (newRoom) => {
+    getScreeningsByDate(newRoom);
 });
 
 
@@ -280,7 +306,7 @@ watch(selectedCinema, async (newCinemaName) => {
     <section class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-md md:max-w-3xl overflow-hidden">
             <header class="flex justify-between items-center bg-primary text-white px-4 py-3">
-                <h4 class="text-lg font-semibold">Gestione Proiezioni</h4>
+                <h4 class="text-lg font-semibold">Nuova Proiezione Per Film "{{ movie?.title }}"</h4>
                 <button @click="closeModal" class="text-white hover:text-gray-200">
                     ✕
                 </button>
@@ -337,19 +363,22 @@ watch(selectedCinema, async (newCinemaName) => {
                     </div>
                 </section>
 
-                <BaseInput id="price" label="Prezzo" type="number" v-model="price" :require="true" :range="{ min: 0, max: 100, step: 0.01 }" />
+                <BaseInput id="price" label="Prezzo" type="number" v-model="price" :require="true"
+                    :range="{ min: 0, max: 100, step: 0.01 }" />
 
                 <!-- Proiezioni per la data selezionata -->
                 <section v-if="selectedDate">
-                    <h5 class="text-lg font-bold">
-                        Proiezioni per {{ dayjs(selectedDate).format("DD MMMM YYYY") }}
+                    <h5 v-if="selectedRoom!==''" class="text-lg font-bold">
+                        Proiezioni per il {{ dayjs(selectedDate).format("DD MMMM YYYY") }}
                     </h5>
-                    <!-- <ul class="mt-2 space-y-2">
-                        <li v-for="projection in projections.filter(p => p.roomId === selectedRoom && p.date === selectedDate)"
-                            :key="projection.date + projection.times" class="bg-gray-100 rounded-md px-4 py-2">
-                            {{ projection.times.join(", ") }}
+                    <ul v-if="projections.length!==0" class="mt-2 space-y-2">
+                        <li class="flex gap-3 items-center bg-gray-100 rounded-md px-4 py-2" v-for="projection in projections"
+                            :key="projection.date + projection.times">
+                            <p class="font-semibold">{{ projection.movie }}</p>
+                            <p>{{projection.times.join(", ")}}</p>
                         </li>
-                    </ul> -->
+                    </ul>
+                    <p v-else-if="selectedRoom!==''" class="text-gray-700 mt-2">Nessuna proiezione in questa sala per questa data.</p>
 
                     <div class="mt-4 flex items-center gap-4">
                         <!-- Selezione ora -->

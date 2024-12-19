@@ -187,7 +187,7 @@ exports.getPastReservationsByUser = (req, res) => {
         .sort({ reservationDate: -1 })
         .then(docs => {
             if (docs.length === 0) {
-                return res.status(200);
+                return res.status(200).send("");
             }
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
@@ -227,7 +227,7 @@ exports.getFutureReservationsByUser = (req, res) => {
         .sort({ reservationDate: 1 })
         .then(docs => {
             if (docs.length === 0) {
-                return res.status(200);
+                return res.status(200).send("");
             }
             const transformedDocs = docs.map(doc => ({
                 ...doc.toObject(),
