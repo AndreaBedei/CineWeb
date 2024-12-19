@@ -15,6 +15,7 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["update"]);
 
 const user = useUserStore();
 const modalShowTime = ref(false);
@@ -36,6 +37,10 @@ function closeModalAddShowTimes() {
 
 function openModalAddShowTimes() {
   modalShowTime.value = true;
+}
+
+function updateShowTimes() {
+  emit('update');
 }
 </script>
 
@@ -106,5 +111,5 @@ function openModalAddShowTimes() {
       <SimpleButton v-if="user.isAdmin" content="Aggiungi proiezione" color="primary" rounding="small" :handle-click="openModalAddShowTimes" />
     </div>
   </section>
-  <AddShowTimesModal v-if="modalShowTime" :movie="movie"  @close="closeModalAddShowTimes" />
+  <AddShowTimesModal v-if="modalShowTime" :movie="movie" @update="updateShowTimes"  @close="closeModalAddShowTimes" />
 </template>

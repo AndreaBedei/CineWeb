@@ -167,7 +167,7 @@ exports.findScreeningsByCinemaHallAndDate = async (req, res) => {
         .sort({ screeningDate: 1 }); 
 
         if (!screenings || screenings.length === 0) {
-            return res.status(200).send('No screenings found for this cinema hall on this date');
+            return res.status(200).send("");
         }
 
         res.json(screenings);

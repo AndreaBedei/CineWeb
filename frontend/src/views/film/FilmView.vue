@@ -53,9 +53,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="p-4 w-full">
+  <div class="p-4 w-full max-w-7xl mx-auto">
     <MovieDetails v-if="movie" :movie="movie" />
-    <Showtimes v-if="showtimes && movie" :showtimes="showtimes" :movie="movie" />
+    <Showtimes v-if="showtimes && movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm @update="updateReviews"/>
     <ReviewList v-if="reviews" :reviews="reviews" />

@@ -113,6 +113,7 @@ import BaseInput from "@/components/BaseInput.vue";
 import LoadingAlert from '@/components/LoadingAlert.vue';
 import ErrorAlert from "@/components/ErrorAlert.vue";
 import "dayjs/locale/it"; // Importa la localizzazione italiana
+import OkAlert from "@/components/OkAlert.vue";
 dayjs.locale("it"); // Imposta la lingua italiana
 
 const props = defineProps({
@@ -136,13 +137,14 @@ interface Cinema {
 
 const cinemas = ref<Cinema[]>([]);
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', "update"]);
 
 const selectedRoom = ref(""); // Sala selezionata
 const selectedCinema = ref(""); // Sala selezionata
 const checkLoading = ref(false);
 const msgUserOk = ref("");
 const msgUserError = ref("");
+const loading = ref(false);
 
 interface Projection {
     roomId: string;
@@ -161,11 +163,12 @@ const price = ref("0.0"); // Prezzo del biglietto
 const isModalOpen = ref(false); // Stato del modale
 
 async function getScreeningsByDate(room: string) {
+    loading.value = true;
     projections.value = [];
     try {
         const startTime = dayjs(selectedDate.value).hour(0).minute(0).second(0).millisecond(0);
         const response = await axios.get(`http://localhost:3001/screenings/cinemaHall/${room}/date/${startTime.toISOString()}`);
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.length > 0) {
             projections.value = response.data.map((screening: {
                 screeningDate: string | number | Date | dayjs.Dayjs | null | undefined; movie: {
                     title: string; duration: string;
@@ -181,12 +184,12 @@ async function getScreeningsByDate(room: string) {
                     movie: screening.movie.title,
                 };
             });
-        } else {
-            console.error("Errore durante il recupero delle proiezioni.");
         }
 
     } catch (error) {
         console.error("Errore di connessione:", error);
+    } finally {
+        loading.value = false;
     }
 }
 
@@ -234,6 +237,7 @@ async function addProjection() {
 
         if (response.status === 201) {
             msgUserOk.value = "Proiezione aggiunta con successo.";
+            emit('update');
         } else {
             console.error("Errore durante l'inserimento della proiezione.");
             msgUserError.value = "Errore durante l'inserimento della proiezione.";
@@ -257,7 +261,6 @@ function closeModal() {
 
 onMounted(() => {
     getCinemas();
-    console.log(props.movie?.duration);
 });
 
 async function getCinemas() {
@@ -288,10 +291,13 @@ async function getRooms(newCinemaName: string) {
 
 async function changeDate(day: string) {
     selectedDate.value = day;
-    getScreeningsByDate(selectedRoom.value);
+    if (selectedRoom.value !== "") {
+        getScreeningsByDate(selectedRoom.value);
+    }
 }
 
 watch(selectedCinema, async (newCinemaName) => {
+    selectedRoom.value = "";
     getRooms(newCinemaName);
 });
 
@@ -313,6 +319,7 @@ watch(selectedRoom, async (newRoom) => {
             </header>
             <LoadingAlert v-if="checkLoading" />
             <ErrorAlert v-if="msgUserError" :message="msgUserError" @clear="msgUserError = ''" />
+            <OkAlert v-if="msgUserOk" :message="msgUserOk" @clear="msgUserOk = ''" />
             <form @submit.prevent="addProjection" class="p-4 space-y-4" method="post">
                 <!-- Selezione del cinema -->
                 <section>
@@ -344,22 +351,22 @@ watch(selectedRoom, async (newRoom) => {
                 <!-- Calendario -->
                 <section>
                     <div class="flex justify-between items-center">
-                        <button @click="changeMonth('prev')" class="text-primary hover:primary-dark">
+                        <button type="button" @click="changeMonth('prev')" class="text-primary hover:primary-dark">
                             ← Mese precedente
                         </button>
                         <h3 class="text-lg font-bold">{{ currentDate.format("MMMM YYYY") }}</h3>
-                        <button @click="changeMonth('next')" class="text-primary hover:text-prymary-dark">
+                        <button type="button" @click="changeMonth('next')" class="text-primary hover:text-prymary-dark">
                             Mese successivo →
                         </button>
                     </div>
 
                     <div class="mt-4 grid grid-cols-7 gap-2">
-                        <div v-for="day in daysInMonth" :key="day"
+                        <p v-for="day in daysInMonth" :key="day"
                             class="border rounded-lg p-2 text-center cursor-pointer"
                             :class="day === selectedDate ? 'bg-primary-medium' : 'bg-gray-50 hover:bg-gray-100'"
                             @click="changeDate(day)">
                             {{ dayjs(day).date() }}
-                        </div>
+                        </p>
                     </div>
                 </section>
 
@@ -368,17 +375,19 @@ watch(selectedRoom, async (newRoom) => {
 
                 <!-- Proiezioni per la data selezionata -->
                 <section v-if="selectedDate">
-                    <h5 v-if="selectedRoom!==''" class="text-lg font-bold">
+                    <h5 v-if="selectedRoom !== ''" class="text-lg font-bold">
                         Proiezioni per il {{ dayjs(selectedDate).format("DD MMMM YYYY") }}
                     </h5>
-                    <ul v-if="projections.length!==0" class="mt-2 space-y-2">
-                        <li class="flex gap-3 items-center bg-gray-100 rounded-md px-4 py-2" v-for="projection in projections"
-                            :key="projection.date + projection.times">
+                    <ul v-if="projections.length !== 0" class="mt-2 space-y-2">
+                        <li class="flex gap-3 items-center bg-gray-100 rounded-md px-4 py-2"
+                            v-for="projection in projections" :key="projection.date + projection.times">
                             <p class="font-semibold">{{ projection.movie }}</p>
-                            <p>{{projection.times.join(", ")}}</p>
+                            <p>{{ projection.times.join(", ") }}</p>
                         </li>
                     </ul>
-                    <p v-else-if="selectedRoom!==''" class="text-gray-700 mt-2">Nessuna proiezione in questa sala per questa data.</p>
+                    <p v-else-if="loading" class="text-gray-700 mt-2">Caricamento...</p>
+                    <p v-else-if="selectedRoom !== ''" class="text-gray-700 mt-2">Nessuna proiezione in questa sala per
+                        questa data.</p>
 
                     <div class="mt-4 flex items-center gap-4">
                         <!-- Selezione ora -->
