@@ -55,7 +55,7 @@ onMounted(() => {
 <template>
   <div class="p-4 w-full">
     <MovieDetails v-if="movie" :movie="movie" />
-    <Showtimes v-if="showtimes" :showtimes="showtimes" />
+    <Showtimes v-if="showtimes && movie" :showtimes="showtimes" :movie="movie" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm @update="updateReviews"/>
     <ReviewList v-if="reviews" :reviews="reviews" />
