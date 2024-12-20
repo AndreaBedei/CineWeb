@@ -76,7 +76,8 @@ exports.findScreeningsByMovie = async (req, res) => {
             .populate({
                 path: 'cinemaHall',
                 select: 'name cinema'
-            });
+            })
+            .sort({ screeningDate: 1 }); ;
 
         if (screenings.length === 0) {
             return res.status(200).send("");
