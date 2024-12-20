@@ -1,11 +1,14 @@
 <script lang="ts" setup>
+import SimpleButton from './SimpleButton.vue';
+
 
 const props = defineProps<{
-  title: string;
-  message: string;
+  title: string,
+  message: string,
+  confirm: boolean,
 }>();
 
-const emit = defineEmits(['closeModal']);
+const emit = defineEmits(['closeModal', 'confirm']);
 </script>
 
 <template>
@@ -31,13 +34,8 @@ const emit = defineEmits(['closeModal']);
       </p>
 
       <div class="flex justify-end">
-        <button
-          @click="emit('closeModal')"
-          class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:outline-none"
-          aria-label="Chiudi modale"
-        >
-          Chiudi
-        </button>
+        <SimpleButton :handle-click="() => emit('closeModal')" class="mr-2" color="primary" size="small" content="Chiudi"/>
+        <SimpleButton v-if="props.confirm" :handle-click="() => emit('confirm')" color="red" size="small" content="Elimina"/>
       </div>
     </div>
   </div>

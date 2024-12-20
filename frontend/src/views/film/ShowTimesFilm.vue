@@ -4,6 +4,8 @@ import { useUserStore } from '../stores/user';
 import AddShowTimesModal from './AddShowTimesModal.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import dayjs from "dayjs";
+import axios from 'axios';
+import PageModal from '@/components/PageModal.vue';
 
 const props = defineProps({
   showtimes: {
@@ -20,6 +22,7 @@ const emit = defineEmits(["update"]);
 
 const user = useUserStore();
 const modalShowTime = ref(false);
+const modalCheck = ref(false);
 const screeningId = ref('');
 const cinema = ref('');
 const cinemaHall = ref('');
@@ -27,6 +30,10 @@ const screeningDate = ref(dayjs());
 const ticketPrice = ref('0.00');
 const h = ref(8)
 const m = ref(0)
+
+const title = ref('');
+const message = ref('');
+const elimination = ref(true);
 
 function formatDate(date: string): string {
   const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -50,8 +57,20 @@ function closeModalAddShowTimes() {
   m.value = 0;
 }
 
+function openModalCheck(id: string) {
+  modalCheck.value = true;
+  title.value ="Elimina proiezione" 
+  message.value = "Sei sicuro di voler eliminare la proiezione?"
+  screeningId.value = id;
+}
+
 function openModalAddShowTimes() {
   modalShowTime.value = true;
+}
+
+function closeCheck() {
+  modalCheck.value = false;
+  elimination.value = true;
 }
 
 function openModalAddShowTimesWithParams(cinemaN: string, cinemaHallN: string, screeningDateN: dayjs.Dayjs, ticketPriceN: string, screeningIdN: string) {
@@ -63,6 +82,24 @@ function openModalAddShowTimesWithParams(cinemaN: string, cinemaHallN: string, s
   h.value = dayjs(screeningDateN).hour();
   m.value = dayjs(screeningDateN).minute();
   modalShowTime.value = true;
+}
+
+async function deleteScreen() {
+  try {
+    const response = await axios.delete(`http://localhost:3001/screenings/${screeningId.value}`);
+    screeningId.value = '';
+    elimination.value = false;
+    if (response.status === 200) {
+        title.value ="Conferma eliminazione" 
+        message.value = "Proiezione eliminata con successo"
+    } else {
+        title.value ="Errore eliminazione" 
+        message.value = "Proiezione non eliminata!!!"
+    }
+  } catch (error) {
+    console.error('Errore nel caricamento degli orari', error);
+  }
+  emit('update');
 }
 
 function updateShowTimes() {
@@ -92,7 +129,8 @@ function updateShowTimes() {
 
         <!-- Tabella -->
         <div class="overflow-x-auto">
-          <table class="table-auto w-full text-left text-sm text-gray-700 border-collapse border min-w-max border-gray-300">
+          <table
+            class="table-auto w-full text-left text-sm text-gray-700 border-collapse border min-w-max border-gray-300">
             <thead class="bg-gray-100">
               <tr>
                 <th :id="'room' + cinema" scope="col" class="py-2 px-1 font-semibold">
@@ -104,7 +142,8 @@ function updateShowTimes() {
                 <th :id="'date' + cinema" scope="col" class="py-2 px-1 font-semibold">
                   Orario
                 </th>
-                <th v-if="!user.isAdmin" :id="'action' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
+                <th v-if="!user.isAdmin" :id="'action' + cinema" scope="col"
+                  class="py-2 px-1 font-semibold text-center">
                   Prenota
                 </th>
                 <th v-else :id="'action' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
@@ -125,11 +164,15 @@ function updateShowTimes() {
                   {{ formatDate(screening.screeningDate).split(',')[0] }} <br />
                   {{ formatDate(screening.screeningDate).split(',')[1] }}
                 </td>
-                <td :headers="'action' + cinema" class="flex flex-wrap justify-center items-center py-2 px-1 text-center gap-2">
-                  <SimpleButton v-if="isFutureDate(screening.screeningDate) && !user.isAdmin" class="mx-1" size="small" rounding="small" content="Prenota" color="primary"/>
+                <td :headers="'action' + cinema"
+                  class="flex flex-wrap justify-center items-center py-2 px-1 text-center gap-2">
+                  <SimpleButton v-if="isFutureDate(screening.screeningDate) && !user.isAdmin" class="mx-1" size="small"
+                    rounding="small" content="Prenota" color="primary" />
                   <div v-if="user.isAdmin" class="flex flex-col gap-1">
-                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small" content="Modifica" color="secondary" :handle-click="() => openModalAddShowTimesWithParams(cinema, screening.cinemaHallId, screening.screeningDate, screening.ticketPrice.toFixed(2), screening.screeningId)"/>
-                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small" content="Elimina" color="red" />
+                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small"
+                      content="Modifica" color="secondary"
+                      :handle-click="() => openModalAddShowTimesWithParams(cinema, screening.cinemaHallId, screening.screeningDate, screening.ticketPrice.toFixed(2), screening.screeningId)" />
+                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small" content="Elimina" color="red" :handle-click="() => openModalCheck(screening.screeningId)" />
                   </div>
                 </td>
               </tr>
@@ -139,21 +182,12 @@ function updateShowTimes() {
       </section>
     </section>
     <div class="flex justify-end">
-      <SimpleButton v-if="user.isAdmin" content="Aggiungi proiezione" color="primary" rounding="small" :handle-click="openModalAddShowTimes" />
+      <SimpleButton v-if="user.isAdmin" content="Aggiungi proiezione" color="primary" rounding="small"
+        :handle-click="openModalAddShowTimes" />
     </div>
   </section>
-  <AddShowTimesModal
-    v-if="modalShowTime"
-    :movie="movie"
-    :cinema="cinema"
-    :room="cinemaHall"
-    :date="screeningDate"
-    :priceV="ticketPrice"
-    :h="h"
-    :m="m"
-    :screeningId="screeningId"
-    class="overflow-auto max-h-screen"
-    @update="updateShowTimes"
-    @close="closeModalAddShowTimes"
-  />
+  <PageModal v-if="modalCheck" :title="title" :message="message" :confirm="elimination" @confirm="deleteScreen" @close-modal="closeCheck" />
+  <AddShowTimesModal v-if="modalShowTime" :movie="movie" :cinema="cinema" :room="cinemaHall" :date="screeningDate"
+    :priceV="ticketPrice" :h="h" :m="m" :screeningId="screeningId" class="overflow-auto max-h-screen"
+    @update="updateShowTimes" @close="closeModalAddShowTimes" />
 </template>
