@@ -107,7 +107,7 @@ async function handleSubmit() {
     </button>
   </form>
 
-  <Modal v-if="showModal" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
+  <Modal v-if="showModal" :title="modalTitle" :confirm="false" :message="modalMessage" @closeModal="closeModal" />
 </template>
 
 <style scoped></style>

@@ -81,6 +81,7 @@ function closeRegister() {
       v-if="showModal"
       :title="modalTitle"
       :message="modalMessage"
+      :confirm="false"
       @closeModal="closeModal"
     />
 </template>

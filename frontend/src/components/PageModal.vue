@@ -34,8 +34,8 @@ const emit = defineEmits(['closeModal', 'confirm']);
       </p>
 
       <div class="flex justify-end">
-        <SimpleButton :handle-click="() => emit('closeModal')" class="mr-2" color="primary" size="small" content="Chiudi"/>
-        <SimpleButton v-if="props.confirm" :handle-click="() => emit('confirm')" color="red" size="small" content="Elimina"/>
+        <SimpleButton :handle-click="() => emit('closeModal')" class="mr-2" color="primary" size="small" rounding="small" content="Chiudi"/>
+        <SimpleButton v-if="props.confirm" :handle-click="() => emit('confirm')" color="red" size="small" rounding="small" content="Elimina"/>
       </div>
     </div>
   </div>

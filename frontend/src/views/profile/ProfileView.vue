@@ -228,5 +228,5 @@ const formatDate = (date: string | number | Date) => {
         @closeModal="closeModalProfile" @submitForm="handleFormSubmit" />
     <PasswordModal v-if="isModalVisiblePassword" title="Modifica Password" :id="id" @closeModal="closeModalPassword"
         @submitForm="handleFormSubmit" />
-    <ModalOk v-if="showModal" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
+    <ModalOk v-if="showModal" :confirm="false" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
 </template>

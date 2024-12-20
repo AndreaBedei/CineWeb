@@ -113,5 +113,5 @@ function deleteReview() {
       </div>
     </form>
   </div>
-  <Modal v-if="showModal" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
+  <Modal v-if="showModal" :confirm="false" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" />
 </template>

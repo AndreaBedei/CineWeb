@@ -99,7 +99,7 @@ watch(user, () => {
 </script>
 
 <template>
-  <PageModal v-if="updateOk" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
+  <PageModal v-if="updateOk" :confirm="false" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
   <div class="p-4 w-full bg-secondary-light">
     <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
     <div class="flex justify-end">

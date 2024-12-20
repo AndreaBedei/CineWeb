@@ -172,9 +172,11 @@ async function addProjection() {
 
         if (response.status === 201 && screeningId.value === "") {
             msgUserOk.value = "Proiezione aggiunta con successo.";
+            getScreeningsByDate(selectedRoom.value);
             emit('update');
         } else if (response.status === 200) {
             msgUserOk.value = "Proiezione modificata con successo.";
+            getScreeningsByDate(selectedRoom.value);
             emit('update');
         } else if (screeningId.value === ""){
             msgUserError.value = "Errore durante l'inserimento della proiezione.";

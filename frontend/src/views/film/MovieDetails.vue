@@ -85,7 +85,7 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
 </script>
 
 <template>
-  <PageModal v-if="updateOk" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
+  <PageModal v-if="updateOk" :confirm="false" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
   <section v-if="isLoading" class="flex items-center justify-center min-h-screen bg-gray-100">
     <p class="text-lg text-gray-700 font-medium">Caricamento...</p>
   </section>

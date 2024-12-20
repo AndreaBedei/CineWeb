@@ -6,6 +6,7 @@ import SimpleButton from '@/components/SimpleButton.vue';
 import dayjs from "dayjs";
 import axios from 'axios';
 import PageModal from '@/components/PageModal.vue';
+import PayPallModal from '@/components/PayPallModal.vue';
 
 const props = defineProps({
   showtimes: {
@@ -34,6 +35,8 @@ const m = ref(0)
 const title = ref('');
 const message = ref('');
 const elimination = ref(true);
+
+const bookingModal = ref(false);
 
 function formatDate(date: string): string {
   const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -71,6 +74,10 @@ function openModalAddShowTimes() {
 function closeCheck() {
   modalCheck.value = false;
   elimination.value = true;
+}
+
+function booking() {
+  bookingModal.value = true;
 }
 
 function openModalAddShowTimesWithParams(cinemaN: string, cinemaHallN: string, screeningDateN: dayjs.Dayjs, ticketPriceN: string, screeningIdN: string) {
@@ -133,13 +140,13 @@ function updateShowTimes() {
             class="table-auto w-full text-left text-sm text-gray-700 border-collapse border min-w-max border-gray-300">
             <thead class="bg-gray-100">
               <tr>
-                <th :id="'room' + cinema" scope="col" class="py-2 px-1 font-semibold">
+                <th :id="'room' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
                   Sala
                 </th>
-                <th :id="'price' + cinema" scope="col" class="py-2 px-1 font-semibold">
+                <th :id="'price' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
                   Prezzo
                 </th>
-                <th :id="'date' + cinema" scope="col" class="py-2 px-1 font-semibold">
+                <th :id="'date' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
                   Orario
                 </th>
                 <th v-if="!user.isAdmin" :id="'action' + cinema" scope="col"
@@ -153,7 +160,7 @@ function updateShowTimes() {
             </thead>
             <tbody>
               <tr v-for="screening in screenings" :key="screening.screeningId"
-                class="odd:bg-white even:bg-gray-200 hover:bg-gray-300">
+                class="odd:bg-white even:bg-gray-200 hover:bg-gray-300 text-center">
                 <td :headers="'room' + cinema" class="py-2 px-1">
                   {{ screening.cinemaHallName }}
                 </td>
@@ -167,7 +174,7 @@ function updateShowTimes() {
                 <td :headers="'action' + cinema"
                   class="flex flex-wrap justify-center items-center py-2 px-1 text-center gap-2">
                   <SimpleButton v-if="isFutureDate(screening.screeningDate) && !user.isAdmin" class="mx-1" size="small"
-                    rounding="small" content="Prenota" color="primary" />
+                    rounding="small" content="Prenota" color="primary" :handle-click="booking" />
                   <div v-if="user.isAdmin" class="flex flex-col gap-1">
                     <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small"
                       content="Modifica" color="secondary"
@@ -190,4 +197,5 @@ function updateShowTimes() {
   <AddShowTimesModal v-if="modalShowTime" :movie="movie" :cinema="cinema" :room="cinemaHall" :date="screeningDate"
     :priceV="ticketPrice" :h="h" :m="m" :screeningId="screeningId" class="overflow-auto max-h-screen"
     @update="updateShowTimes" @close="closeModalAddShowTimes" />
+  <PayPallModal v-if="bookingModal" price="10" @close="bookingModal = false" />
 </template>
