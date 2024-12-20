@@ -89,6 +89,7 @@ exports.findScreeningsByMovie = async (req, res) => {
             }
             acc[cinemaName].push({
                 screeningId: screening._id,
+                cinemaHallId: screening.cinemaHall._id,
                 cinemaHallName: screening.cinemaHall.name,
                 ticketPrice: screening.ticketPrice,
                 screeningDate: screening.screeningDate

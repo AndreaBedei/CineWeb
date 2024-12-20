@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useUserStore } from '../stores/user';
 import AddShowTimesModal from './AddShowTimesModal.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
+import dayjs from "dayjs";
 
 const props = defineProps({
   showtimes: {
@@ -19,6 +20,13 @@ const emit = defineEmits(["update"]);
 
 const user = useUserStore();
 const modalShowTime = ref(false);
+const screeningId = ref('');
+const cinema = ref('');
+const cinemaHall = ref('');
+const screeningDate = ref(dayjs());
+const ticketPrice = ref('0.00');
+const h = ref(8)
+const m = ref(0)
 
 function formatDate(date: string): string {
   const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -33,9 +41,27 @@ function isFutureDate(date: string): boolean {
 
 function closeModalAddShowTimes() {
   modalShowTime.value = false;
+  cinema.value = '';
+  cinemaHall.value = '';
+  screeningDate.value = dayjs();
+  ticketPrice.value = '0.00';
+  screeningId.value = '';
+  h.value = 8;
+  m.value = 0;
 }
 
 function openModalAddShowTimes() {
+  modalShowTime.value = true;
+}
+
+function openModalAddShowTimesWithParams(cinemaN: string, cinemaHallN: string, screeningDateN: dayjs.Dayjs, ticketPriceN: string, screeningIdN: string) {
+  cinema.value = cinemaN;
+  cinemaHall.value = cinemaHallN;
+  screeningDate.value = dayjs(screeningDateN);
+  screeningId.value = screeningIdN;
+  ticketPrice.value = ticketPriceN;
+  h.value = dayjs(screeningDateN).hour();
+  m.value = dayjs(screeningDateN).minute();
   modalShowTime.value = true;
 }
 
@@ -66,40 +92,45 @@ function updateShowTimes() {
 
         <!-- Tabella -->
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-700 border-collapse border border-gray-300">
+          <table class="table-auto w-full text-left text-sm text-gray-700 border-collapse border min-w-max border-gray-300">
             <thead class="bg-gray-100">
               <tr>
-                <th :id="'room' + cinema" scope="col" class="py-2 px-4 font-semibold">
+                <th :id="'room' + cinema" scope="col" class="py-2 px-1 font-semibold">
                   Sala
                 </th>
-                <th :id="'price' + cinema" scope="col" class="py-2 px-4 font-semibold">
-                  Prezzo (€)
+                <th :id="'price' + cinema" scope="col" class="py-2 px-1 font-semibold">
+                  Prezzo
                 </th>
-                <th :id="'date' + cinema" scope="col" class="py-2 px-4 font-semibold">
+                <th :id="'date' + cinema" scope="col" class="py-2 px-1 font-semibold">
                   Orario
                 </th>
-                <th :id="'action' + cinema" scope="col" class="py-2 px-4 font-semibold text-center">
+                <th v-if="!user.isAdmin" :id="'action' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
                   Prenota
+                </th>
+                <th v-else :id="'action' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
+                  Gestisci
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="screening in screenings" :key="screening.screeningId"
-                class="odd:bg-white even:bg-gray-50 hover:bg-gray-200">
-                <td :headers="'room' + cinema" class="py-2 px-4">
+                class="odd:bg-white even:bg-gray-200 hover:bg-gray-300">
+                <td :headers="'room' + cinema" class="py-2 px-1">
                   {{ screening.cinemaHallName }}
                 </td>
-                <td :headers="'price' + cinema" class="py-2 px-4">
+                <td :headers="'price' + cinema" class="py-2 px-1">
                   {{ screening.ticketPrice.toFixed(2) }}
                 </td>
-                <td :headers="'date' + cinema" class="py-2 px-4">
-                  {{ formatDate(screening.screeningDate) }}
+                <td :headers="'date' + cinema" class="py-2 px-1">
+                  {{ formatDate(screening.screeningDate).split(',')[0] }} <br />
+                  {{ formatDate(screening.screeningDate).split(',')[1] }}
                 </td>
-                <td :headers="'action' + cinema" class="py-2 px-4 text-center">
-                  <button v-if="isFutureDate(screening.screeningDate)"
-                    class="px-2 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:px-4 md:py-2 md:text-sm">
-                    Prenota
-                  </button>
+                <td :headers="'action' + cinema" class="flex flex-wrap justify-center items-center py-2 px-1 text-center gap-2">
+                  <SimpleButton v-if="isFutureDate(screening.screeningDate) && !user.isAdmin" class="mx-1" size="small" rounding="small" content="Prenota" color="primary"/>
+                  <div v-if="user.isAdmin" class="flex flex-col gap-1">
+                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small" content="Modifica" color="secondary" :handle-click="() => openModalAddShowTimesWithParams(cinema, screening.cinemaHallId, screening.screeningDate, screening.ticketPrice.toFixed(2), screening.screeningId)"/>
+                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small" content="Elimina" color="red" />
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -111,5 +142,18 @@ function updateShowTimes() {
       <SimpleButton v-if="user.isAdmin" content="Aggiungi proiezione" color="primary" rounding="small" :handle-click="openModalAddShowTimes" />
     </div>
   </section>
-  <AddShowTimesModal v-if="modalShowTime" :movie="movie" @update="updateShowTimes"  @close="closeModalAddShowTimes" />
+  <AddShowTimesModal
+    v-if="modalShowTime"
+    :movie="movie"
+    :cinema="cinema"
+    :room="cinemaHall"
+    :date="screeningDate"
+    :priceV="ticketPrice"
+    :h="h"
+    :m="m"
+    :screeningId="screeningId"
+    class="overflow-auto max-h-screen"
+    @update="updateShowTimes"
+    @close="closeModalAddShowTimes"
+  />
 </template>

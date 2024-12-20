@@ -1,113 +1,7 @@
-<!-- <script setup lang="ts">
-import { ref } from 'vue';
-import SimpleButton from '@/components/SimpleButton.vue';
-import ErrorAlert from "@/components/ErrorAlert.vue";
-import axios from 'axios';
-import LoadingAlert from '@/components/LoadingAlert.vue';
-
-
-// Props ricevute
-const props = defineProps({
-    modalTitle: {
-        type: String,
-        default: "Aggiungi proiezione"
-    },
-    movieId: {
-        type: String,
-        default: ''
-    },
-    modality: {
-        type: Boolean,
-        default: false
-    },
-});
-
-const msgUser = ref("");
-const check = ref(false);
-
-const emit = defineEmits(['close', 'save', 'update']);
-
-
-async function addTimeLine() {
-    try {
-        const response = await axios.post('http://localhost:3001/movies', {
-            
-        });
-
-        if (response.status === 200) {
-            emit('close', true);
-        } else {
-            msgUser.value = "Errore durante l'aggiunta della proiezione.";
-            check.value = false;
-        }
-    } catch (error) {
-        console.error('Errore di connessione:', error);
-        msgUser.value = "Errore di connessione durante l'aggiunta del film.";
-        check.value = false;
-    }
-}
-
-async function updateTimeLine() {
-    try {
-        const response = await axios.put(`http://localhost:3001/movies/movie/${props.movieId}`, {
-
-        });
-
-        if (response.status === 200) {
-            emit('update');
-        } else {
-            msgUser.value = "Errore durante l'aggiornamento del film.";
-            check.value = false;
-        }
-    } catch (error) {
-        console.error('Errore di connessione:', error);
-        msgUser.value = "Errore di connessione durante l'aggiunta del film.";
-        check.value = false;
-    }
-}
-
-function handleSubmit() {
-    check.value = true;
-    if (props.modality) {
-        updateTimeLine();
-    } else {
-        addTimeLine();
-    }
-}
-
-function closeModal() {
-    emit('close', false);
-}
-
-</script>
-<template>
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50" role="dialog"
-        aria-labelledby="modal-title" aria-modal="true">
-        <div
-            class="bg-white rounded-lg shadow-lg max-w-md sm:max-w-lg lg:max-w-2xl w-full p-6 relative max-h-[98vh] overflow-y-auto overflow-x-hidden">
-            <header>
-                <h2 id="modal-title" class="text-2xl font-semibold text-primary-dark mb-4">
-                    {{ props.modalTitle }}
-                </h2>
-            </header>
-            <ErrorAlert v-if="msgUser" :message="msgUser" @clear="msgUser = ''" />
-            <LoadingAlert v-if="check" />
-            <form @submit.prevent="handleSubmit">
-                
-                <div class="flex justify-end space-x-4">
-                    <SimpleButton content="Annulla" color="red" :handleClick="closeModal" rounding="small" />
-                    <SimpleButton content="Salva" color="green" rounding="small" type="submit" />
-                </div>
-            </form>
-        </div>
-    </div>
-</template> -->
-
-
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import dayjs from "dayjs";
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import SimpleButton from "@/components/SimpleButton.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import LoadingAlert from '@/components/LoadingAlert.vue';
@@ -119,6 +13,34 @@ dayjs.locale("it"); // Imposta la lingua italiana
 const props = defineProps({
     movie: {
         type: Object,
+    },
+    cinema: {
+        type: String,
+        default: "",
+    },
+    room: {
+        type: String,
+        default: "",
+    },
+    date: {
+        type: dayjs.Dayjs,
+        default: dayjs(),
+    },
+    priceV: {
+        type: String,
+        default: "0.0",
+    },
+    h: {
+        type: Number,
+        default: 8,
+    },
+    m: {
+        type: Number,
+        default: 0,
+    },
+    screeningId: {
+        type: String,
+        default: "",
     },
 });
 
@@ -139,12 +61,23 @@ const cinemas = ref<Cinema[]>([]);
 
 const emit = defineEmits(['close', "update"]);
 
-const selectedRoom = ref(""); // Sala selezionata
-const selectedCinema = ref(""); // Sala selezionata
+const selectedCinema = ref(props.cinema); // Sala selezionata
+if (selectedCinema.value !== "") {
+    getRooms(selectedCinema.value);
+}
+const selectedRoom = ref(props.room); // Sala selezionata
 const checkLoading = ref(false);
 const msgUserOk = ref("");
+const screeningId = ref(props.screeningId);
 const msgUserError = ref("");
 const loading = ref(false);
+const currentDate = ref(props.date); // Data corrente del calendario
+const selectedDate = ref(currentDate.value.format("YYYY-MM-DD")); // Usa ref per renderlo reattivo
+const price = ref(props.priceV); // Prezzo del biglietto
+const newProjection = ref({ hour: props.h, minute: props.m }); // Orario della nuova proiezione
+const projections = ref<Projection[]>([]); // Proiezioni per la sala selezionata
+const isModalOpen = ref(false); // Stato del modale
+changeDate(selectedDate.value);
 
 interface Projection {
     roomId: string;
@@ -152,15 +85,6 @@ interface Projection {
     times: string[];
     movie: string;
 }
-
-const projections = ref<Projection[]>([]); // Proiezioni per la sala selezionata
-
-const currentDate = ref(dayjs()); // Data corrente del calendario
-const selectedDate = ref(currentDate.value.format("YYYY-MM-DD")); // Usa ref per renderlo reattivo
-const newProjection = ref({ hour: 8, minute: 0 }); // Orario della nuova proiezione
-const price = ref("0.0"); // Prezzo del biglietto
-
-const isModalOpen = ref(false); // Stato del modale
 
 async function getScreeningsByDate(room: string) {
     loading.value = true;
@@ -227,20 +151,35 @@ async function addProjection() {
     checkLoading.value = true;
     const { hour, minute } = newProjection.value;
     const startTime = dayjs(selectedDate.value).hour(hour).minute(minute); // Combina la data selezionata con l'ora di inizio
-    try {
-        const response = await axios.post(`http://localhost:3001/screenings/`, {
-            movie: props.movie?._id, // Sostituisci con l'ID effettivo del film
-            cinemaHall: selectedRoom.value, // Sostituisci con l'ID della sala selezionata
-            ticketPrice: price.value, // Prezzo del biglietto
-            screeningDate: startTime.toISOString() // Converte il valore in formato ISO
-        });
+    let response: AxiosResponse;
 
-        if (response.status === 201) {
+    try {
+        if (screeningId.value === "") {
+            response = await axios.post(`http://localhost:3001/screenings/`, {
+                movie: props.movie?._id, // Sostituisci con l'ID effettivo del film
+                cinemaHall: selectedRoom.value, // Sostituisci con l'ID della sala selezionata
+                ticketPrice: price.value, // Prezzo del biglietto
+                screeningDate: startTime.toISOString() // Converte il valore in formato ISO
+            });
+        } else {
+            response = await axios.put(`http://localhost:3001/screenings/${screeningId.value}`, {
+                movie: props.movie?._id, // Sostituisci con l'ID effettivo del film
+                cinemaHall: selectedRoom.value, // Sostituisci con l'ID della sala selezionata
+                ticketPrice: price.value, // Prezzo del biglietto
+                screeningDate: startTime.toISOString() // Converte il valore in formato ISO
+            });
+        }
+
+        if (response.status === 201 && screeningId.value === "") {
             msgUserOk.value = "Proiezione aggiunta con successo.";
             emit('update');
-        } else {
-            console.error("Errore durante l'inserimento della proiezione.");
+        } else if (response.status === 200) {
+            msgUserOk.value = "Proiezione modificata con successo.";
+            emit('update');
+        } else if (screeningId.value === ""){
             msgUserError.value = "Errore durante l'inserimento della proiezione.";
+        } else {
+            msgUserError.value = "Errore durante la modifica della proiezione.";
         }
     } catch (error) {
         console.error("Errore di connessione:", error);
@@ -248,9 +187,6 @@ async function addProjection() {
     } finally {
         checkLoading.value = false;
     }
-
-    // Reset del nuovo orario
-    newProjection.value = { hour: 8, minute: 0 };
 }
 
 
@@ -304,8 +240,6 @@ watch(selectedCinema, async (newCinemaName) => {
 watch(selectedRoom, async (newRoom) => {
     getScreeningsByDate(newRoom);
 });
-
-
 </script>
 
 <template>
@@ -409,7 +343,10 @@ watch(selectedRoom, async (newRoom) => {
                         <div class="flex-grow"></div>
 
                         <!-- Bottone -->
-                        <SimpleButton class="justify-end" content="Aggiungi" type="submit" color="green"
+
+                        <SimpleButton v-if="screeningId === ''" class="justify-end" content="Aggiungi" type="submit" color="green"
+                            rounding="small" />
+                        <SimpleButton v-else class="justify-end" content="Modifica" type="submit" color="secondary"
                             rounding="small" />
                     </div>
                 </section>
