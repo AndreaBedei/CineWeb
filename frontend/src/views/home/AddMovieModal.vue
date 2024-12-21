@@ -41,6 +41,10 @@ const props = defineProps({
     movieId: {
         type: String,
         default: ''
+    },
+    year: {
+        type: String,
+        default: ''
     }
 });
 
@@ -50,6 +54,7 @@ const duration = ref(props.duration);
 const genres = ref<{ _id: string; name: string }[]>([]);
 const selectedGenres = ref<{ _id: string; name: string }[]>(props.genresO);
 const image = ref(props.poster);
+const year = ref(props.year);
 const msgUser = ref("");
 const upload = ref(false);
 const check = ref(false);
@@ -75,13 +80,13 @@ onMounted(() => {
 
 async function handleSubmit() {
     check.value = true;
-    if (upload.value === false) {
+    if (upload.value === false && props.poster === '') {
         msgUser.value = "Devi prima caricare il poster per il film.";
         check.value = false;
         return;
     }
     const response = await axios.get(
-        `http://www.omdbapi.com/?t=${encodeURIComponent(name.value)}&apikey=e2b4e2eb`
+        `http://www.omdbapi.com/?t=${encodeURIComponent(name.value)}&y=${year.value}&apikey=e2b4e2eb`
     );
     if (response.data.Response === 'False') {
         msgUser.value = "Il nome del film non è stato trovato nell'archivio di OMDB, inserire il titolo corretto.";
@@ -107,6 +112,7 @@ async function addMovie() {
     try {
         const response = await axios.post('http://localhost:3001/movies', {
             title: name.value,
+            productionYear: year.value,
             trailerLink: trailer.value,
             duration: duration.value.toString(),
             genres: selectedGenres.value,
@@ -130,6 +136,7 @@ async function updateMovie() {
     try {
         const response = await axios.put(`http://localhost:3001/movies/movie/${props.movieId}`, {
             title: name.value,
+            productionYear: year.value,
             trailerLink: trailer.value,
             duration: duration.value.toString(),
             genres: selectedGenres.value,
@@ -170,9 +177,13 @@ function closeModal() {
                 <!-- Nome -->
                 <BaseInput id="nome-film" label="Nome del film" v-model="name" :require="true" />
 
-                <!-- Durata -->
-                <BaseInput id="durata-film" label="Durata (minuti)" type="number" v-model="duration" :require="true"
-                    :range="{ min: 1, max: 500, step: 1 }" />
+                <div class="flex flex-col md:flex-row md:space-x-4">
+                    <BaseInput id="anno" label="Anno produzione" type="text" v-model="year" :require="true"
+                        class="flex-1" />
+                    <BaseInput id="durata-film" label="Durata (minuti)" type="number" v-model="duration" :require="true"
+                        :range="{ min: 1, max: 500, step: 1 }" class="flex-1" />
+                </div>
+
 
                 <!-- Poster -->
                 <UploadInput @fileUploaded="handleFileUploaded" :currentFile="image" />
@@ -187,8 +198,8 @@ function closeModal() {
                     <h3 class="block text-primary-dark font-semibold mb-2 mt-2">Categorie</h3>
                     <div class="grid gap-4 grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         <div v-for="genre in genres" :key="genre._id" class="flex items-center space-x-2">
-                            <input type="checkbox" :id="'genre-' + genre._id" :value="genre"
-                                v-model="selectedGenres" :checked="selectedGenres.some(g => g._id === genre._id)"
+                            <input type="checkbox" :id="'genre-' + genre._id" :value="genre" v-model="selectedGenres"
+                                :checked="selectedGenres.some(g => g._id === genre._id)"
                                 class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                             <label :for="'genre-' + genre._id" class="text-sm font-medium text-gray-700">
                                 {{ genre.name }}

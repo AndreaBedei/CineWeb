@@ -34,16 +34,17 @@ const title = ref(props.movie.title);
 const poster = ref(props.movie.poster);
 const trailerLink = ref(props.movie.trailerLink);
 const duration = ref(props.movie.duration);
+const year = ref(props.movie.productionYear);
 const user = useUserStore();
 
 onMounted(() => {
-  fetchMovieDetails(props.movie.title);
+  fetchMovieDetails(props.movie.title, props.movie.productionYear);
 });
 
-async function fetchMovieDetails(title: string) {
+async function fetchMovieDetails(title: string, year: string) {
   try {
     const response = await axios.get(
-      `http://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=e2b4e2eb`
+      `http://www.omdbapi.com/?t=${encodeURIComponent(title)}&y=${year}&apikey=e2b4e2eb`
     );
     const translate = await axios.get(
       `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=it&dt=t&q=${encodeURIComponent(
@@ -62,7 +63,7 @@ async function fetchMovieDetails(title: string) {
 }
 
 watch(() => props.movie.title, (newTitle) => {
-  fetchMovieDetails(newTitle);
+  fetchMovieDetails(newTitle, props.movie.productionYear);
   title.value = newTitle;
   poster.value = props.movie.poster;
   duration.value = props.movie.duration;
@@ -75,7 +76,7 @@ function openModalModifyMovie() {
 
 function closeModal(update: boolean) {
   if (update) {
-    fetchMovieDetails(props.movie.title);
+    fetchMovieDetails(props.movie.title, props.movie.productionYear);
   }
   modalFilm.value = false;
 }
@@ -166,5 +167,5 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
       </div>
     </div>
   </section>
-  <ModifyMovieModal v-if="user.isAdmin && modalFilm" :movieId="movie._id" :update="true" modal-title="Modifica film" :name="title" :poster="poster" :trailerLink="trailerLink" :duration="duration" :genresO="genres" @close="closeModal" @update="updateValue" />
+  <ModifyMovieModal v-if="user.isAdmin && modalFilm" :movieId="movie._id" :update="true" :year="year" modal-title="Modifica film" :name="title" :poster="poster" :trailerLink="trailerLink" :duration="duration" :genresO="genres" @close="closeModal" @update="updateValue" />
 </template>
