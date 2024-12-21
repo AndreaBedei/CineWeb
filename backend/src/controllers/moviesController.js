@@ -1,4 +1,5 @@
 const { moviesModel } = require('../models/moviesModel');
+const { screeningsModel } = require('../models/screeningsModel');
 
 exports.moviesList = (req, res) => {
     moviesModel.find()
@@ -66,32 +67,63 @@ exports.deleteMovie = (req, res) => {
         });
 }
 
-exports.availableMovies = (req, res) => {
-    moviesModel.find()
-        .where('isAvailable').equals(true)
-        .populate('genres', 'name') 
-        .sort({ _id: -1 }) 
-        .then(doc => {
-            res.json(doc);
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
+exports.availableMovies = async (req, res) => {
+    try {
+        const moviesWithFutureScreenings = await screeningsModel.aggregate([
+            {
+                $match: {
+                    screeningDate: { $gt: new Date() } // Solo proiezioni future
+                }
+            },
+            {
+                $group: {
+                    _id: '$movie' // Raggruppa per movie ID
+                }
+            }
+        ]);
+
+        const movieIds = moviesWithFutureScreenings.map(screening => screening._id);
+
+        const availableMovies = await moviesModel.find({ _id: { $in: movieIds } })
+            .populate('genres', 'name')
+            .sort({ _id: -1 });
+
+        res.json(availableMovies);
+    } catch (err) {
+        res.status(500).send(err);
+    }
 };
 
-exports.availableMoviesByGenre = (req, res) => {
-    const genreId = req.params.genreId;
-    moviesModel.find()
-        .where('genres').in([genreId])
-        .where('isAvailable').equals(true)
-        .populate('genres', 'name') 
-        .sort({ _id: -1 }) 
-        .then(doc => {
-            res.json(doc);
+exports.availableMoviesByGenre = async (req, res) => {
+    try {
+        const genreId = req.params.genreId;
+
+        const moviesWithFutureScreenings = await screeningsModel.aggregate([
+            {
+                $match: {
+                    screeningDate: { $gt: new Date() } // Solo proiezioni future
+                }
+            },
+            {
+                $group: {
+                    _id: '$movie' // Raggruppa per movie ID
+                }
+            }
+        ]);
+
+        const movieIds = moviesWithFutureScreenings.map(screening => screening._id);
+
+        const availableMovies = await moviesModel.find({
+            _id: { $in: movieIds },
+            genres: genreId
         })
-        .catch(err => {
-            res.status(500).send(err);
-        });
+            .populate('genres', 'name')
+            .sort({ _id: -1 });
+
+        res.json(availableMovies);
+    } catch (err) {
+        res.status(500).send(err);
+    }
 };
 
 exports.searchMoviesByTitle = (req, res) => {
