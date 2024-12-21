@@ -5,6 +5,7 @@ import SignOn from '@/views/signOn/SignOn.vue'
 import ProfileView from '@/views/profile/ProfileView.vue'
 import FilmView from '@/views/film/FilmView.vue'
 import AddMovieRoomView from '@/views/add_movie_room/AddMovieRoomView.vue'
+import NotificationsView from '@/views/notifications/NotificationsView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,15 @@ const router = createRouter({
             path: '/addmovieroom',
             name: 'addmovieroom',
             component: AddMovieRoomView
+        },
+        {
+            path: '/notify',
+            name: 'notify',
+            component: NotificationsView
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: { name: 'home' }
         }
     ],
 })

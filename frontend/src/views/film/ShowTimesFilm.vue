@@ -10,7 +10,7 @@ import PayPallModal from '@/components/PayPallModal.vue';
 
 const props = defineProps({
   showtimes: {
-    type: Object,
+    type: [Object, String],
     required: true,
   },
   movie: {
@@ -18,6 +18,7 @@ const props = defineProps({
     required: true,
   },
 });
+
 
 const emit = defineEmits(["update"]);
 
@@ -179,7 +180,7 @@ function updateShowTimes() {
                     <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small"
                       content="Modifica" color="secondary"
                       :handle-click="() => openModalAddShowTimesWithParams(cinema, screening.cinemaHallId, screening.screeningDate, screening.ticketPrice.toFixed(2), screening.screeningId)" />
-                    <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small" content="Elimina" color="red" :handle-click="() => openModalCheck(screening.screeningId)" />
+                    <SimpleButton size="small" rounding="small" content="Elimina" color="red" :handle-click="() => openModalCheck(screening.screeningId)" />
                   </div>
                 </td>
               </tr>

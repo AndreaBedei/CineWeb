@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import SimpleButton from "@/components/SimpleButton.vue";
 import { useUserStore } from "../stores/user";
@@ -60,6 +60,14 @@ async function fetchMovieDetails(title: string) {
     isLoading.value = false; // Imposta a false quando il caricamento è completato
   }
 }
+
+watch(() => props.movie.title, (newTitle) => {
+  fetchMovieDetails(newTitle);
+  title.value = newTitle;
+  poster.value = props.movie.poster;
+  duration.value = props.movie.duration;
+  trailerLink.value = props.movie.trailerLink;
+});
 
 function openModalModifyMovie() {
   modalFilm.value = true;

@@ -26,7 +26,7 @@ const fetchMoviesByInterest = async (interestId: string, interestName: string) =
   try {
     const response = await axios.get(`http://localhost:3001/movies/genre/${interestId}`);
     if (response.data) {
-      if (response.data.length > 0) {
+      if (response.data.length > 0 && !user.isAdmin) {
         movieCarousels.value.push({
           title: `Di categoria ${interestName}`,
           movies: response.data,
@@ -109,7 +109,7 @@ watch(user, () => {
     <div v-for="carousel in movieCarousels" :key="carousel.title">
       <Carousel :title="carousel.title" :movies="carousel.movies" />
     </div>
-    <SimpleButton v-if="user.interests.length == 0" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
+    <SimpleButton v-if="user.interests.length == 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
   </div>
 </template>
 

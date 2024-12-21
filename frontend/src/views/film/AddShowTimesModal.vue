@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import dayjs from "dayjs";
 import axios, { type AxiosResponse } from "axios";
 import SimpleButton from "@/components/SimpleButton.vue";
@@ -178,7 +178,7 @@ async function addProjection() {
             msgUserOk.value = "Proiezione modificata con successo.";
             getScreeningsByDate(selectedRoom.value);
             emit('update');
-        } else if (screeningId.value === ""){
+        } else if (screeningId.value === "") {
             msgUserError.value = "Errore durante l'inserimento della proiezione.";
         } else {
             msgUserError.value = "Errore durante la modifica della proiezione.";
@@ -242,12 +242,36 @@ watch(selectedCinema, async (newCinemaName) => {
 watch(selectedRoom, async (newRoom) => {
     getScreeningsByDate(newRoom);
 });
+
+function disableBodyScroll() {
+  document.body.style.overflow = "hidden";
+}
+
+function enableBodyScroll() {
+  document.body.style.overflow = "";
+}
+
+onMounted(() => {
+  disableBodyScroll();
+});
+
+onUnmounted(() => {
+  enableBodyScroll();
+});
 </script>
 
 <template>
-    <section class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md md:max-w-3xl overflow-hidden">
-            <header class="flex justify-between items-center bg-primary text-white px-4 py-3">
+    <section
+    class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="bg-white rounded-lg shadow-lg w-full max-w-md md:max-w-3xl overflow-y-auto"
+      style="max-height: 90vh;"
+    >
+            <header class="flex justify-between items-center bg-primary text-white px-4 py-1">
                 <h4 class="text-lg font-semibold">Nuova Proiezione Per Film "{{ movie?.title }}"</h4>
                 <button @click="closeModal" class="text-white hover:text-gray-200">
                     ✕
@@ -256,7 +280,7 @@ watch(selectedRoom, async (newRoom) => {
             <LoadingAlert v-if="checkLoading" />
             <ErrorAlert v-if="msgUserError" :message="msgUserError" @clear="msgUserError = ''" />
             <OkAlert v-if="msgUserOk" :message="msgUserOk" @clear="msgUserOk = ''" />
-            <form @submit.prevent="addProjection" class="p-4 space-y-4" method="post">
+            <form @submit.prevent="addProjection" class="p-2 space-y-2" method="post">
                 <!-- Selezione del cinema -->
                 <section>
                     <label for="cinema" class="block text-sm font-medium text-gray-700">Cinema</label>
@@ -314,8 +338,8 @@ watch(selectedRoom, async (newRoom) => {
                     <h5 v-if="selectedRoom !== ''" class="text-lg font-bold">
                         Proiezioni per il {{ dayjs(selectedDate).format("DD MMMM YYYY") }}
                     </h5>
-                    <ul v-if="projections.length !== 0" class="mt-2 space-y-2">
-                        <li class="flex gap-3 items-center bg-gray-100 rounded-md px-4 py-2"
+                    <ul v-if="projections.length !== 0" class="mt-2 space-y-1">
+                        <li class="flex gap-3 items-center bg-gray-100 rounded-md px-4 py-1"
                             v-for="projection in projections" :key="projection.date + projection.times">
                             <p class="font-semibold">{{ projection.movie }}</p>
                             <p>{{ projection.times.join(", ") }}</p>
@@ -346,8 +370,8 @@ watch(selectedRoom, async (newRoom) => {
 
                         <!-- Bottone -->
 
-                        <SimpleButton v-if="screeningId === ''" class="justify-end" content="Aggiungi" type="submit" color="green"
-                            rounding="small" />
+                        <SimpleButton v-if="screeningId === ''" class="justify-end" content="Aggiungi" type="submit"
+                            color="green" rounding="small" />
                         <SimpleButton v-else class="justify-end" content="Modifica" type="submit" color="secondary"
                             rounding="small" />
                     </div>

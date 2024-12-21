@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import BaseInput from '@/components/BaseInput.vue';
 import { useUserStore } from '../stores/user';
@@ -28,7 +28,7 @@ const idReview = ref('');
 const hasReviewed = ref(false); // Per simulazione
 const user = useUserStore();
 const route = useRoute();
-const movieId = route.query.id;; // Sostituisci con un ID dinamico
+const movieId = ref(route.query.id); // Sostituisci con un ID dinamico
 
 const emit = defineEmits(['update']);
 
@@ -46,7 +46,7 @@ const submitReview = async () => {
         rating: rating.value,
         text: message.value,
         user: user.userId,
-        movie: movieId,
+        movie: movieId.value,
       };
       await axios.post(`http://localhost:3001/reviews/`, payload);
     }
@@ -63,7 +63,7 @@ onMounted(async () => {
 });
 
 async function getDatas() {
-  const response = await axios.get(`http://localhost:3001/reviews/user/${user.userId}/movie/${movieId}`);
+  const response = await axios.get(`http://localhost:3001/reviews/user/${user.userId}/movie/${movieId.value}`);
   if (response.data.length === 0) {
     return;
   }
@@ -89,6 +89,11 @@ function deleteReview() {
   hasReviewed.value = false;
   emit('update');
 }
+
+watch(() => route.query.id, (newId) => {
+  movieId.value = newId as string;
+  getDatas();
+});
 </script>
 
 <template>
