@@ -76,7 +76,7 @@ exports.createReview = async (req, res) => {
         if (admins.length > 0) {
             const notifications = admins.map(admin => ({
                 user: admin._id,
-                text: "Nuova recensione pubblicata da un cliente! Premi qui per leggerla.",
+                text: "Nuova recensione pubblicata da un cliente! Premi qui per andare alla pagina del film.",
                 resource: savedReview.movie
             }));
             await notificationsModel.insertMany(notifications);
@@ -85,7 +85,6 @@ exports.createReview = async (req, res) => {
     } catch (err) {
         res.status(500).send(err);
     }
-    res.status(201).json(savedReview);
 };
 
 exports.readReview = (req, res) => {

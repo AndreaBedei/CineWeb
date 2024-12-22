@@ -50,11 +50,11 @@ const submitReview = async () => {
         movie: movieId.value,
       };
       await axios.post(`http://localhost:3001/reviews/`, payload);
+      user.socket.emit('newReview', { movieId: movieId.value });
     }
     emit('update');
     showOk('Recensione inviata', 'La tua recensione è stata inviata con successo');
     getDatas();
-    user.socket.emit('newReview', { movieId: movieId.value });
   } catch (error) {
     console.error('Errore durante l\'invio della recensione', error);
   }
@@ -83,8 +83,8 @@ function formatDate(date: string): string {
   return new Date(date).toLocaleDateString(undefined, options);
 }
 
-function deleteReview() {
-  axios.delete(`http://localhost:3001/reviews/${idReview.value}`);
+async function deleteReview() {
+  await axios.delete(`http://localhost:3001/reviews/${idReview.value}`);
   rating.value = "0";
   message.value = '';
   date.value = '';
