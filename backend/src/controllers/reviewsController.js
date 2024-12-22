@@ -31,7 +31,7 @@ exports.getReviewsByUser = (req, res) => {
     reviewsModel.find({ user: userId })
         .populate({
             path: 'user',
-            select: '-password -salt' // Escludi password e salt
+            select: '-password -salt'
         })
         .sort({ reviewDate: -1 })
         .then(docs => {
@@ -52,8 +52,9 @@ exports.getReviewsByMovie = (req, res) => {
     reviewsModel.find({ movie: movieId })
         .populate({
             path: 'user',
-            select: '-password -salt' // Escludi password e salt
+            select: '-password -salt'
         })
+        .limit(10)
         .sort({ reviewDate: -1 })
         .then(docs => {
             if (docs.length === 0) {
@@ -66,28 +67,25 @@ exports.getReviewsByMovie = (req, res) => {
         });
 };
 
+
 exports.createReview = async (req, res) => {
     try {
         const review = new reviewsModel(req.body);
         const savedReview = await review.save();
-
         const admins = await usersModel.find({ isAdmin: true }, '_id');
-
         if (admins.length > 0) {
             const notifications = admins.map(admin => ({
                 user: admin._id,
-                text: "Nuova recensione pubblicata",
-                resource: savedReview._id
+                text: "Nuova recensione pubblicata da un cliente! Premi qui per leggerla.",
+                resource: savedReview.movie
             }));
-
             await notificationsModel.insertMany(notifications);
         }
-
         res.status(201).json(savedReview);
     } catch (err) {
         res.status(500).send(err);
     }
-
+    res.status(201).json(savedReview);
 };
 
 exports.readReview = (req, res) => {
