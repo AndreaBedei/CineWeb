@@ -53,7 +53,6 @@ app.use('/image', imagesRouter);
 app.use('/img', express.static(path.join(__dirname, 'img')));
 
 io.on('connection', (socket) => {
-    console.log('Un utente si è connesso');
     let userId = "";
     /**
      * @type {Boolean | undefined}
@@ -68,8 +67,6 @@ io.on('connection', (socket) => {
         isAdmin = true;
         console.log('Un admin si è registrato');
     });
-
-    // FIXME: è maglio usare un solo tipo di messaggio 'register' e distinguere tra admin e user guardando sul db, piuttosto che distinguere client-side
 
     // Riconosci gli amministratori
     socket.on('registerUser', (id) => {

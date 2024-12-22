@@ -53,6 +53,7 @@ const submitReview = async () => {
     emit('update');
     showOk('Recensione inviata', 'La tua recensione è stata inviata con successo');
     getDatas();
+    user.socket.emit('newReview', { movieId: movieId.value });
   } catch (error) {
     console.error('Errore durante l\'invio della recensione', error);
   }
@@ -112,9 +113,7 @@ watch(() => route.query.id, (newId) => {
 
       <div class="flex justify-end">
         <SimpleButton v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red" class="text-white py-2 px-4 rounded-lg hover:bg-red-800 mt-4 mx-2" rounding="small" />
-        <button type="submit" class="bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark mt-4">
-          {{ hasReviewed ? 'Aggiorna' : 'Pubblica' }}
-        </button>
+        <SimpleButton type="submit" :handleClick="deleteReview" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="primary" rounding="small" />
       </div>
     </form>
   </div>
