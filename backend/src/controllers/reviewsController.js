@@ -78,7 +78,7 @@ exports.createReview = (req, res) => {
             if (admins.length > 0) {
                 const notifications = admins.map(admin => ({
                     user: admin._id,
-                    text: "Nuova recensione pubblicata! Premi qui per leggerla.",
+                    text: "Nuova recensione pubblicata da un cliente! Premi qui per leggerla.",
                     resource: savedReview-movie
                 }));
     
