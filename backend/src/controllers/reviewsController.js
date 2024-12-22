@@ -1,4 +1,6 @@
 const { reviewsModel } = require('../models/reviewsModel');
+const { usersModel } = require('../models/usersModel');
+const { notificationsModel } = require('../models/notificationsModel');
 const mongoose = require('mongoose');
 
 exports.getAllReviews = (req, res) => {
@@ -65,14 +67,28 @@ exports.getReviewsByMovie = (req, res) => {
 };
 
 exports.createReview = (req, res) => {
-    const review = new reviewsModel(req.body);
-    review.save()
-        .then(doc => {
-            res.status(201).json(doc);
-        })
-        .catch(err => {
+    exports.createReview = async (req, res) => {
+        try {
+            const review = new reviewsModel(req.body);
+            const savedReview = await review.save();
+    
+            const admins = await usersModel.find({ isAdmin: true }, '_id');
+    
+            if (admins.length > 0) {
+                const notifications = admins.map(admin => ({
+                    user: admin._id,
+                    text: "Nuova recensione pubblicata",
+                    resource: savedReview._id
+                }));
+    
+                await notificationsModel.insertMany(notifications);
+            }
+    
+            res.status(201).json(savedReview);
+        } catch (err) {
             res.status(500).send(err);
-        });
+        }
+    };
 };
 
 exports.readReview = (req, res) => {
