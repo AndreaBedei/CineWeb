@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '../../stores/user';
 import SimpleButton from '@/components/SimpleButton.vue';
+import axios from 'axios';
 
 interface Notification {
     id: string;
@@ -11,12 +12,18 @@ interface Notification {
 }
 
 const user = useUserStore();
-
-
 const notifications = ref<Notification[]>([]);
 
 // Mock delle notifiche (da sostituire con una chiamata API reale)
 const fetchNotifications = async () => {
+    try {
+        const response = await axios.get(`http://localhost:3001/notifications/user/${user.userId}`);
+        console.log(response.data);
+    } catch (error) {
+        console.error('Errore nel caricamento del film', error);
+    }
+
+
     notifications.value = [
         {
             id: '1',
@@ -81,8 +88,10 @@ onMounted(fetchNotifications);
                 </p>
 
                 <!-- Azioni amministratore -->
-                <div v-if="user.isAdmin" class="flex flex-col sm:flex-row mt-4 space-y-2 sm:space-y-0 sm:space-x-2">
-                    <SimpleButton :handle-click="() => deleteNotification(notification.id)" color="red" rounding="small" content="Elimina" size="small"/>
+                <div v-if="user.isAdmin"
+                    class="flex flex-col sm:flex-row mt-4 sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                    <SimpleButton :handle-click="() => deleteNotification(notification.id)" color="red" rounding="small"
+                        content="Elimina" size="small" />
                 </div>
             </li>
         </ul>

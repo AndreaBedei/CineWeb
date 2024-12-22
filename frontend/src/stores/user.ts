@@ -19,7 +19,7 @@ export const useUserStore = defineStore('user', () => {
     const interests = ref([] as Interest[]);
     const isAdmin = ref(false);
     const ready = ref(false);
-    const socket = io('http://localhost:3001');
+    const socket = io('http://localhost:3001/');
 
     async function _loadData(userId: string) {
         const response = await axios.get(`http://localhost:3001/users/${userId}`);

@@ -25,11 +25,11 @@ const io = new Server(server);
 /**
  * @type {Map<String, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>>}
  */
-let adminSockets = Map();
+let adminSockets = new Map();
 /**
  * @type {Map<String, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>>}
  */
-let userSockets = Map();
+let userSockets = new Map();
 
 app.use(cors({
     origin: '*', // URL della tua applicazione frontend
