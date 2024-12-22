@@ -6,6 +6,8 @@ import { useUserStore } from "../stores/user";
 import ModifyMovieModal from "../home/AddMovieModal.vue";
 import PageModal from "@/components/PageModal.vue";
 
+const emit = defineEmits(["updateVideo"]);
+
 const props = defineProps({
   movie: {
     type: Object,
@@ -89,6 +91,7 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
   trailerLink.value = trailer;
   modalFilm.value = false;
   updateOk.value = true;
+  emit("updateVideo");
 }
 
 </script>

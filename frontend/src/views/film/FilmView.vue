@@ -51,6 +51,10 @@ onMounted(() => {
   fetchReviews();
 });
 
+function updateVideo() {
+  fetchMovieDetails();
+};
+
 watch(() => route.query.id, (newId) => {
   movieId.value = newId as string;
   reviews.value = [];
@@ -63,7 +67,7 @@ watch(() => route.query.id, (newId) => {
 
 <template>
   <div class="p-4 w-full max-w-7xl mx-auto">
-    <MovieDetails v-if="movie" :movie="movie" />
+    <MovieDetails v-if="movie" :movie="movie" @updateVideo="updateVideo" />
     <Showtimes v-if="movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm @update="updateReviews"/>

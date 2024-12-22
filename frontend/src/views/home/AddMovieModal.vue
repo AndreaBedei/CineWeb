@@ -113,7 +113,7 @@ async function addMovie() {
         const response = await axios.post('http://localhost:3001/movies', {
             title: name.value,
             productionYear: year.value,
-            trailerLink: trailer.value,
+            trailerLink: extractVideoCode(trailer.value),
             duration: duration.value.toString(),
             genres: selectedGenres.value,
             poster: image.value,
@@ -133,6 +133,7 @@ async function addMovie() {
 }
 
 async function updateMovie() {
+    trailer.value = extractVideoCode(trailer.value);
     try {
         const response = await axios.put(`http://localhost:3001/movies/movie/${props.movieId}`, {
             title: name.value,
@@ -154,6 +155,22 @@ async function updateMovie() {
         msgUser.value = "Errore di connessione durante l'aggiunta del film.";
         check.value = false;
     }
+}
+
+function extractVideoCode(url: string): string {
+  const patterns = [
+    /youtube\.com\/watch\?v=([^&]+)/, // Matcha il formato: https://www.youtube.com/watch?v=...
+    /youtu\.be\/([^?]+)/             // Matcha il formato: https://youtu.be/...
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1]; // Restituisce il codice del video
+    }
+  }
+
+  return ""; // Restituisce null se nessun pattern corrisponde
 }
 
 function closeModal() {
@@ -188,10 +205,7 @@ function closeModal() {
                 <!-- Poster -->
                 <UploadInput @fileUploaded="handleFileUploaded" :currentFile="image" />
 
-                <section>
-                    <BaseInput id="trailer-film" label="Trailer (Video Key)" v-model="trailer" :require="true" />
-                    <p class="text-sm text-gray-500 mt-1">Esempio: v=<strong>dQw4w9WgXcQ</strong></p>
-                </section>
+                <BaseInput id="trailer-film" label="Trailer (Youtube video link)" v-model="trailer" :require="true" placeholder="https://youtu.be/A1x1s__vlKU?si=mqifAXeGjlIDDset" />
 
                 <!-- Categorie -->
                 <section class="mb-4">
