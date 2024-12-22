@@ -150,3 +150,19 @@ exports.getUserInterests = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+exports.findUsersByGenre = (req, res) => {
+    const genreId = req.params.genreId;
+
+    usersModel.find({ favoriteGenres: genreId })
+        .populate('favoriteGenres', 'name') 
+        .then(users => {
+            if (!users.length) {
+                return res.status(404).send('No users found with the specified genre');
+            }
+            res.json(users);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
