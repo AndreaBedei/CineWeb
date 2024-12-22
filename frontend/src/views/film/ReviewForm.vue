@@ -42,6 +42,7 @@ const submitReview = async () => {
       };
       await axios.put(`http://localhost:3001/reviews/${idReview.value}`, payload);
     } else {
+
       const payload = {
         rating: rating.value,
         text: message.value,
@@ -112,8 +113,9 @@ watch(() => route.query.id, (newId) => {
         placeholder="Scrivi qui la tua recensione"></textarea>
 
       <div class="flex justify-end">
-        <SimpleButton v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red" class="text-white py-2 px-4 rounded-lg hover:bg-red-800 mt-4 mx-2" rounding="small" />
-        <SimpleButton type="submit" :handleClick="deleteReview" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="primary" rounding="small" />
+        <SimpleButton v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red"
+          class="text-white py-2 px-4 rounded-lg hover:bg-red-800 mt-4 mx-2" rounding="small" />
+        <SimpleButton type="submit" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="primary" rounding="small" />
       </div>
     </form>
   </div>

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 exports.getAllReviews = (req, res) => {
     reviewsModel.find()
-        .sort({ reviewDate: -1 }) 
+        .sort({ reviewDate: -1 })
         .then(docs => {
             res.json(docs);
         })
@@ -16,7 +16,7 @@ exports.getAllReviews = (req, res) => {
 
 exports.getReviewsByRating = (req, res) => {
     reviewsModel.find()
-        .sort({ rating: -1 }) 
+        .sort({ rating: -1 })
         .then(docs => {
             res.json(docs);
         })
@@ -33,7 +33,7 @@ exports.getReviewsByUser = (req, res) => {
             path: 'user',
             select: '-password -salt' // Escludi password e salt
         })
-        .sort({ reviewDate: -1 }) 
+        .sort({ reviewDate: -1 })
         .then(docs => {
             if (docs.length === 0) {
                 return res.status(404).send('No reviews found for this user');
@@ -54,7 +54,7 @@ exports.getReviewsByMovie = (req, res) => {
             path: 'user',
             select: '-password -salt' // Escludi password e salt
         })
-        .sort({ reviewDate: -1 }) 
+        .sort({ reviewDate: -1 })
         .then(docs => {
             if (docs.length === 0) {
                 return res.status(200).send("");
@@ -66,29 +66,28 @@ exports.getReviewsByMovie = (req, res) => {
         });
 };
 
-exports.createReview = (req, res) => {
-    exports.createReview = async (req, res) => {
-        try {
-            const review = new reviewsModel(req.body);
-            const savedReview = await review.save();
-    
-            const admins = await usersModel.find({ isAdmin: true }, '_id');
-    
-            if (admins.length > 0) {
-                const notifications = admins.map(admin => ({
-                    user: admin._id,
-                    text: "Nuova recensione pubblicata",
-                    resource: savedReview._id
-                }));
-    
-                await notificationsModel.insertMany(notifications);
-            }
-    
-            res.status(201).json(savedReview);
-        } catch (err) {
-            res.status(500).send(err);
+exports.createReview = async (req, res) => {
+    try {
+        const review = new reviewsModel(req.body);
+        const savedReview = await review.save();
+
+        const admins = await usersModel.find({ isAdmin: true }, '_id');
+
+        if (admins.length > 0) {
+            const notifications = admins.map(admin => ({
+                user: admin._id,
+                text: "Nuova recensione pubblicata",
+                resource: savedReview._id
+            }));
+
+            await notificationsModel.insertMany(notifications);
         }
-    };
+
+        res.status(201).json(savedReview);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+
 };
 
 exports.readReview = (req, res) => {
@@ -133,21 +132,23 @@ exports.deleteReview = (req, res) => {
 exports.getAverageRatingByMovie = (req, res) => {
     const movieId = req.params.movieId;
     reviewsModel.aggregate([
-        { $match: { movie: mongoose.Types.ObjectId.createFromHexString(movieId)} }, 
-        { $group: { 
-            _id: "$movie", 
-            averageRating: { $avg: "$rating" } 
-        } }
-    ])
-    .then(result => {
-        if (result.length === 0) {
-            return res.json({ averageRating: "No Recensioni" });
+        { $match: { movie: mongoose.Types.ObjectId.createFromHexString(movieId) } },
+        {
+            $group: {
+                _id: "$movie",
+                averageRating: { $avg: "$rating" }
+            }
         }
-        return res.json({ averageRating: result[0].averageRating.toString() });
-    })
-    .catch(err => {
-        res.status(500).send(err);
-    });
+    ])
+        .then(result => {
+            if (result.length === 0) {
+                return res.json({ averageRating: "No Recensioni" });
+            }
+            return res.json({ averageRating: result[0].averageRating.toString() });
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
 };
 
 exports.getReviewByUserAndMovie = (req, res) => {

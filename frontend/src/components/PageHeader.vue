@@ -2,7 +2,7 @@
 import { useUserStore } from '@/stores/user';
 import SimpleButton from './SimpleButton.vue';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { ArrowLeftStartOnRectangleIcon, ArrowRightEndOnRectangleIcon, EllipsisVerticalIcon, HomeIcon, UserCircleIcon, BellIcon } from '@heroicons/vue/16/solid';
 import SearchBar from './SearchBar.vue';
 
@@ -11,13 +11,33 @@ defineProps<{
 }>()
 
 const router = useRouter();
+const user = useUserStore();
+
+const hasNewNotification = ref(false);
+
+onMounted(() => {
+    if (user.isAdmin) {
+        user.socket.on('newReviewNotification', (reviewData) => {
+            console.log('Nuova notifica ricevuta:', reviewData);
+
+            // Segnala la nuova notifica
+            hasNewNotification.value = true;
+
+            // Rimuovi la segnalazione dopo un po' di tempo (es. 5 secondi)
+            setTimeout(() => {
+                hasNewNotification.value = false;
+            }, 5000);
+        });
+    }
+});
+
+function goToNotify() {
+    hasNewNotification.value = false; // Resetta lo stato
+    router.push('/notify');
+}
 
 function goToLogin() {
     router.push('/signon');
-}
-
-function goToNotify() {
-    router.push('/notify');
 }
 
 function goToLoginAndOut() {
@@ -53,7 +73,7 @@ function toggleExpandedMenu() {
             <SimpleButton v-if="logged" content="Home" color="secondary" rounding="small" :handle-click="goToHome">
             </SimpleButton>
             <SimpleButton v-if="logged" content="Notifiche" color="secondary" rounding="small"
-                :handle-click="goToNotify"></SimpleButton>
+                :handle-click="goToNotify" :class="{ 'animate-notify': hasNewNotification }"></SimpleButton>
             <SimpleButton v-if="logged" content="Logout" color="red" rounding="small" :handle-click="goToLoginAndOut">
             </SimpleButton>
             <SimpleButton v-if="!logged" content="Login" color="secondary" rounding="small" :handle-click="goToLogin">
@@ -77,7 +97,8 @@ function toggleExpandedMenu() {
                         <HomeIcon />
                     </SimpleButton>
                     <SimpleButton v-if="logged" title="Notifiche" color="secondary" rounding="full"
-                        :handle-click="goToNotify" size="small" class="aspect-square m-1">
+                        :handle-click="goToNotify" size="small" class="aspect-square m-1"
+                        :class="{ 'animate-notify': hasNewNotification }">
                         <BellIcon />
                     </SimpleButton>
                     <SimpleButton v-if="logged" title="Logout" color="red" rounding="full"
@@ -93,3 +114,19 @@ function toggleExpandedMenu() {
         </div>
     </div>
 </template>
+
+<style scoped>
+.animate-notify {
+    animation: notify-blink 1s ease-in-out infinite;
+}
+
+@keyframes notify-blink {
+    0%, 100% {
+        background-color: #ffcc00; /* Colore giallo */
+    }
+    50% {
+        background-color: #ff6600; /* Colore arancione */
+    }
+}
+</style>
+
