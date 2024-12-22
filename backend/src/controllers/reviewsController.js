@@ -31,7 +31,7 @@ exports.getReviewsByUser = (req, res) => {
     reviewsModel.find({ user: userId })
         .populate({
             path: 'user',
-            select: '-password -salt' // Escludi password e salt
+            select: '-password -salt' 
         })
         .sort({ reviewDate: -1 }) 
         .then(docs => {
@@ -52,8 +52,9 @@ exports.getReviewsByMovie = (req, res) => {
     reviewsModel.find({ movie: movieId })
         .populate({
             path: 'user',
-            select: '-password -salt' // Escludi password e salt
+            select: '-password -salt' 
         })
+        .limit(10) 
         .sort({ reviewDate: -1 }) 
         .then(docs => {
             if (docs.length === 0) {
