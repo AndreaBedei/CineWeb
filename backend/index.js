@@ -20,7 +20,7 @@ mongoose.connect('mongodb+srv://andrea:paperino@progettoweb.fz4bm.mongodb.net/?r
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {cors: {origin: '*'}});
 
 /**
  * @type {Map<String, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>>}
@@ -96,6 +96,6 @@ io.on('connection', (socket) => {
     });
 });
 
-app.listen(3001, () => {
+server.listen(3001, () => {
     console.log('Server listening on port 3001');
 });

@@ -1,3 +1,6 @@
+const { notificationsModel } = require('../models/notificationsModel');
+const { usersModel } = require('../models/usersModel');
+
 exports.notificationsList = (req, res) => {
     notificationsModel.find()
         .populate('user', 'name email') 

@@ -19,25 +19,10 @@ const fetchNotifications = async () => {
     try {
         const response = await axios.get(`http://localhost:3001/notifications/user/${user.userId}`);
         console.log(response.data);
+        notifications.value = response.data;
     } catch (error) {
         console.error('Errore nel caricamento del film', error);
     }
-
-
-    notifications.value = [
-        {
-            id: '1',
-            title: 'Benvenuto!',
-            message: 'Grazie per esserti iscritto.',
-            timestamp: '2024-12-21T10:00:00.000Z',
-        },
-        {
-            id: '2',
-            title: 'Manutenzione prevista',
-            message: 'Il servizio sarà interrotto il 23 dicembre dalle 2 alle 4.',
-            timestamp: '2024-12-20T15:30:00.000Z',
-        },
-    ];
 };
 
 // Formatta la data per una migliore leggibilità
@@ -95,8 +80,7 @@ onMounted(fetchNotifications);
                 </div>
             </li>
         </ul>
-
         <!-- Nessuna notifica -->
-        <p v-else class="text-gray-500 text-center">Non ci sono notifiche da visualizzare.</p>
+        <p v-else class="text-gray-500 text-center bg-gray-50 rounded-lg shadow-md p-4 border border-gray-200">Non ci sono notifiche da visualizzare.</p>
     </section>
 </template>
