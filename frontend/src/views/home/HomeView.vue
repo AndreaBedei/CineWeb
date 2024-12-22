@@ -3,7 +3,7 @@ import { ref, onMounted, onUpdated, watch } from 'vue';
 import Carousel from './MovieCarousel.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../../stores/user';
 import router from '@/router';
 import AddMovieModal from './AddMovieModal.vue';
 import PageModal from '@/components/PageModal.vue';

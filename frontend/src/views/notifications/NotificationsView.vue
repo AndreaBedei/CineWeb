@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../../stores/user';
 import SimpleButton from '@/components/SimpleButton.vue';
 
 interface Notification {
@@ -82,7 +82,6 @@ onMounted(fetchNotifications);
 
                 <!-- Azioni amministratore -->
                 <div v-if="user.isAdmin" class="flex flex-col sm:flex-row mt-4 space-y-2 sm:space-y-0 sm:space-x-2">
-                    <SimpleButton :handle-click="() => editNotification(notification.id)" color="primary" rounding="small" content="Modifica" size="small"/>
                     <SimpleButton :handle-click="() => deleteNotification(notification.id)" color="red" rounding="small" content="Elimina" size="small"/>
                 </div>
             </li>

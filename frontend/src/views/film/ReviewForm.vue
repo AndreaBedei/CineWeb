@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import BaseInput from '@/components/BaseInput.vue';
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../../stores/user';
 import { useRoute } from 'vue-router';
 import Modal from "@/components/PageModal.vue";
 import SimpleButton from '@/components/SimpleButton.vue';

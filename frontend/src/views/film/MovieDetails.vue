@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import SimpleButton from "@/components/SimpleButton.vue";
-import { useUserStore } from "../stores/user";
+import { useUserStore } from "../../stores/user";
 import ModifyMovieModal from "../home/AddMovieModal.vue";
 import PageModal from "@/components/PageModal.vue";
 

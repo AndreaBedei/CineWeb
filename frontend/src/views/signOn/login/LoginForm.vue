@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import BaseInput from '../../../components/BaseInput.vue';
 import Modal from "../../../components/PageModal.vue";
-import { useUserStore } from '@/views/stores/user';
+import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

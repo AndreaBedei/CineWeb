@@ -5,7 +5,7 @@ import Modal from './ModifyModal.vue'
 import PasswordModal from './PasswordModal.vue'
 import ModalOk from '@/components/PageModal.vue'
 import axios from 'axios';
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../../stores/user';
 
 interface Interest {
     _id: string;

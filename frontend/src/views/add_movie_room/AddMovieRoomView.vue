@@ -4,7 +4,7 @@ import MovieRoom from './MovieRoom.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import InputList from '@/components/InputList.vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../../stores/user';
 
 const router = useRouter()
 const user = useUserStore()

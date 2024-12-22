@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { defineStore } from 'pinia'
 import CryptoJS from 'crypto-js';
 import { ref } from 'vue';
+import { io } from 'socket.io-client';
 
 interface Interest {
     _id: string;
@@ -18,6 +19,7 @@ export const useUserStore = defineStore('user', () => {
     const interests = ref([] as Interest[]);
     const isAdmin = ref(false);
     const ready = ref(false);
+    const socket = io('http://localhost:3001');
 
     async function _loadData(userId: string) {
         const response = await axios.get(`http://localhost:3001/users/${userId}`);
@@ -30,6 +32,11 @@ export const useUserStore = defineStore('user', () => {
             profileImg.value = data.profilePicture;
             isAdmin.value = data.isAdmin;
             ready.value = true;
+            if (isAdmin.value) {
+                socket.emit('registerAdmin', userId);
+            } else {
+                socket.emit('registerUser', userId);
+            }
         }
     }
 
@@ -70,6 +77,7 @@ export const useUserStore = defineStore('user', () => {
         interests.value = [];
         isAdmin.value = false;
         ready.value = false;
+        socket.disconnect();
 
         localStorage.removeItem('userId');
     }
@@ -93,5 +101,5 @@ export const useUserStore = defineStore('user', () => {
         return true;
     } 
 
-    return { userId, username, email, name, surname, profileImg, interests, isAdmin, ready, login, logout, refresh, tryLogin }
+    return { userId, username, email, name, surname, profileImg, interests, isAdmin, ready, socket, login, logout, refresh, tryLogin }
 })

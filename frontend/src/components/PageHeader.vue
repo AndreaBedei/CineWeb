@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUserStore } from '@/views/stores/user';
+import { useUserStore } from '@/stores/user';
 import SimpleButton from './SimpleButton.vue';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';

@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import PageHeader from './components/PageHeader.vue';
 import PageFooter from './components/PageFooter.vue';
-import { useUserStore } from './views/stores/user';
+import { useUserStore } from './stores/user';
 import { useRouter } from 'vue-router';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { io } from 'socket.io-client';
+import { watch } from 'vue';
 
 const router = useRouter();
 const user = useUserStore();
-// const registered = ref(false);
 
-// const socket = io('http://localhost:3001');
+
 // const notifications = ref<string[]>([]);
 
 // onMounted(() => {
@@ -25,16 +23,7 @@ watch(router.currentRoute, async (to) => {
     if (!logged && to.path !== '/signon') {
         router.push('/signon');
     }
-    // if (logged && user.isAdmin && !registered.value) {
-    //     registered.value = true;
-    //     socket.emit('registerAdmin');
-    // }
-})
-
-// onUnmounted(() => {
-//   socket.disconnect();
-// });
-
+});
 </script>
 
 <template>

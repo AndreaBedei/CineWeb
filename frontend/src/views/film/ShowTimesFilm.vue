@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../../stores/user';
 import AddShowTimesModal from './AddShowTimesModal.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import dayjs from "dayjs";
