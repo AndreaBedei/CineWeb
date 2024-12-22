@@ -1,10 +1,7 @@
-const { notificationsModel } = require('../models/notificationsModel');
-const { usersModel } = require('../models/usersModel');
-
-// Elenco notifiche
 exports.notificationsList = (req, res) => {
     notificationsModel.find()
-        .populate('user', 'name email') // Mostra nome ed email dell'utente
+        .populate('user', 'name email') 
+        .sort({ timestamp: -1 }) 
         .then(docs => {
             res.json(docs);
         })
@@ -13,7 +10,6 @@ exports.notificationsList = (req, res) => {
         });
 };
 
-// Creazione di una nuova notifica
 exports.createNotification = (req, res) => {
     const newNotification = new notificationsModel(req.body);
     newNotification.save()
@@ -25,7 +21,6 @@ exports.createNotification = (req, res) => {
         });
 };
 
-// Aggiornamento di una notifica
 exports.updateNotification = (req, res) => {
     notificationsModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
         .then(doc => {
@@ -39,7 +34,6 @@ exports.updateNotification = (req, res) => {
         });
 };
 
-// Eliminazione di una notifica
 exports.deleteNotification = (req, res) => {
     notificationsModel.findByIdAndDelete(req.params.id)
         .then(doc => {
@@ -53,10 +47,10 @@ exports.deleteNotification = (req, res) => {
         });
 };
 
-// Notifiche di un utente specifico
 exports.getUserNotifications = (req, res) => {
     notificationsModel.find({ user: req.params.userId })
-        .populate('user', 'name email') // Mostra nome ed email dell'utente
+        .populate('user', 'name email') 
+        .sort({ timestamp: -1 }) 
         .then(docs => {
             res.json(docs);
         })
