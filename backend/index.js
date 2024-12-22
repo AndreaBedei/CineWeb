@@ -10,6 +10,7 @@ const reviewsRouter = require('./src/routes/reviewsRoutes');
 const seatsRouter = require('./src/routes/seatsRoutes');
 const reservationsRouter = require('./src/routes/reservationsRoutes');
 const cinemasRouter = require('./src/routes/cinemasRoutes');
+const notificationsRouter = require('./src/routes/notificationsRoutes');
 const imagesRouter = require('./src/routes/imagesRoutes');
 const path = require('path');
 const http = require('http');
@@ -40,6 +41,7 @@ app.use('/reviews', reviewsRouter);
 app.use('/seats', seatsRouter);
 app.use('/reservations', reservationsRouter);
 app.use('/cinemas', cinemasRouter);
+app.use('/notifications', notificationsRouter);
 app.use('/image', imagesRouter);
 app.use('/img', express.static(path.join(__dirname, 'img')));
 
