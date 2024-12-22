@@ -78,8 +78,17 @@ io.on('connection', (socket) => {
 
     // Assegna notifiche agli admin
     socket.on('newReview', (reviewData) => {
-        adminSockets.forEach((adminSocket) => {
-            adminSocket.emit('newReviewNotification', reviewData);
+        console.log('Nuova recensione ricevuta');
+        adminSockets.forEach((adminSocket, adminId) => {
+            if (adminSocket.connected) {
+                try {
+                    adminSocket.emit('newReviewNotification', reviewData);
+                } catch (error) {
+                    console.error(`Errore nell'invio della notifica a admin ID: ${adminId}`, error);
+                }
+            } else {
+                console.warn(`Socket non connesso per admin ID: ${adminId}`);
+            }
         });
     });
 

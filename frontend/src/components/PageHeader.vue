@@ -16,19 +16,17 @@ const user = useUserStore();
 const hasNewNotification = ref(false);
 
 onMounted(() => {
-    if (user.isAdmin) {
-        user.socket.on('newReviewNotification', (reviewData) => {
-            console.log('Nuova notifica ricevuta:', reviewData);
+    user.socket.on('newReviewNotification', (reviewData) => {
+        console.log('Nuova notifica ricevuta:', reviewData);
 
-            // Segnala la nuova notifica
-            hasNewNotification.value = true;
+        // Segnala la nuova notifica
+        hasNewNotification.value = true;
 
-            // Rimuovi la segnalazione dopo un po' di tempo (es. 5 secondi)
-            setTimeout(() => {
-                hasNewNotification.value = false;
-            }, 5000);
-        });
-    }
+        // Rimuovi la segnalazione dopo un po' di tempo (es. 5 secondi)
+        setTimeout(() => {
+            hasNewNotification.value = false;
+        }, 60000);
+    });
 });
 
 function goToNotify() {
@@ -72,8 +70,15 @@ function toggleExpandedMenu() {
                 :handle-click="goToProfile"></SimpleButton>
             <SimpleButton v-if="logged" content="Home" color="secondary" rounding="small" :handle-click="goToHome">
             </SimpleButton>
-            <SimpleButton v-if="logged" content="Notifiche" color="secondary" rounding="small"
-                :handle-click="goToNotify" :class="{ 'animate-notify': hasNewNotification }"></SimpleButton>
+            <button
+    class="flex items-center gap-2 rounded-lg transition-colors border-solid border-2 px-5 py-3 bg-secondary hover:bg-secondary-dark text-white border-secondary hover:border-secondary-dark"
+    @click="goToNotify"
+    :class="{ 'bg-yellow-500 animate-pulse': hasNewNotification }"
+>
+    <span>Notifiche</span>
+    <BellIcon class="w-6 h-6" />
+</button>
+
             <SimpleButton v-if="logged" content="Logout" color="red" rounding="small" :handle-click="goToLoginAndOut">
             </SimpleButton>
             <SimpleButton v-if="!logged" content="Login" color="secondary" rounding="small" :handle-click="goToLogin">
@@ -114,19 +119,4 @@ function toggleExpandedMenu() {
         </div>
     </div>
 </template>
-
-<style scoped>
-.animate-notify {
-    animation: notify-blink 1s ease-in-out infinite;
-}
-
-@keyframes notify-blink {
-    0%, 100% {
-        background-color: #ffcc00; /* Colore giallo */
-    }
-    50% {
-        background-color: #ff6600; /* Colore arancione */
-    }
-}
-</style>
 

@@ -113,8 +113,7 @@ watch(() => route.query.id, (newId) => {
         placeholder="Scrivi qui la tua recensione"></textarea>
 
       <div class="flex justify-end">
-        <SimpleButton v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red"
-          class="text-white py-2 px-4 rounded-lg hover:bg-red-800 mt-4 mx-2" rounding="small" />
+        <SimpleButton class="mx-1" v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red" rounding="small" />
         <SimpleButton type="submit" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="primary" rounding="small" />
       </div>
     </form>
