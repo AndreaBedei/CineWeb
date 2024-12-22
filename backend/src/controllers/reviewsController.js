@@ -79,7 +79,7 @@ exports.createReview = (req, res) => {
                 const notifications = admins.map(admin => ({
                     user: admin._id,
                     text: "Nuova recensione pubblicata! Premi qui per leggerla.",
-                    resource: savedReview._id
+                    resource: savedReview-movie
                 }));
     
                 await notificationsModel.insertMany(notifications);
