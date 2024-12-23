@@ -144,7 +144,10 @@ exports.getUserInterests = (req, res) => {
             if (!user) {
                 return res.status(404).send('User not found');
             }
-            res.json(user.favoriteGenres); 
+            if (user.isAdmin) {
+                return res.status(403).send('Admins do not have favorite genres');
+            }
+            res.json(user.favoriteGenres);
         })
         .catch(err => {
             res.status(500).send(err);
@@ -154,8 +157,8 @@ exports.getUserInterests = (req, res) => {
 exports.findUsersByGenre = (req, res) => {
     const genreId = req.params.genreId;
 
-    usersModel.find({ favoriteGenres: genreId })
-        .populate('favoriteGenres', 'name') 
+    usersModel.find({ favoriteGenres: genreId, isAdmin: false })
+        .populate('favoriteGenres', 'name')
         .then(users => {
             if (!users.length) {
                 return res.status(404).send('No users found with the specified genre');

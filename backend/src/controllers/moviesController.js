@@ -27,17 +27,34 @@ exports.readMovie = (req, res) => {
         });
 }
 
-exports.createMovie = (req, res) => {
-    const movie = new moviesModel(req.body);
-    movie.save()
-        .then(doc => {
-            doc.populate('genres', 'name') 
-                .then(populatedDoc => res.json(populatedDoc));
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
-}
+exports.createMovie = async (req, res) => {
+    try {
+        const movie = new moviesModel(req.body);
+        const savedMovie = await movie.save();
+
+        const populatedMovie = await savedMovie.populate('genres', 'name').execPopulate();
+
+        const genreIds = populatedMovie.genres.map(genre => genre._id);
+        const interestedUsers = await usersModel.find({
+            favoriteGenres: { $in: genreIds },
+            isAdmin: false
+        }).select('_id'); 
+
+        const uniqueUserIds = [...new Set(interestedUsers.map(user => user._id.toString()))];
+
+        const notifications = uniqueUserIds.map(userId => ({
+            user: userId,
+            text: "E' stato inserito un film di un genere che segui, presto potranno essere pubblicate delle proiezioni! Premi qui per andare alla pagina del film.",
+            resource: savedMovie._id
+        }));
+
+        await notificationsModel.insertMany(notifications);
+
+        res.json(populatedMovie);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
 
 exports.updateMovie = (req, res) => {
     moviesModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
