@@ -6,6 +6,7 @@ import PasswordModal from './PasswordModal.vue'
 import ModalOk from '@/components/PageModal.vue'
 import axios from 'axios';
 import { useUserStore } from '../../stores/user';
+import router from '@/router';
 
 interface Interest {
     _id: string;
@@ -130,6 +131,10 @@ const formatDate = (date: string | number | Date) => {
     return new Intl.DateTimeFormat('it-IT', options).format(new Date(date));
 };
 
+function goToNotifications() {
+    router.push('/notify');
+}
+
 </script>
 
 <template>
@@ -150,13 +155,14 @@ const formatDate = (date: string | number | Date) => {
             </div>
             <div v-if="isCurrentUser" class="flex flex-col space-y-2 mt-4 lg:mt-0 lg:ml-4">
                 <SimpleButton content="Modifica informazioni" color="primary" :outlineOnly="false" :rounded="true"
-                    size="small" bold :disabled="false" @click="openModalProfile" />
+                    size="small" bold :disabled="false" :handle-click="openModalProfile" />
 
                 <SimpleButton content="Modifica password" color="primary" :outlineOnly="false" :rounded="true"
-                    size="small" bold :disabled="false" @click="openModalPassword" />
+                    size="small" bold :disabled="false" :handle-click="openModalPassword" />
 
+                    
                 <SimpleButton content="Vedi Notifiche" color="secondary" :outlineOnly="false" :rounded="true"
-                    size="small" bold :disabled="false" />
+                    size="small" bold :disabled="false" :handle-click="goToNotifications"/>
             </div>
         </div>
 

@@ -6,6 +6,7 @@ import SimpleButton from '@/components/SimpleButton.vue';
 import ErrorAlert from "@/components/ErrorAlert.vue";
 import axios from 'axios';
 import LoadingAlert from '@/components/LoadingAlert.vue';
+import { useUserStore } from '@/stores/user';
 
 
 // Props ricevute
@@ -58,6 +59,7 @@ const year = ref(props.year);
 const msgUser = ref("");
 const upload = ref(false);
 const check = ref(false);
+const user = useUserStore();
 
 // Effettua la richiesta GET per recuperare i generi
 async function fetchGenres() {
@@ -120,6 +122,7 @@ async function addMovie() {
         });
 
         if (response.status === 200) {
+            user.socket.emit('newFilm', { movie: name.value, genres: selectedGenres.value });
             emit('close', true);
         } else {
             msgUser.value = "Errore durante l'aggiunta del film.";

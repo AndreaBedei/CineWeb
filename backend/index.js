@@ -92,6 +92,49 @@ io.on('connection', (socket) => {
         });
     });
 
+    socket.on('newFilm', async (reviewData) => {
+        console.log('Nuovo film ricevuto');
+        console.log(reviewData);
+        reviewData = JSON.parse(reviewData);
+        genres = reviewData.genres;
+
+        const userPromises = genres.map(async (genreId) => {
+            try {
+                const response = await axios.get(`/genre/${genreId}`);
+                console.log(response.data);
+                return response.data.users;
+            } catch (error) {
+                console.error(`Errore durante la chiamata per il genere ${genreId}:`, error);
+                return []; // Restituisci un array vuoto in caso di errore
+            }
+        });
+    
+        try {
+            // Aspetta che tutte le richieste siano completate
+            const usersByGenre = await Promise.all(userPromises);
+    
+            // Unisci tutti gli utenti in un unico array senza duplicati
+            const allUsers = [...new Set(usersByGenre.flat())];
+    
+            // Itera su ogni userSocket
+            userSockets.forEach((userSocket, userId) => {
+                if (userSocket.connected) {
+                    if (allUsers.includes(userId)) {
+                        try {
+                            userSocket.emit('newFilmNotification', reviewData);
+                        } catch (error) {
+                            console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
+                        }
+                    }
+                } else {
+                    console.warn(`Socket non connesso per user ID: ${userId}`);
+                }
+            });
+        } catch (error) {
+            console.error('Errore durante l elaborazione delle notifiche:', error);
+        }
+    });
+
     // Gestione della disconnessione
     socket.on('disconnect', () => {
         if (isAdmin && adminSockets.delete(socket)) {

@@ -18,11 +18,14 @@ const hasNewNotification = ref(false);
 onMounted(() => {
     user.socket.on('newReviewNotification', (reviewData) => {
         console.log('Nuova notifica ricevuta:', reviewData);
-
-        // Segnala la nuova notifica
         hasNewNotification.value = true;
-
-        // Rimuovi la segnalazione dopo un po' di tempo (es. 5 secondi)
+        setTimeout(() => {
+            hasNewNotification.value = false;
+        }, 60000);
+    });
+    user.socket.on('newFilmNotification', (filmData) => {
+        console.log('Nuova notifica ricevuta:', filmData);
+        hasNewNotification.value = true;
         setTimeout(() => {
             hasNewNotification.value = false;
         }, 60000);
