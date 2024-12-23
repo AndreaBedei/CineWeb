@@ -157,4 +157,18 @@ exports.searchMoviesByTitle = (req, res) => {
         });
 };
 
+exports.latestMovies = (req, res) => {
+    moviesModel.find()
+        .sort({ _id: -1 }) // Ordina in ordine decrescente basandoti sull'_id
+        .limit(5) // Limita i risultati agli ultimi 5 film
+        .populate('genres', 'name') // Popola i generi per restituire anche i nomi dei generi
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
+
+
 
