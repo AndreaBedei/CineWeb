@@ -60,8 +60,6 @@ exports.getReservationByID = (req, res) => {
         });
 };
 
-
-
 exports.createReservation = (req, res) => {
     const reservation = new reservationsModel(req.body);
     reservation.save()
@@ -167,12 +165,7 @@ exports.findReservationsByScreening = (req, res) => {
 exports.getPastReservationsByUser = (req, res) => {
     const userId = req.params.userId;
 
-    reservationsModel.find({
-        $and: [
-            { user: userId },
-            { reservationDate: { $lt: new Date() } }
-        ]
-    })
+    reservationsModel.find({ user: userId })
         .populate({
             path: 'screening',
             populate: [
@@ -184,12 +177,17 @@ exports.getPastReservationsByUser = (req, res) => {
             path: 'seats',
             select: 'row column',
         })
-        .sort({ reservationDate: -1 })
         .then(docs => {
-            if (docs.length === 0) {
+            const pastReservations = docs.filter(doc => {
+                const screeningDate = new Date(doc.screening.screeningDate);
+                return screeningDate < new Date(); // Confronto con la data attuale
+            });
+
+            if (pastReservations.length === 0) {
                 return res.status(200).send("");
             }
-            const transformedDocs = docs.map(doc => ({
+
+            const transformedDocs = pastReservations.map(doc => ({
                 ...doc.toObject(),
                 screening: {
                     ...doc.screening,
@@ -197,6 +195,7 @@ exports.getPastReservationsByUser = (req, res) => {
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
             }));
+
             return res.json(transformedDocs);
         })
         .catch(err => {
@@ -207,12 +206,7 @@ exports.getPastReservationsByUser = (req, res) => {
 exports.getFutureReservationsByUser = (req, res) => {
     const userId = req.params.userId;
 
-    reservationsModel.find({
-        $and: [
-            { user: userId },
-            { reservationDate: { $gt: new Date() } }
-        ]
-    })
+    reservationsModel.find({ user: userId })
         .populate({
             path: 'screening',
             populate: [
@@ -224,12 +218,17 @@ exports.getFutureReservationsByUser = (req, res) => {
             path: 'seats',
             select: 'row column',
         })
-        .sort({ reservationDate: 1 })
         .then(docs => {
-            if (docs.length === 0) {
+            const futureReservations = docs.filter(doc => {
+                const screeningDate = new Date(doc.screening.screeningDate);
+                return screeningDate > new Date(); // Confronto con la data attuale
+            });
+
+            if (futureReservations.length === 0) {
                 return res.status(200).send("");
             }
-            const transformedDocs = docs.map(doc => ({
+
+            const transformedDocs = futureReservations.map(doc => ({
                 ...doc.toObject(),
                 screening: {
                     ...doc.screening,
@@ -237,11 +236,10 @@ exports.getFutureReservationsByUser = (req, res) => {
                 },
                 seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
             }));
+
             return res.json(transformedDocs);
         })
         .catch(err => {
             res.status(500).send(err);
         });
 };
-
-
