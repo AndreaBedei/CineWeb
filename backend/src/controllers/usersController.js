@@ -161,7 +161,7 @@ exports.findUsersByGenre = (req, res) => {
         .populate('favoriteGenres', 'name')
         .then(users => {
             if (!users.length) {
-                return res.status(404).send('No users found with the specified genre');
+                return res.status(200);
             }
             res.json(users);
         })
