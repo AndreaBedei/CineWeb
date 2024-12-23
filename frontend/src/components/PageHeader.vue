@@ -16,15 +16,13 @@ const user = useUserStore();
 const hasNewNotification = ref(false);
 
 onMounted(() => {
-    user.socket.on('newReviewNotification', (reviewData) => {
-        console.log('Nuova notifica ricevuta:', reviewData);
+    user.socket.on('newReviewNotification', () => {
         hasNewNotification.value = true;
         setTimeout(() => {
             hasNewNotification.value = false;
         }, 60000);
     });
-    user.socket.on('newFilmNotification', (filmData) => {
-        console.log('Nuova notifica ricevuta:', filmData);
+    user.socket.on('newFilmNotification', () => {
         hasNewNotification.value = true;
         setTimeout(() => {
             hasNewNotification.value = false;

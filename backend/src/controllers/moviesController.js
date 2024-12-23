@@ -1,5 +1,7 @@
 const { moviesModel } = require('../models/moviesModel');
 const { screeningsModel } = require('../models/screeningsModel');
+const { usersModel } = require('../models/usersModel');
+const { notificationsModel } = require('../models/notificationsModel');
 
 exports.moviesList = (req, res) => {
     moviesModel.find()
@@ -31,9 +33,7 @@ exports.createMovie = async (req, res) => {
     try {
         const movie = new moviesModel(req.body);
         const savedMovie = await movie.save();
-
-        const populatedMovie = await savedMovie.populate('genres', 'name').execPopulate();
-
+        const populatedMovie = await savedMovie.populate('genres', 'name');
         const genreIds = populatedMovie.genres.map(genre => genre._id);
         const interestedUsers = await usersModel.find({
             favoriteGenres: { $in: genreIds },

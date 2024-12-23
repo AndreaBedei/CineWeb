@@ -17,8 +17,8 @@ const props = defineProps<{
     userId: string;
 }>()
 
-const userStore = useUserStore();
-const userCurrentId = userStore.userId;
+const user = useUserStore();
+const userCurrentId = user.userId;
 const id = props.userId;
 
 async function getUserData() {
@@ -112,7 +112,7 @@ async function handleFormSubmit(form: { value: { email: string; name: string; su
         showCheckModal('Conferma', "I dati sono stati aggiornati come richiesto!");
         closeModalProfile();
         closeModalPassword();
-        await userStore.refresh()
+        await user.refresh()
     } catch (error) {
         showCheckModal('Errore', "I dati non sono stati aggiornati! Contattare l'assistenza col seguente errore: " + error);
     }
@@ -148,7 +148,7 @@ function goToNotifications() {
                 <p class="text-gray-600">
                     Mail: {{ mail }}
                 </p>
-                <p class="text-gray-600">
+                <p v-if="!user.isAdmin" class="text-gray-600">
                     Interessi: <span v-for="(interest, index) in interests" :key="index">{{ interest.name + " "
                         }}</span>
                 </p>

@@ -1,3 +1,4 @@
+const axios = require('axios');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
@@ -20,7 +21,7 @@ mongoose.connect('mongodb+srv://andrea:paperino@progettoweb.fz4bm.mongodb.net/?r
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {cors: {origin: '*'}});
+const io = new Server(server, { cors: { origin: '*' } });
 
 /**
  * @type {Map<String, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>>}
@@ -61,24 +62,37 @@ io.on('connection', (socket) => {
 
     // Riconosci gli amministratori
     socket.on('registerAdmin', (id) => {
-        // TODO: check se l'utente è effettivamente admin 
+        if (adminSockets.has(id)) {
+            const oldSocket = adminSockets.get(id);
+            if (oldSocket.connected) {
+                oldSocket.disconnect();
+            }
+            adminSockets.delete(id);
+            console.log(`Admin con ID ${id} sostituito.`);
+        }
         userId = id;
         adminSockets.set(id, socket);
         isAdmin = true;
-        console.log('Un admin si è registrato');
+        console.log(`Un admin si è registrato con ID ${id}`);
     });
 
-    // Riconosci gli amministratori
     socket.on('registerUser', (id) => {
+        if (userSockets.has(id)) {
+            const oldSocket = userSockets.get(id);
+            if (oldSocket.connected) {
+                oldSocket.disconnect();
+            }
+            userSockets.delete(id);
+            console.log(`Utente con ID ${id} sostituito.`);
+        }
         userId = id;
         userSockets.set(id, socket);
         isAdmin = false;
-        console.log('Un admin si è registrato');
+        console.log(`Un utente si è registrato con ID ${id}`);
     });
 
     // Assegna notifiche agli admin
     socket.on('newReview', (reviewData) => {
-        console.log('Nuova recensione ricevuta');
         adminSockets.forEach((adminSocket, adminId) => {
             if (adminSocket.connected) {
                 try {
@@ -92,36 +106,27 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('newFilm', async (reviewData) => {
-        console.log('Nuovo film ricevuto');
-        console.log(reviewData);
-        reviewData = JSON.parse(reviewData);
-        genres = reviewData.genres;
-
+    socket.on('newFilm', async (film) => {
+        genres = film.genres;
         const userPromises = genres.map(async (genreId) => {
             try {
-                const response = await axios.get(`/genre/${genreId}`);
-                console.log(response.data);
-                return response.data.users;
+                const response = await axios.get(`http://localhost:3001/users/genre/${genreId._id}`);
+                const userIds = response.data.map(user => user._id);
+                return userIds;
             } catch (error) {
-                console.error(`Errore durante la chiamata per il genere ${genreId}:`, error);
+                console.error(`Errore durante la chiamata per il genere ${genreId._id}:`, error);
                 return []; // Restituisci un array vuoto in caso di errore
             }
         });
-    
+
         try {
-            // Aspetta che tutte le richieste siano completate
             const usersByGenre = await Promise.all(userPromises);
-    
-            // Unisci tutti gli utenti in un unico array senza duplicati
             const allUsers = [...new Set(usersByGenre.flat())];
-    
-            // Itera su ogni userSocket
             userSockets.forEach((userSocket, userId) => {
                 if (userSocket.connected) {
                     if (allUsers.includes(userId)) {
                         try {
-                            userSocket.emit('newFilmNotification', reviewData);
+                            userSocket.emit('newFilmNotification', film);
                         } catch (error) {
                             console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
                         }

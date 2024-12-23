@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUpdated, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import Carousel from './MovieCarousel.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
@@ -16,21 +16,24 @@ interface Movie {
   rating?: number;
 }
 
-const movieCarousels = ref<{ title: string; movies: Movie[] }[]>([]); // Array per i caroselli
+const movieCarousels = ref(new Map<string, Movie[]>());
 
 const loaded = ref(false);
 const modalFilm = ref(false);
 const updateOk = ref(false);
+
+function addCarousel(title: string, movies: Movie[]) {
+    const newCarousels = new Map(movieCarousels.value);
+    newCarousels.set(title, movies);
+    movieCarousels.value = newCarousels; // Immutabile: sostituisci l'intera struttura
+}
 
 const fetchMoviesByInterest = async (interestId: string, interestName: string) => {
   try {
     const response = await axios.get(`http://localhost:3001/movies/genre/${interestId}`);
     if (response.data) {
       if (response.data.length > 0 && !user.isAdmin) {
-        movieCarousels.value.push({
-          title: `Di categoria ${interestName}`,
-          movies: response.data,
-        });
+        addCarousel(`Di categoria ${interestName}`, response.data);
       }
     }
   } catch (error) {
@@ -39,15 +42,12 @@ const fetchMoviesByInterest = async (interestId: string, interestName: string) =
 };
 
 const fetchMovies = async () => {
-  movieCarousels.value = [];
+  movieCarousels.value = new Map<string, Movie[]>();
   try {
     // Nuove uscite
     const newReleasesResponse = await axios.get('http://localhost:3001/movies/available');
     if (newReleasesResponse.data) {
-      movieCarousels.value.push({
-        title: 'Nuove uscite',
-        movies: newReleasesResponse.data,
-      });
+      addCarousel('Nuove uscite', newReleasesResponse.data);
     }
 
     // Carica film per ciascun interesse
@@ -60,7 +60,7 @@ const fetchMovies = async () => {
 };
 
 function goToProfile() {
-  router.push('/profile');
+  router.push(`/profile/${user.userId}`);
 }
 
 function openModalAddMovie() {
@@ -83,14 +83,7 @@ onMounted(() => {
 });
 
 
-onUpdated(() => {
-  if (!loaded.value && user.ready) {
-    fetchMovies();
-    loaded.value = true;
-  }
-});
-
-watch(user, () => {
+watch(() => user.ready, () => {
   if (user.ready) {
     fetchMovies();
     loaded.value = true;
@@ -99,17 +92,17 @@ watch(user, () => {
 </script>
 
 <template>
-  <PageModal v-if="updateOk" :confirm="false" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
+  <PageModal v-if="updateOk" :confirm="false" title="Richiesta ricevuta" message="La sua operazione è stata eseguita con successo." @closeModal="updateOk = false" />
   <div class="p-4 w-full bg-secondary-light">
     <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
     <div class="flex justify-end">
       <SimpleButton v-if="user.isAdmin" content="Aggiungi film" color="primary" rounding="small" :handle-click="openModalAddMovie" />
       <AddMovieModal v-if="user.isAdmin && modalFilm" @close="closeModal" />
     </div>
-    <div v-for="carousel in movieCarousels" :key="carousel.title">
-      <Carousel :title="carousel.title" :movies="carousel.movies" />
+    <div v-for="(title) in movieCarousels" :key="title[0]">
+      <Carousel :title="title[0]" :movies="title[1]" />
     </div>
-    <SimpleButton v-if="user.interests.length == 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
+    <SimpleButton v-if="movieCarousels.size !== 0 && user.interests.length === 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
   </div>
 </template>
 

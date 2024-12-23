@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import BaseInput from '@/components/BaseInput.vue';
 import axios from 'axios';
 import ErrorAlert from "@/components/ErrorAlert.vue";
+import { useUserStore } from '@/stores/user';
 
 const props = defineProps<{
     title: string;
@@ -17,6 +18,7 @@ const msgUser = ref('');
 const selectedFile = ref<File | null>(null);
 const selectedInterests = ref<{ _id: string; name: string }[]>(props.interests.map((interest) => ({ _id: interest._id, name: interest.name })));
 const availableInterests = ref<{ _id: string; name: string }[]>([]);
+const user = useUserStore();
 
 const emit = defineEmits(['closeModal', 'submitForm']);
 
@@ -135,7 +137,7 @@ async function uploadImage() {
                 </div>
 
 
-                <section>
+                <section v-if="!user.isAdmin">
                     <p class="block text-primary-dark font-semibold mb-2">
                         I tuoi interessi (max {{ maxInterests }})
                     </p>
