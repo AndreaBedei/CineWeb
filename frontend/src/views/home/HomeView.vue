@@ -44,10 +44,15 @@ const fetchMoviesByInterest = async (interestId: string, interestName: string) =
 const fetchMovies = async () => {
   movieCarousels.value = new Map<string, Movie[]>();
   try {
-    // Nuove uscite
+
+    const newMovies = await axios.get('http://localhost:3001/movies/latest');
+    if (newMovies.data) {
+      addCarousel('Nuovi film', newMovies.data);
+    }
+
     const newReleasesResponse = await axios.get('http://localhost:3001/movies/available');
     if (newReleasesResponse.data) {
-      addCarousel('Nuove uscite', newReleasesResponse.data);
+      addCarousel('Prossime proiezioni', newReleasesResponse.data);
     }
 
     // Carica film per ciascun interesse

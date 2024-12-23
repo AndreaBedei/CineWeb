@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useUserStore } from '../../stores/user';
 import SimpleButton from '@/components/SimpleButton.vue';
 import axios from 'axios';
+import router from '@/router';
 
 const user = useUserStore();
 interface CustomNotification {
@@ -46,6 +47,10 @@ const deleteNotification = async (id: string) => {
     }
 };
 
+function goToMovie(id: string) {
+    router.push({ name: 'movie', query: { id } });
+}
+
 // Carica le notifiche all'avvio
 onMounted(fetchNotifications);
 </script>
@@ -59,26 +64,23 @@ onMounted(fetchNotifications);
         <!-- Lista notifiche -->
         <ul v-if="notifications.length > 0" class="space-y-4">
             <li v-for="notification in notifications" :key="notification._id"
-                class="bg-gray-50 rounded-lg shadow-md p-4 border border-gray-200 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
-                :aria-label="'Notifica ' + notification._id">
-                <router-link :to="{ name: 'movie', query: { id: notification.resource } }"
-                    class="block text-gray-700 hover:text-blue-600" role="link">
-                    <p class="text-sm text-gray-600">
-                        <span class="font-bold"></span>
-                    </p>
-                    <p class="text-sm text-gray-500 mt-2">
-                        <span class="font-bold">Messaggio:</span> {{ notification.text }}
-                    </p>
-                    <p class="text-sm text-gray-400 mt-2">
-                        <span class="font-bold">Ricevuto il:</span> {{ formatDate(notification.timestamp) }}
-                    </p>
-                </router-link>
-                    <!-- Azioni amministratore -->
-                    <div v-if="user.isAdmin"
-                        class="flex flex-col sm:flex-row mt-4 sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-                        <SimpleButton :handle-click="() => deleteNotification(notification._id)" color="red"
-                            rounding="small" content="Elimina" size="small" />
-                    </div>
+                class="bg-gray-50 rounded-lg shadow-md p-4 border border-gray-200 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                :aria-label="'Notifica ' + notification._id" @click="() => goToMovie(notification.resource)"
+                role="link">
+                <p class="text-sm text-gray-600">
+                    <span class="font-bold"></span>
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                    <span class="font-bold">Messaggio:</span> {{ notification.text }}
+                </p>
+                <p class="text-sm text-gray-400 mt-2">
+                    <span class="font-bold">Ricevuto il:</span> {{ formatDate(notification.timestamp) }}
+                </p>
+                <!-- Azioni amministratore -->
+                <div class="flex flex-col sm:flex-row mt-4 sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                    <SimpleButton @click.stop="() => deleteNotification(notification._id)" color="red" rounding="small"
+                        content="Elimina" size="small" />
+                </div>
             </li>
         </ul>
         <!-- Nessuna notifica -->

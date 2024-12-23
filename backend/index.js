@@ -140,6 +140,20 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('changeScreening', (movie) => {
+        userSockets.forEach((userSocket, userId) => {
+            if (userSocket.connected) {
+                try {
+                    userSocket.emit('newScreeningNotification', movie);
+                } catch (error) {
+                    console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
+                }
+            } else {
+                console.warn(`Socket non connesso per user ID: ${userId}`);
+            }
+        });
+    });
+
     // Gestione della disconnessione
     socket.on('disconnect', () => {
         if (isAdmin && adminSockets.delete(socket)) {

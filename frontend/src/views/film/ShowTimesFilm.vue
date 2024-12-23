@@ -100,6 +100,7 @@ async function deleteScreen() {
     if (response.status === 200) {
         title.value ="Conferma eliminazione" 
         message.value = "Proiezione eliminata con successo"
+        user.socket.emit('changeScreening', { movie: props.movie });
     } else {
         title.value ="Errore eliminazione" 
         message.value = "Proiezione non eliminata!!!"

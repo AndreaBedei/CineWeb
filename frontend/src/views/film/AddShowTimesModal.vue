@@ -8,6 +8,7 @@ import LoadingAlert from '@/components/LoadingAlert.vue';
 import ErrorAlert from "@/components/ErrorAlert.vue";
 import "dayjs/locale/it"; // Importa la localizzazione italiana
 import OkAlert from "@/components/OkAlert.vue";
+import { useUserStore } from "@/stores/user";
 dayjs.locale("it"); // Imposta la lingua italiana
 
 const props = defineProps({
@@ -77,6 +78,7 @@ const price = ref(props.priceV); // Prezzo del biglietto
 const newProjection = ref({ hour: props.h, minute: props.m }); // Orario della nuova proiezione
 const projections = ref<Projection[]>([]); // Proiezioni per la sala selezionata
 const isModalOpen = ref(false); // Stato del modale
+const user = useUserStore();
 changeDate(selectedDate.value);
 
 interface Projection {
@@ -177,6 +179,7 @@ async function addProjection() {
         } else if (response.status === 200) {
             msgUserOk.value = "Proiezione modificata con successo.";
             getScreeningsByDate(selectedRoom.value);
+            user.socket.emit('changeScreening', { movie: props.movie });
             emit('update');
         } else if (screeningId.value === "") {
             msgUserError.value = "Errore durante l'inserimento della proiezione.";
@@ -272,7 +275,7 @@ onUnmounted(() => {
       style="max-height: 90vh;"
     >
             <header class="flex justify-between items-center bg-primary text-white px-4 py-1">
-                <h4 class="text-lg font-semibold">Nuova Proiezione Per Film "{{ movie?.title }}"</h4>
+                <h4 class="text-lg font-semibold">{{ screeningId === '' ? 'Nuova' : 'Modifica' }} Proiezione Per Film "{{ movie?.title }}"</h4>
                 <button @click="closeModal" class="text-white hover:text-gray-200">
                     ✕
                 </button>

@@ -7,8 +7,10 @@ import ReviewForm from './ReviewForm.vue';
 import ReviewList from './ReviewList.vue';
 import { useRoute } from 'vue-router';
 import IFrameComponent from './IFrameComponent.vue';
+import { useUserStore } from '@/stores/user';
 
 const route = useRoute();
+const user = useUserStore();
 const movieId = ref(route.query.id); // Sostituisci con un ID dinamico
 const movie = ref(null);
 const reviews = ref([]);
@@ -70,7 +72,7 @@ watch(() => route.query.id, (newId) => {
     <MovieDetails v-if="movie" :movie="movie" @updateVideo="updateVideo" />
     <Showtimes v-if="movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
-    <ReviewForm @update="updateReviews"/>
-    <ReviewList v-if="reviews" :reviews="reviews" />
+    <ReviewForm v-if="!user.isAdmin && movie" @update="updateReviews"/>
+    <ReviewList v-if="movie && reviews" :reviews="reviews" />
   </div>
 </template>
