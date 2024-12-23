@@ -123,6 +123,7 @@ onMounted(async () => {
     getUserData();
     pastReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/past`)).data;
     futureReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/future`)).data;
+    console.log(futureReservation.value);
 });
 
 

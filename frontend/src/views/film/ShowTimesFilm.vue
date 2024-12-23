@@ -99,12 +99,15 @@ async function deleteScreen() {
         title.value ="Conferma eliminazione" 
         message.value = "Proiezione eliminata con successo"
         user.socket.emit('changeScreening', { screening: screeningId.value});
+        screeningId.value = '';
+        elimination.value = false;
     } else {
         title.value ="Errore eliminazione" 
         message.value = "Proiezione non eliminata!!!"
+        screeningId.value = '';
+        elimination.value = false;
     }
-    screeningId.value = '';
-    elimination.value = false;
+
   } catch (error) {
     console.error('Errore nel caricamento degli orari', error);
   }

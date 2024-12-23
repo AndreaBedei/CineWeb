@@ -143,14 +143,14 @@ io.on('connection', (socket) => {
     socket.on('changeScreening', async (screening) => {
         console.log("Gle screening sono:",screening);
         try {
-            const response = await axios.get(`http://localhost:3001/reservations/screening/${screening}`);
+            const response = await axios.get(`http://localhost:3001/reservations/screening/${screening.screening}`);
             const userIds = response.data.map(data => data.user);
             console.log("Gli user sono:",userIds);
             userSockets.forEach((userSocket, userId) => {
                 if (userSocket.connected) {
                     if (userIds.includes(userId)) {
                         try {
-                            userSocket.emit('newFilmNotification', screening);
+                            userSocket.emit('newFilmNotification', screening.screening);
                         } catch (error) {
                             console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
                         }
@@ -160,7 +160,7 @@ io.on('connection', (socket) => {
                 }
             });
         } catch (error) {
-            console.error(`Errore durante la chiamata per il genere ${genreId._id}:`, error);
+            console.error(`Errore durante la chiamata:`, error);
             return []; // Restituisci un array vuoto in caso di errore
         }
 
