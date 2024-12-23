@@ -1,8 +1,6 @@
 const { screeningsModel } = require('../models/screeningsModel');
-const { moviesModel } = require('../models/moviesModel');
-const { cinemaHallsModel } = require('../models/cinemaHallsModel');
 const { reservationsModel } = require('../models/reservationsModel');
-const { seatsModel } = require('../models/seatsModel');
+const { notificationsModel } = require('../models/notificationsModel');
 
 exports.screeningsList = (req, res) => {
     screeningsModel.find()
@@ -43,32 +41,93 @@ exports.createScreening = (req, res) => {
 }
 
 exports.updateScreening = (req, res) => {
-    screeningsModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .populate('movie', 'title')
-        .populate('cinemaHall', 'name')
-        .then(doc => {
-            if (!doc) {
-                return res.status(404).send('Screening not found');
-            }
-            res.json(doc);
+    const screeningId = req.params.id;
+    const updatedData = req.body;  
+
+    reservationsModel.find({ screening: screeningId })
+        .then(reservations => {
+            reservations.forEach(reservation => {
+                screeningsModel.findById(screeningId)
+                    .populate('movie') 
+                    .then(screening => {
+                        const filmId = screening.movie._id; 
+                        const userId = reservation.user; 
+
+                        const notificationText = "Attenzione, una tua prenotazione ha subito qualche modifica da un amministratore (orario, sala e prezzo potrebbero essere cambiati). Premi qui per andare alla pagina del film interessato.";
+
+                        const newNotification = new notificationsModel({
+                            user: userId,
+                            text: notificationText,
+                            resource: filmId
+                        });
+
+                        newNotification.save()
+                            .catch(err => console.error('Error creating notification:', err));
+                    })
+                    .catch(err => {
+                        console.error('Error finding screening:', err);
+                    });
+            });
+
+            screeningsModel.findByIdAndUpdate(screeningId, updatedData, { new: true })
+                .then(updatedScreening => {
+                    res.json(updatedScreening);
+                })
+                .catch(err => {
+                    res.status(500).send('Error updating screening');
+                });
         })
         .catch(err => {
-            res.status(500).send(err);
+            res.status(500).send('Error finding reservations');
         });
-}
+};
 
 exports.deleteScreening = (req, res) => {
-    screeningsModel.findByIdAndDelete(req.params.id)
-        .then(doc => {
-            if (!doc) {
-                return res.status(404).send('Screening not found');
-            }
-            res.json({ message: 'Screening deleted' });
+    const screeningId = req.params.id;
+
+    reservationsModel.find({ screening: screeningId })
+        .then(reservations => {
+            reservations.forEach(reservation => {
+                screeningsModel.findById(screeningId)
+                    .populate('movie') 
+                    .then(screening => {
+                        const filmId = screening.movie._id; 
+                        const filmName = screening.movie.title; 
+                        const reservationDate = reservation.date; 
+                        const userId = reservation.user; 
+
+                        const notificationText = `Ci dispiace informarti che la tua proiezione per il film ${filmName} del ${reservationDate} è stata annullata da un amministratore! Come previsto, sarai interamente rimborsato. Premi qui per andare alla pagina del film interessato.`;
+
+                        const newNotification = new notificationsModel({
+                            user: userId,
+                            text: notificationText,
+                            resource: filmId
+                        });
+
+                        newNotification.save()
+                            .then(() => {
+                                reservationsModel.findByIdAndDelete(reservation._id)
+                                    .catch(err => console.error('Error deleting reservation:', err));
+                            })
+                            .catch(err => console.error('Error creating notification:', err));
+                    })
+                    .catch(err => {
+                        console.error('Error finding screening:', err);
+                    });
+            });
+
+            screeningsModel.findByIdAndDelete(screeningId)
+                .then(() => {
+                    res.json({ message: 'Screening and associated reservations deleted successfully' });
+                })
+                .catch(err => {
+                    res.status(500).send('Error deleting screening');
+                });
         })
         .catch(err => {
-            res.status(500).send(err);
+            res.status(500).send('Error finding reservations');
         });
-}
+};
 
 exports.findScreeningsByMovie = async (req, res) => {
     try {
