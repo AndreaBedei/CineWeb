@@ -95,16 +95,16 @@ function openModalAddShowTimesWithParams(cinemaN: string, cinemaHallN: string, s
 async function deleteScreen() {
   try {
     const response = await axios.delete(`http://localhost:3001/screenings/${screeningId.value}`);
-    screeningId.value = '';
-    elimination.value = false;
     if (response.status === 200) {
         title.value ="Conferma eliminazione" 
         message.value = "Proiezione eliminata con successo"
-        user.socket.emit('changeScreening', { movie: props.movie });
+        user.socket.emit('changeScreening', { screening: screeningId.value});
     } else {
         title.value ="Errore eliminazione" 
         message.value = "Proiezione non eliminata!!!"
     }
+    screeningId.value = '';
+    elimination.value = false;
   } catch (error) {
     console.error('Errore nel caricamento degli orari', error);
   }
@@ -177,9 +177,9 @@ function updateShowTimes() {
                   class="flex flex-wrap justify-center items-center py-2 px-1 text-center gap-2">
                   <SimpleButton v-if="isFutureDate(screening.screeningDate) && !user.isAdmin" class="mx-1" size="small"
                     rounding="small" content="Prenota" color="primary" :handle-click="booking" />
-                  <div v-if="user.isAdmin" class="flex flex-col gap-1">
+                    <div v-if="user.isAdmin" class="flex flex-col sm:flex-row items-center gap-1">
                     <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small" rounding="small"
-                      content="Modifica" color="secondary"
+                      content="Modifica" color="secondary" class="mx-1"
                       :handle-click="() => openModalAddShowTimesWithParams(cinema, screening.cinemaHallId, screening.screeningDate, screening.ticketPrice.toFixed(2), screening.screeningId)" />
                     <SimpleButton size="small" rounding="small" content="Elimina" color="red" :handle-click="() => openModalCheck(screening.screeningId)" />
                   </div>

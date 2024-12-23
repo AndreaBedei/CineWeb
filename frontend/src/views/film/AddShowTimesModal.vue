@@ -179,7 +179,7 @@ async function addProjection() {
         } else if (response.status === 200) {
             msgUserOk.value = "Proiezione modificata con successo.";
             getScreeningsByDate(selectedRoom.value);
-            user.socket.emit('changeScreening', { movie: props.movie });
+            user.socket.emit('changeScreening', { screening: screeningId.value });
             emit('update');
         } else if (screeningId.value === "") {
             msgUserError.value = "Errore durante l'inserimento della proiezione.";

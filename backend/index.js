@@ -140,18 +140,30 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('changeScreening', (movie) => {
-        userSockets.forEach((userSocket, userId) => {
-            if (userSocket.connected) {
-                try {
-                    userSocket.emit('newScreeningNotification', movie);
-                } catch (error) {
-                    console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
+    socket.on('changeScreening', async (screening) => {
+        console.log("Gle screening sono:",screening);
+        try {
+            const response = await axios.get(`http://localhost:3001/reservations/screening/${screening}`);
+            const userIds = response.data.map(data => data.user);
+            console.log("Gli user sono:",userIds);
+            userSockets.forEach((userSocket, userId) => {
+                if (userSocket.connected) {
+                    if (userIds.includes(userId)) {
+                        try {
+                            userSocket.emit('newFilmNotification', screening);
+                        } catch (error) {
+                            console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
+                        }
+                    }
+                } else {
+                    console.warn(`Socket non connesso per user ID: ${userId}`);
                 }
-            } else {
-                console.warn(`Socket non connesso per user ID: ${userId}`);
-            }
-        });
+            });
+        } catch (error) {
+            console.error(`Errore durante la chiamata per il genere ${genreId._id}:`, error);
+            return []; // Restituisci un array vuoto in caso di errore
+        }
+
     });
 
     // Gestione della disconnessione
