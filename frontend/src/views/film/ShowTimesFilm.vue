@@ -94,18 +94,16 @@ function openModalAddShowTimesWithParams(cinemaN: string, cinemaHallN: string, s
 
 async function deleteScreen() {
   try {
+    user.socket.emit('changeScreening', { screening: screeningId.value});
     const response = await axios.delete(`http://localhost:3001/screenings/${screeningId.value}`);
+    screeningId.value = '';
+    elimination.value = false;
     if (response.status === 200) {
         title.value ="Conferma eliminazione" 
         message.value = "Proiezione eliminata con successo"
-        user.socket.emit('changeScreening', { screening: screeningId.value});
-        screeningId.value = '';
-        elimination.value = false;
     } else {
         title.value ="Errore eliminazione" 
         message.value = "Proiezione non eliminata!!!"
-        screeningId.value = '';
-        elimination.value = false;
     }
 
   } catch (error) {

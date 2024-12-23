@@ -68,12 +68,10 @@ io.on('connection', (socket) => {
                 oldSocket.disconnect();
             }
             adminSockets.delete(id);
-            console.log(`Admin con ID ${id} sostituito.`);
         }
         userId = id;
         adminSockets.set(id, socket);
         isAdmin = true;
-        console.log(`Un admin si è registrato con ID ${id}`);
     });
 
     socket.on('registerUser', (id) => {
@@ -83,15 +81,12 @@ io.on('connection', (socket) => {
                 oldSocket.disconnect();
             }
             userSockets.delete(id);
-            console.log(`Utente con ID ${id} sostituito.`);
         }
         userId = id;
         userSockets.set(id, socket);
         isAdmin = false;
-        console.log(`Un utente si è registrato con ID ${id}`);
     });
 
-    // Assegna notifiche agli admin
     socket.on('newReview', (reviewData) => {
         adminSockets.forEach((adminSocket, adminId) => {
             if (adminSocket.connected) {
@@ -141,16 +136,14 @@ io.on('connection', (socket) => {
     });
 
     socket.on('changeScreening', async (screening) => {
-        console.log("Gle screening sono:",screening);
         try {
             const response = await axios.get(`http://localhost:3001/reservations/screening/${screening.screening}`);
             const userIds = response.data.map(data => data.user);
-            console.log("Gli user sono:",userIds);
             userSockets.forEach((userSocket, userId) => {
                 if (userSocket.connected) {
                     if (userIds.includes(userId)) {
                         try {
-                            userSocket.emit('newFilmNotification', screening.screening);
+                            userSocket.emit('newScreeningNotification', screening.screening);
                         } catch (error) {
                             console.error(`Errore nell'invio della notifica a user ID: ${userId}`, error);
                         }

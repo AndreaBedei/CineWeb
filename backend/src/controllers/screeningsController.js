@@ -82,6 +82,7 @@ exports.updateScreening = (req, res) => {
         });
 };
 
+
 exports.deleteScreening = (req, res) => {
     const screeningId = req.params.id;
 
@@ -93,10 +94,14 @@ exports.deleteScreening = (req, res) => {
                     .then(screening => {
                         const filmId = screening.movie._id; 
                         const filmName = screening.movie.title; 
-                        const reservationDate = reservation.date; 
                         const userId = reservation.user; 
 
-                        const notificationText = `Ci dispiace informarti che la tua proiezione per il film ${filmName} del ${reservationDate} è stata annullata da un amministratore! Come previsto, sarai interamente rimborsato. Premi qui per andare alla pagina del film interessato.`;
+                        function formatDate(date) {
+                            const options = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
+                            return new Date(date).toLocaleDateString(undefined, options);
+                        }
+
+                        const notificationText = `Ci dispiace informarti che la tua proiezione per il film ${filmName} del ${formatDate(screening.screeningDate)} è stata annullata da un amministratore! Come previsto, sarai interamente rimborsato. Premi qui per andare alla pagina del film interessato.`;
 
                         const newNotification = new notificationsModel({
                             user: userId,
@@ -131,12 +136,17 @@ exports.deleteScreening = (req, res) => {
 
 exports.findScreeningsByMovie = async (req, res) => {
     try {
-        const screenings = await screeningsModel.find({ movie: req.params.movieId })
-            .populate({
-                path: 'cinemaHall',
-                select: 'name cinema'
-            })
-            .sort({ screeningDate: -1 }); ;
+        const currentDate = new Date(); // Ottieni la data attuale
+
+        const screenings = await screeningsModel.find({ 
+            movie: req.params.movieId, 
+            screeningDate: { $gte: currentDate } // Filtra per date future
+        })
+        .populate({
+            path: 'cinemaHall',
+            select: 'name cinema'
+        })
+        .sort({ screeningDate: 1 }); // Ordina per data crescente
 
         if (screenings.length === 0) {
             return res.status(200).send("");
@@ -162,6 +172,7 @@ exports.findScreeningsByMovie = async (req, res) => {
         res.status(500).send(err);
     }
 };
+
 
 
 exports.findScreeningsByDate = (req, res) => {

@@ -16,15 +16,23 @@ const user = useUserStore();
 const hasNewNotification = ref(false);
 
 onMounted(() => {
-    const notificationTypes = ['newReviewNotification', 'newFilmNotification', 'newScreeningNotification'];
-
-    notificationTypes.forEach(type => {
-        user.socket.on(type, () => {
-            hasNewNotification.value = true;
-            setTimeout(() => {
-                hasNewNotification.value = false;
-            }, 60000);
-        });
+    user.socket.on('newReviewNotification', () => {
+        hasNewNotification.value = true;
+        setTimeout(() => {
+            hasNewNotification.value = false;
+        }, 60000);
+    });
+    user.socket.on('newFilmNotification', () => {
+        hasNewNotification.value = true;
+        setTimeout(() => {
+            hasNewNotification.value = false;
+        }, 60000);
+    });
+    user.socket.on('newScreeningNotification', () => {
+        hasNewNotification.value = true;
+        setTimeout(() => {
+            hasNewNotification.value = false;
+        }, 60000);
     });
 });
 

@@ -42,7 +42,7 @@ async function getUserData() {
 
 // Props o dati passati per il controllo
 const userData = ref(null);
-const isCurrentUser = ref(userCurrentId===id);
+const isCurrentUser = ref(userCurrentId === id);
 const mail = ref("");
 const name = ref("");
 const surname = ref("");
@@ -123,7 +123,6 @@ onMounted(async () => {
     getUserData();
     pastReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/past`)).data;
     futureReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/future`)).data;
-    console.log(futureReservation.value);
 });
 
 
@@ -134,6 +133,10 @@ const formatDate = (date: string | number | Date) => {
 
 function goToNotifications() {
     router.push('/notify');
+}
+
+function goToMovie(ticket: Ticket) {
+    router.push({ path: `/movie`, query: { id: ticket.screening._doc.movie._id } });
 }
 
 </script>
@@ -161,9 +164,9 @@ function goToNotifications() {
                 <SimpleButton content="Modifica password" color="primary" :outlineOnly="false" :rounded="true"
                     size="small" bold :disabled="false" :handle-click="openModalPassword" />
 
-                    
+
                 <SimpleButton content="Vedi Notifiche" color="secondary" :outlineOnly="false" :rounded="true"
-                    size="small" bold :disabled="false" :handle-click="goToNotifications"/>
+                    size="small" bold :disabled="false" :handle-click="goToNotifications" />
             </div>
         </div>
 
@@ -183,7 +186,8 @@ function goToNotifications() {
                     <tbody v-if="Object.keys(futureReservation).length !== 0">
                         <tr v-for="ticket in futureReservation" :key="ticket._id">
                             <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
-                            <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate) }}</td>
+                            <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate)
+                                }}</td>
                             <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>
                             <td headers="hall" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.name }}</td>
                             <td headers="seat" class="border-b p-2">{{ ticket.seats.join(', ') }}</td>
@@ -191,7 +195,8 @@ function goToNotifications() {
                     </tbody>
                     <tbody v-else>
                         <tr>
-                            <td headers="film time cinema action" class="border-b p-2 text-center" colspan="5">Nessuna prenotazione futura</td>
+                            <td headers="film time cinema action" class="border-b p-2 text-center" colspan="5">Nessuna
+                                prenotazione futura</td>
                         </tr>
                     </tbody>
                 </table>
@@ -212,19 +217,19 @@ function goToNotifications() {
                     <tbody v-if="Object.keys(pastReservation).length !== 0">
                         <tr v-for="ticket in pastReservation" :key="ticket._id">
                             <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
-                            <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate) }}</td>
+                            <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate)
+                                }}</td>
                             <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>
                             <td v-if="isCurrentUser" headers="action" class="border-b p-2">
-                                <router-link :to="{ path: `/movie`, query: { id: ticket.screening._doc.movie._id} }" class="block">
-                                    <SimpleButton content="Recensisci" color="green" :outlineOnly="false" :rounded="true"
-                                        size="small" bold :disabled="false" />
-                                </router-link>
+                                <SimpleButton content="Recensisci" color="green" :outlineOnly="false" :rounded="true"
+                                    size="small" bold :disabled="false" :handle-click="() => goToMovie(ticket)" />
                             </td>
                         </tr>
                     </tbody>
                     <tbody v-else>
                         <tr>
-                            <td headers="film time cinema action" class="border-b p-2 text-center" colspan="4">Nessun film visto in passato</td>
+                            <td headers="film time cinema action" class="border-b p-2 text-center" colspan="4">Nessun
+                                film visto in passato</td>
                         </tr>
                     </tbody>
                 </table>
