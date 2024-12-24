@@ -65,15 +65,24 @@ onUpdated(() => {
 })
 
 // Funzione per spostarsi nel carosello (opzionale)
-function scroll(direction: 'left' | 'right') {
-    if (direction == "left") {
-        currentCardIndex.value = Math.max(0, currentCardIndex.value - 1)
-    } else {
-        currentCardIndex.value = Math.min(currentCardIndex.value + 1, cards.value!.length - 1)
+function scroll(direction: 'left' | 'right', event?: Event) {
+    if (event) {
+        event.preventDefault(); // Blocca il comportamento predefinito
     }
 
-    cards.value![currentCardIndex.value]?.$el.scrollIntoView({ behavior: 'smooth', inline: "start", block: "end" });
+    if (direction == 'left') {
+        currentCardIndex.value = Math.max(0, currentCardIndex.value - 1);
+    } else {
+        currentCardIndex.value = Math.min(currentCardIndex.value + 1, cards.value!.length - 1);
+    }
+
+    cards.value![currentCardIndex.value]?.$el.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'start',
+        block: 'nearest'
+    });
 }
+
 </script>
 
 <template>
@@ -87,13 +96,15 @@ function scroll(direction: 'left' | 'right') {
                     :title="movie.title" :rating="movie.rating?.toString()" :movieid="movie._id" />
             </div>
             <button v-if="showLeftButton"
+                type="button"
                 class="absolute top-1/2 left-6 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-10 h-10 hidden group-hover:block"
-                aria-label="Precedente" @click="scroll('left')">
+                aria-label="Precedente" @click.prevent="scroll('left')">
                 ‹
             </button>
             <button v-if="showRightButton"
+                type="button"
                 class="absolute top-1/2 right-6 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-10 h-10 hidden group-hover:block"
-                aria-label="Successivo" @click="scroll('right')">
+                aria-label="Successivo" @click.prevent="scroll('right')">
                 ›
             </button>
         </div>

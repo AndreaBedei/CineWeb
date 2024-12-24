@@ -80,8 +80,8 @@ function openModalModifyMovie() {
 
 async function deleteFilm() {
   try {
-    await axios.delete(`http://localhost:3001/movies/${props.movie._id}`);
-    router.push({ name: "Home" });
+    await axios.delete(`http://localhost:3001/movies/movie/${props.movie._id}`);
+    router.push('/movie');
   } catch (error) {
     console.error("Errore nell'eliminazione del film:", error);
   }

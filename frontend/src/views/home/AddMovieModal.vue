@@ -170,6 +170,8 @@ function extractVideoCode(url: string): string {
     const match = url.match(pattern);
     if (match && match[1]) {
       return match[1]; // Restituisce il codice del video
+    } else {
+        return url;
     }
   }
 
