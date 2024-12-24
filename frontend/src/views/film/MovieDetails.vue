@@ -5,6 +5,7 @@ import SimpleButton from "@/components/SimpleButton.vue";
 import { useUserStore } from "../../stores/user";
 import ModifyMovieModal from "../home/AddMovieModal.vue";
 import PageModal from "@/components/PageModal.vue";
+import router from "@/router";
 
 const emit = defineEmits(["updateVideo"]);
 
@@ -38,6 +39,7 @@ const trailerLink = ref(props.movie.trailerLink);
 const duration = ref(props.movie.duration);
 const year = ref(props.movie.productionYear);
 const user = useUserStore();
+const checkDelete = ref(false);
 
 onMounted(() => {
   fetchMovieDetails(props.movie.title, props.movie.productionYear);
@@ -74,6 +76,15 @@ watch(() => props.movie.title, (newTitle) => {
 
 function openModalModifyMovie() {
   modalFilm.value = true;
+}
+
+async function deleteFilm() {
+  try {
+    await axios.delete(`http://localhost:3001/movies/${props.movie._id}`);
+    router.push({ name: "Home" });
+  } catch (error) {
+    console.error("Errore nell'eliminazione del film:", error);
+  }
 }
 
 function closeModal(update: boolean) {
@@ -165,10 +176,12 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
           </li>
         </ul>
         <div class="flex justify-end w-full mt-4">
+          <SimpleButton class="mx-2" v-if="user.isAdmin" content="Elimina film" color="red" rounding="small" :handle-click="() => checkDelete = true" />
           <SimpleButton v-if="user.isAdmin" content="Aggiorna dati" color="primary" rounding="small" :handle-click="openModalModifyMovie" />
         </div>
       </div>
     </div>
   </section>
   <ModifyMovieModal v-if="user.isAdmin && modalFilm" :movieId="movie._id" :update="true" :year="year" modal-title="Modifica film" :name="title" :poster="poster" :trailerLink="trailerLink" :duration="duration" :genresO="genres" @close="closeModal" @update="updateValue" />
+  <PageModal v-if="checkDelete" :confirm="true" title="Elimina film" message="Sei sicuro di voler eliminare il film?" @closeModal="checkDelete = false" @confirm="deleteFilm" />
 </template>

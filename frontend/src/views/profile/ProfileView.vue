@@ -221,7 +221,7 @@ function goToMovie(ticket: Ticket) {
                                 }}</td>
                             <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>
                             <td v-if="isCurrentUser" headers="action" class="border-b p-2">
-                                <SimpleButton content="Recensisci" color="green" :outlineOnly="false" :rounded="true"
+                                <SimpleButton :content="user.isAdmin ? 'Controlla Recensioni' : 'Recensisci'" color="green" :outlineOnly="false" :rounded="true"
                                     size="small" bold :disabled="false" :handle-click="() => goToMovie(ticket)" />
                             </td>
                         </tr>

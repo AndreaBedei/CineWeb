@@ -78,13 +78,12 @@ function toggleExpandedMenu() {
             <SimpleButton v-if="logged" content="Home" color="secondary" rounding="small" :handle-click="goToHome">
             </SimpleButton>
             <button
-    class="flex items-center gap-2 rounded-lg transition-colors border-solid border-2 px-5 py-3 bg-secondary hover:bg-secondary-dark text-white border-secondary hover:border-secondary-dark"
-    @click="goToNotify"
-    :class="{ 'bg-yellow-500 animate-pulse': hasNewNotification }"
->
-    <span>Notifiche</span>
-    <BellIcon class="w-6 h-6" />
-</button>
+                v-if="logged"
+                class="flex items-center gap-2 rounded-lg transition-colors border-solid border-2 px-5 py-3 bg-secondary hover:bg-secondary-dark text-white border-secondary hover:border-secondary-dark"
+                @click="goToNotify" :class="{ 'bg-yellow-500 animate-pulse': hasNewNotification }">
+                <span>Notifiche</span>
+                <BellIcon class="w-6 h-6" />
+            </button>
 
             <SimpleButton v-if="logged" content="Logout" color="red" rounding="small" :handle-click="goToLoginAndOut">
             </SimpleButton>
@@ -126,4 +125,3 @@ function toggleExpandedMenu() {
         </div>
     </div>
 </template>
-
