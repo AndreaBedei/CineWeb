@@ -136,17 +136,17 @@ exports.deleteScreening = (req, res) => {
 
 exports.findScreeningsByMovie = async (req, res) => {
     try {
-        const currentDate = new Date(); // Ottieni la data attuale
+        const currentDate = new Date(); 
 
         const screenings = await screeningsModel.find({ 
             movie: req.params.movieId, 
-            screeningDate: { $gte: currentDate } // Filtra per date future
+            screeningDate: { $gte: currentDate } 
         })
         .populate({
             path: 'cinemaHall',
             select: 'name cinema'
         })
-        .sort({ screeningDate: 1 }); // Ordina per data crescente
+        .sort({ screeningDate: 1 }); 
 
         if (screenings.length === 0) {
             return res.status(200).send("");
@@ -172,8 +172,6 @@ exports.findScreeningsByMovie = async (req, res) => {
         res.status(500).send(err);
     }
 };
-
-
 
 exports.findScreeningsByDate = (req, res) => {
     const { date } = req.query;
@@ -247,5 +245,3 @@ exports.findScreeningsByCinemaHallAndDate = async (req, res) => {
         res.status(500).send(err);
     }
 };
-
-

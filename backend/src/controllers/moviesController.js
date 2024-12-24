@@ -2,6 +2,9 @@ const { moviesModel } = require('../models/moviesModel');
 const { screeningsModel } = require('../models/screeningsModel');
 const { usersModel } = require('../models/usersModel');
 const { notificationsModel } = require('../models/notificationsModel');
+const { reservationsModel } = require('../models/reservationsModel');
+const { reviewsModel } = require('../models/reviewsModel');
+const mongoose = require('mongoose');
 
 exports.moviesList = (req, res) => {
     moviesModel.find()
@@ -70,31 +73,61 @@ exports.updateMovie = (req, res) => {
         });
 }
 
-exports.deleteMovie = (req, res) => {
-    moviesModel.findByIdAndDelete(req.params.id)
-        .populate('genres', 'name') 
-        .then(doc => {
-            if (!doc) {
-                return res.status(404).send('Movie not found');
-            }
-            res.json({ message: 'Movie deleted' });
-        })
-        .catch(err => {
-            res.status(500).send(err);
-        });
-}
+exports.deleteMovie = async (req, res) => {
+    const movieId = req.params.id;
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        // 1. Trovare tutte le screening con il film specificato
+        const screenings = await screeningsModel.find({ movie: movieId }).session(session);
+
+        // 2. Per ogni screening, eliminare le reservations
+        const screeningIds = screenings.map(screening => screening._id);
+        await reservationsModel.deleteMany({ screening: { $in: screeningIds } }).session(session);
+
+        // 3. Eliminare tutte le screening trovate
+        await screeningsModel.deleteMany({ _id: { $in: screeningIds } }).session(session);
+
+        // 4. Eliminare tutte le recensioni per il film specificato
+        await reviewsModel.deleteMany({ movie: movieId }).session(session);
+
+        // 5. Eliminare tutte le notifiche che hanno il film come risorsa
+        await notificationsModel.deleteMany({ resource: movieId }).session(session);
+
+        // 6. Eliminare il film
+        const movie = await moviesModel.findByIdAndDelete(movieId).session(session);
+
+        if (!movie) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(404).send('Movie not found');
+        }
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.json({ message: 'Movie and related data deleted successfully' });
+    } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
+        res.status(500).send(err);
+    }
+};
+
 
 exports.availableMovies = async (req, res) => {
     try {
         const moviesWithFutureScreenings = await screeningsModel.aggregate([
             {
                 $match: {
-                    screeningDate: { $gt: new Date() } // Solo proiezioni future
+                    screeningDate: { $gt: new Date() } 
                 }
             },
             {
                 $group: {
-                    _id: '$movie' // Raggruppa per movie ID
+                    _id: '$movie' 
                 }
             }
         ]);
@@ -118,12 +151,12 @@ exports.availableMoviesByGenre = async (req, res) => {
         const moviesWithFutureScreenings = await screeningsModel.aggregate([
             {
                 $match: {
-                    screeningDate: { $gt: new Date() } // Solo proiezioni future
+                    screeningDate: { $gt: new Date() } 
                 }
             },
             {
                 $group: {
-                    _id: '$movie' // Raggruppa per movie ID
+                    _id: '$movie' 
                 }
             }
         ]);
@@ -159,9 +192,9 @@ exports.searchMoviesByTitle = (req, res) => {
 
 exports.latestMovies = (req, res) => {
     moviesModel.find()
-        .sort({ _id: -1 }) // Ordina in ordine decrescente basandoti sull'_id
-        .limit(5) // Limita i risultati agli ultimi 5 film
-        .populate('genres', 'name') // Popola i generi per restituire anche i nomi dei generi
+        .sort({ _id: -1 }) 
+        .limit(5) 
+        .populate('genres', 'name') 
         .then(doc => {
             res.json(doc);
         })
@@ -169,6 +202,3 @@ exports.latestMovies = (req, res) => {
             res.status(500).send(err);
         });
 };
-
-
-
