@@ -91,7 +91,7 @@ async function handleSubmit() {
         `http://www.omdbapi.com/?t=${encodeURIComponent(name.value)}&y=${year.value}&apikey=e2b4e2eb`
     );
     if (response.data.Response === 'False') {
-        msgUser.value = "Il nome del film non è stato trovato nell'archivio di OMDB, inserire il titolo corretto.";
+        msgUser.value = "Il nome del film non è stato trovato nell'archivio di OMDB oppure l'anno inserito risulta errato!";
         check.value = false;
         return;
     }

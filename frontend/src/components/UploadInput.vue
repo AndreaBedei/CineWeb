@@ -41,12 +41,17 @@ async function uploadImage() {
     });
 
     if (response.ok) {
-      const data = await response.json();
-      uploadStatus.value = { success: true, message: data.message };
-      emit("fileUploaded", data.imagePath);
+      const data = response.json();
+      data.then((data) => {
+        uploadStatus.value = { success: true, message: data.message };
+        emit("fileUploaded", data.imagePath);
+      });
+      
     } else {
-      const error = await response.json();
-      uploadStatus.value = { success: false, message: error.message || 'Errore durante il caricamento.' };
+      const error = response.json();
+      error.then((error) => {
+        uploadStatus.value = { success: false, message: error.message || 'Errore durante il caricamento.' };
+      });
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {

@@ -61,6 +61,7 @@ function handleSubmit() {
             profilePicture: ''
         });
         uploadImage().then(async (data) => {
+            console.log(data);
             form.value.profilePicture = data;
             emit('submitForm', form);
             emit('closeModal');

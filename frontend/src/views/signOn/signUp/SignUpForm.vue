@@ -78,6 +78,10 @@ async function handleSubmit() {
     }
 
     const result = await axios.post('http://localhost:3001/users', form.value);
+    if (result.status === 204) {
+      showPasswordMismatchModal('Data futura', "La data di nascita inserita è futura. Inserisci una data valida.");
+      return;
+    }
     const hashPassw = hashPassword(password, result.data.salt);
 
     try {

@@ -31,7 +31,7 @@ defineProps({
       />
       <div class="p-3">
         <h3 class="text-lg font-semibold truncate" :title="title">{{ title }}</h3>
-        <p class="text-sm text-gray-500 mt-1">Voto: {{ rating }}</p>
+        <p class="text-sm text-gray-500 mt-1">Voto: {{ parseFloat(rating).toFixed(1) }}</p>
       </div>
     </section>
   </router-link>

@@ -36,7 +36,7 @@ exports.createUser = async (req, res) => {
     }
 
     if (isFutureDate(req.body.birthdate)) {
-        return res.status(400).send('Birthdate cannot be in the future');
+        return res.status(204).send('La data di nasciata non può essere futura');
     }
     
     const newUser = new usersModel(req.body);

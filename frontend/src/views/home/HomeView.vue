@@ -46,7 +46,7 @@ const fetchMovies = async () => {
   try {
 
     const newMovies = await axios.get('http://localhost:3001/movies/latest');
-    if (newMovies.data) {
+    if (newMovies.data && user.isAdmin) {
       addCarousel('Nuovi film', newMovies.data);
     }
 

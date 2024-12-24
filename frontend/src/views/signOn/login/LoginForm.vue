@@ -36,14 +36,15 @@ const form = ref({
 });
 
 async function handleSubmit() {
-
     const res = await user.login(form.value.email, form.value.password);
     if (!res.success) {
         switch (res.errorNum) {
             case 0:
                 showPasswordMismatchModal('Errore', "Mail non registrata");
+                break;
             default:
                 showPasswordMismatchModal('Errore di autenticazione', "Errore: " + res.error?.response?.data);
+                break;
         }
     }else{
         goToHome();
