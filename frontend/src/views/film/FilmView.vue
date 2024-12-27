@@ -37,7 +37,11 @@ const fetchShowtimes = async () => {
 const fetchReviews = async () => {
   try {
     const response = await axios.get(`http://localhost:3001/reviews/screening/${movieId.value}`);
-    reviews.value = response.data;
+    if (response.data){
+      reviews.value = response.data;
+    } else {
+      reviews.value = [];
+    }
   } catch (error) {
     console.error('Errore nel caricamento delle recensioni', error);
   }
@@ -73,6 +77,6 @@ watch(() => route.query.id, (newId) => {
     <Showtimes v-if="movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm v-if="!user.isAdmin && movie" @update="updateReviews"/>
-    <ReviewList v-if="movie && reviews" :reviews="reviews" />
+    <ReviewList v-if="movie" :reviews="reviews" />
   </div>
 </template>

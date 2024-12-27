@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   image: {
     type: String,
     required: true,
@@ -17,6 +17,14 @@ defineProps({
     default: '',
   },
 });
+
+function fixRating(): string {
+  if (props.rating === "No Recensioni"){
+    return "No Recensioni";
+  } else {
+    return parseFloat(props.rating).toFixed(1);
+  }
+}
 </script>
 
 <template>
@@ -31,7 +39,7 @@ defineProps({
       />
       <div class="p-3">
         <h3 class="text-lg font-semibold truncate" :title="title">{{ title }}</h3>
-        <p class="text-sm text-gray-500 mt-1">Voto: {{ parseFloat(rating).toFixed(1) }}</p>
+        <p class="text-sm text-gray-500 mt-1">Voto: {{ fixRating() }}</p>
       </div>
     </section>
   </router-link>
