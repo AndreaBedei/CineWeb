@@ -50,7 +50,6 @@ exports.createUser = async (req, res) => {
 }
 
 exports.updateUser = (req, res) => {
-    // Assicurati che 'favoriteGenres' venga convertito da stringa JSON ad array
     if (req.body.favoriteGenres) {
       req.body.favoriteGenres = JSON.parse(req.body.favoriteGenres);
     }

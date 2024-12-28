@@ -180,7 +180,7 @@ exports.getPastReservationsByUser = (req, res) => {
         .then(docs => {
             const pastReservations = docs.filter(doc => {
                 const screeningDate = new Date(doc.screening.screeningDate);
-                return screeningDate < new Date(); // Confronto con la data attuale
+                return screeningDate < new Date(); 
             });
 
             if (pastReservations.length === 0) {
@@ -221,7 +221,7 @@ exports.getFutureReservationsByUser = (req, res) => {
         .then(docs => {
             const futureReservations = docs.filter(doc => {
                 const screeningDate = new Date(doc.screening.screeningDate);
-                return screeningDate > new Date(); // Confronto con la data attuale
+                return screeningDate > new Date(); 
             });
 
             if (futureReservations.length === 0) {

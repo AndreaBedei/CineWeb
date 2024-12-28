@@ -5,6 +5,8 @@ const controller = require('../controllers/cinemaHallsController');
 router.route('/')
     .get(controller.cinemaHallsList)
     .post(controller.createCinemaHall);
+
+router.get('/details/:cinemaName/:hallName', controller.getCinemaHallDetails);
     
 router.get('/cinema/:cinema', controller.getCinemaHallsByCinema);
 

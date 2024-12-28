@@ -7,7 +7,7 @@ const cinemaSchema = new mongoose.Schema({
         type: String,
         validate: {
             validator: function (v) {
-                return /^\+?[0-9]{7,15}$/.test(v); // Valid international phone number
+                return /^\+?[0-9]{7,15}$/.test(v); 
             },
             message: 'Invalid phone number format.'
         },
