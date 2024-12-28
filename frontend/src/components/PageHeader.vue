@@ -72,7 +72,7 @@ function toggleExpandedMenu() {
 
         <SearchBar v-if="logged" class="flex-grow" />
 
-        <div class="hidden md:flex gap-2 ms-auto">
+        <div class="hidden md:flex gap-2">
             <SimpleButton v-if="logged" content="Profilo" color="secondary" rounding="small"
                 :handle-click="goToProfile"></SimpleButton>
             <SimpleButton v-if="logged" content="Home" color="secondary" rounding="small" :handle-click="goToHome">
@@ -96,7 +96,7 @@ function toggleExpandedMenu() {
                     :class="{ 'aspect-square overflow-hidden': !expanded }">
                     <SimpleButton color="primary" :title="expanded ? 'Chiudi menù azioni' : 'Apri menù azioni'"
                         rounding="full" :handle-click="toggleExpandedMenu" size="small" :bold="true"
-                        class="aspect-square transition-all" :class="{ '-rotate-90 m-1': expanded }">
+                        class="aspect-square !transition-all" :class="{ '-rotate-90 m-1': expanded }">
                         <EllipsisVerticalIcon class="py-0" />
                     </SimpleButton>
                     <SimpleButton v-if="logged" title="Profilo" color="secondary" rounding="full"

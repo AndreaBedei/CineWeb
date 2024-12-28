@@ -6,19 +6,24 @@ const props = withDefaults(
         rows: number,
         cols: number,
         interactive?: boolean
+        occupied?: { row: number, col: number }[]
     }>(),
     {
         interactive: true
     }
 )
 
-type Spot = { row: number, col: number }
+export type Spot = { row: number, col: number }
 
 const emit = defineEmits<{
     (e: 'selectedSpots', selectedSpots: Spot[]): void
 }>()
 
 const selectedSpotsIds: Ref<Map<string, Spot>> = ref(new Map())
+
+function isSpotOccupied(row: number, col: number) {
+    return props.occupied?.find(o => o.row === row && o.col === col) != undefined;
+}
 
 function toggleSelection(row: number, col: number) {
     const key = `${row}-${col}`
@@ -30,8 +35,11 @@ function toggleSelection(row: number, col: number) {
     emit('selectedSpots', [...selectedSpotsIds.value.values()])
 }
 
-function colors(isSelected: boolean) {
-    if (isSelected) {
+function colors(isSelected: boolean, isOccupied: boolean) {
+    if (isOccupied) {
+        return props.interactive ? 'bg-red-500 hover:bg-red-700' : 'bg-red-500'
+    }
+    else if (isSelected) {
         return props.interactive ? 'bg-lime-400 hover:bg-lime-600' : 'bg-lime-400'
     } else {
         return props.interactive ? 'bg-white hover:bg-gray-300' : 'bg-white'
@@ -44,9 +52,11 @@ function colors(isSelected: boolean) {
         <div class="flex-grow flex flex-col gap-1 md:gap-2 rounded-md min-w-[50%] overflow-y-scroll">
             <div class="min-h-3 h-3 rounded-full bg-white mx-10 mb-4"></div>
             <div v-for="row in Array.from(Array(rows).keys())" v-bind:key="row" class="flex flex-shrink-0 overflow-x-scroll w-full gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0">
-                <button v-for="col in Array.from(Array(cols).keys())" v-bind:key="`${row}-${col}`" :disabled="!interactive" @click="toggleSelection(Number(row), col)"
+                <button v-for="col in Array.from(Array(cols).keys())" v-bind:key="`${row}-${col}`"
+                    :disabled="!interactive || isSpotOccupied(row, col)"
+                    @click="toggleSelection(Number(row), col)"
                     class="rounded-md aspect-[0.66] min-w-4 md:min-w-8 max-w-10 min-h-10 max-h-full text-gray-800"
-                    :class="[colors(selectedSpotsIds.has(`${row}-${col}`)), {'ms-auto' : col == 0}, {'me-auto' : col == cols - 1}]" :title="'Riga ' + (Number(row) + 1) + ', colonna ' + (col + 1)">{{ col }}</button>
+                    :class="[colors(selectedSpotsIds.has(`${row}-${col}`), isSpotOccupied(row, col)), {'ms-auto' : col == 0}, {'me-auto' : col == cols - 1}]" :title="'Riga ' + (Number(row) + 1) + ', colonna ' + (col + 1)">{{ col }}</button>
             </div>
         </div>
     </div>

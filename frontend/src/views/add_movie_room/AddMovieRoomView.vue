@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import MovieRoom from './MovieRoom.vue';
+import { ref, watch } from 'vue';
+import MovieRoom from '../edit_halls/MovieRoom.vue';
 import SimpleButton from '@/components/SimpleButton.vue';
 import InputList from '@/components/InputList.vue';
 import { useRouter } from 'vue-router';
@@ -9,9 +9,17 @@ import { useUserStore } from '../../stores/user';
 const router = useRouter()
 const user = useUserStore()
 
-if (!user.isAdmin) {
-    router.push("/")
+// TODO: delete
+
+if (user.ready && !user.isAdmin) {
+    router.push("/denied")
 }
+
+watch(() => user.ready, () => {
+    if (!user.isAdmin) {
+        router.push("/denied")
+    }
+});
 
 const name = ref("")
 const rows = ref("1")

@@ -1,4 +1,4 @@
-import MovieRoom from '@/views/add_movie_room/MovieRoom.vue'
+import MovieRoom from '@/views/edit_halls/MovieRoom.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 const meta = {

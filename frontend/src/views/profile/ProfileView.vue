@@ -170,7 +170,7 @@ function goToMovie(ticket: Ticket) {
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div v-if="!user.isAdmin" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div v-if="isCurrentUser" class="bg-gray-100 p-4 rounded-lg shadow">
                 <h3 class="text-lg font-semibold mb-4">I tuoi biglietti</h3>
                 <table class="w-full text-left border-collapse">
@@ -234,6 +234,9 @@ function goToMovie(ticket: Ticket) {
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div v-else>
+            <SimpleButton content="Modifica sale" color="primary" :handle-click="() => router.push('/edithalls')"/>
         </div>
     </div>
     <Modal v-if="isModalVisibleProfile" title="Modifica Profilo" :name="name" :surname="surname" :interests="interests"
