@@ -7,13 +7,11 @@ const seatSchema = new mongoose.Schema({
     },
     row: {
         type: Number,
-        required: true,
-        min: 1
+        required: true
     },
     column: {
         type: Number,
-        required: true,
-        min: 1
+        required: true
     }
 });
 
