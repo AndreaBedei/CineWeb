@@ -114,3 +114,21 @@ exports.getCinemaHallsByCinema = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+exports.getCinemaHallDetails = (req, res) => {
+    const { cinemaName, hallName } = req.params;
+
+    cinemaHallsModel.findOne({ cinema: cinemaName, name: hallName })
+        .then(doc => {
+            if (!doc) {
+                return res.status(404).send('Cinema hall not found');
+            }
+            res.json({
+                numberOfRows: doc.numberOfRows,
+                numberOfColumns: doc.numberOfColumns
+            });
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
