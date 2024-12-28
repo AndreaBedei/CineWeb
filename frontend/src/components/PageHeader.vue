@@ -67,7 +67,7 @@ function toggleExpandedMenu() {
 </script>
 
 <template>
-    <div class="flex gap-2 p-2 bg-neutral-dark text-white border-b border-neutral-dark relative">
+    <div class="flex gap-2 p-2 bg-neutral-dark text-white border-b border-neutral-dark sticky top-0 z-50">
         <img src="../assets/img/icon.svg" alt="Icona CineWeb" class="w-10 h-10 sm:w-12 sm:h-12 self-center" />
 
         <SearchBar v-if="logged" class="flex-grow" />

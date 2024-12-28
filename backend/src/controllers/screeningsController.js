@@ -20,7 +20,7 @@ exports.getScreeningByID = (req, res) => {
         .populate('cinemaHall', 'name')
         .then(doc => {
             if (!doc) {
-                return res.status(404).send('Screening not found');
+                return res.json([]);
             }
             res.json(doc);
         })
