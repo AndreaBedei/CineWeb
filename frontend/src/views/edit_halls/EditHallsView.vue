@@ -63,6 +63,7 @@ async function getRooms(newCinemaName: string) {
     try {
         const response = await axios.get(`http://localhost:3001/cinemaHalls/cinema/${newCinemaName}`);
         if (response.status === 200) {
+            rooms.value.clear();
             for (const r of response.data) {
                 const room = r as Room;
                 rooms.value.set(room.name, room);
@@ -92,33 +93,88 @@ watch(selectedCinema, async (newCinemaName) => {
 
 // });
 
-const name = ref("")
-const rows = ref("1")
-const cols = ref("1")
+const name = ref("");
+const rows = ref("1");
+const cols = ref("1");
 
 function addMovieRoom() {
-    alert(`Movie room ${name.value} added!`) // TODO: (also backend should double-check that the user is an admin)
+    if (editorMode.value == "add") {
+        axios.post("http://localhost:3001/cinemaHalls/", {
+            name: name.value,
+            cinema: selectedCinema.value,
+            numberOfRows: rows.value,
+            numberOfColumns: cols.value
+        })
+        .then(() => {
+            getRooms(selectedCinema.value);
+            hideEditor();
+            alert(`Nuova sala '${name.value}' aggiunta!`) // TODO: (also backend should double-check that the user is an admin)
+        }, () => {
+            alert("Aggiunta della sala fallita.");
+        });
+    } else {
+        axios.put(`http://localhost:3001/cinemaHalls/${rooms.value.get(selectedRoom.value)?._id}`, {
+            name: name.value,
+            cinema: selectedCinema.value,
+            numberOfRows: rows.value,
+            numberOfColumns: cols.value
+        })
+        .then(() => {
+            getRooms(selectedCinema.value);
+            alert(`Nuova sala '${name.value}' aggiunta!`) // TODO: (also backend should double-check that the user is an admin)
+        }, () => {
+            alert("Aggiunta della sala fallita.");
+        });
+    }
+}
+
+function deleteMovieRoom() {
+    axios.get(`http://localhost:3001/screenings/cinemaHall/${rooms.value.get(selectedRoom.value)?._id}/future-screenings`)
+    .then((res) => {
+        if (res.data.length == 0) {
+            axios.delete(`http://localhost:3001/cinemaHalls/${rooms.value.get(selectedRoom.value)?._id}`)
+            .then(() => {
+                const roomName = selectedRoom.value;
+                getRooms(selectedCinema.value);
+                alert(`Sala '${roomName}' eliminata!`);
+            }, () => {
+                alert("Eliminazione della sala fallita.");
+            });
+        } else {
+            alert("Impossibile eliminare la sala, ci sono proiezioni attive.");
+        }
+    }, () => {
+        alert("Eliminazione della sala fallita.");
+    });
 }
 
 function resetValues() {
-    name.value = ""
-    rows.value = "1"
-    cols.value = "1"
+    if (editorMode.value == 'add') {
+        name.value = "";
+        rows.value = "1";
+        cols.value = "1";
+    } else {
+        const room = rooms.value.get(selectedRoom.value)!;
+
+        name.value = room.name;
+        rows.value = room.numberOfRows.toString();
+        cols.value = room.numberOfColumns.toString();
+    }
 }
 
 function handleInputUpdate(index: number, value: string) {
     switch (index) {
         case 0:
-            name.value = value
-            break
+            name.value = value;
+            break;
         case 1:
-            rows.value = value
-            break
+            rows.value = value;
+            break;
         case 2:
-            cols.value = value
-            break
+            cols.value = value;
+            break;
         default:
-            break
+            break;
     }
 }
 
@@ -129,18 +185,23 @@ const editorMode = ref<EditorMode>("add")
 
 function showEditor(mode: EditorMode) {
     displayEditor.value = true;
-    editorMode.value = mode
+    editorMode.value = mode;
 
     if (mode == 'update') {
-        const room = rooms.value.get(selectedRoom.value);
-        name.value = room!.name;
-        cols.value = room!.numberOfColumns.toString();
-        rows.value = room!.numberOfRows.toString();
+        const room = rooms.value.get(selectedRoom.value)!;
+        name.value = room.name;
+        cols.value = room.numberOfColumns.toString();
+        rows.value = room.numberOfRows.toString();
     } else {
         name.value = "";
         cols.value = "1";
         rows.value = "1";
+        selectedRoom.value = ""
     }
+
+    setTimeout(() => {
+        document.getElementById("room-view")?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 25);
 }
 
 function hideEditor() {
@@ -183,11 +244,14 @@ onMounted(() => {
             </section>
 
             <div class="flex gap-2">
-                <SimpleButton color="primary" :disabled="selectedRoom == ''" :handle-click="() => showEditor('update')">
+                <SimpleButton color="primary" size="small" :disabled="selectedCinema == ''" :handle-click="() => showEditor('add')">
+                    Aggiungi nuova sala
+                </SimpleButton>
+                <SimpleButton color="primary" size="small" :disabled="selectedRoom == ''" :handle-click="() => showEditor('update')">
                     Modifica sala
                 </SimpleButton>
-                <SimpleButton color="primary" :handle-click="() => showEditor('add')">
-                    Aggiungi nuova sala
+                <SimpleButton color="red" size="small" :disabled="selectedRoom == ''" :handle-click="deleteMovieRoom">
+                    Elimina sala
                 </SimpleButton>
             </div>
         </div>
@@ -196,7 +260,7 @@ onMounted(() => {
             <div class="my-4">
                 <h1 class="text-2xl font-bold text-center">{{ editorMode == 'add' ? 'Aggiungi nuova sala' : 'Modifica sala' }}</h1>
             </div>
-            <div class="flex flex-grow justify-center gap-2">
+            <div id="room-view" class="flex flex-grow justify-center gap-2">
                 <div
                     class="flex flex-col gap-2 bg-gray-50 border-1, border-solid border-slate-500 rounded-lg w-4/5 max-w-[800px] p-5 self-center">
                     <form class="flex flex-col gap-2" @submit.prevent="addMovieRoom" @reset="resetValues">
@@ -232,10 +296,9 @@ onMounted(() => {
                         ]" @update:value="handleInputUpdate" />
                         <MovieRoom :rows="Number(rows)" :cols="Number(cols)" :interactive="false" class="h-[50vh]" />
                         <div class="flex justify-end gap-2">
-                            <SimpleButton id="reset" type="reset" color="red" size="small" content="Reset"
-                                rounding="small" />
-                            <SimpleButton id="submit" type="submit" color="green" size="small" content="Aggiungi"
-                                rounding="small" />
+                            <SimpleButton id="hide" type="button" color="secondary" size="small" rounding="small" :handle-click="hideEditor">Annulla</SimpleButton>
+                            <SimpleButton id="reset" type="reset" color="red" size="small" rounding="small" >Reset</SimpleButton>
+                            <SimpleButton id="submit" type="submit" color="green" size="small" rounding="small">{{ editorMode == 'add' ? 'Aggiungi' : 'Modifica' }}</SimpleButton>
                         </div>
                     </form>
                 </div>

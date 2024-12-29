@@ -5,8 +5,11 @@ import { onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
 import SimpleButton from '@/components/SimpleButton.vue';
 import PayPallModal from '@/components/PayPallModal.vue';
+import { useUserStore } from '@/stores/user';
+import router from '@/router';
 
 const route = useRoute();
+const user = useUserStore();
 
 const screeningId = ref(route.query.id);
 const ticketPrice = ref(0);
@@ -21,7 +24,16 @@ function updateSpots(spots: Spot[]) {
     selectedSpots.value = spots;
 }
 
+function getTotalPrice() {
+    return ticketPrice.value * selectedSpots.value.length;
+}
+
 onMounted(async () => {
+    if (!screeningId.value) {
+        alert("Screening mancante");
+        router.push("/");
+    }
+
     const screeningResponse = await axios.get(`http://localhost:3001/screenings/${screeningId.value}`);
     if (!screeningResponse.data) {
         console.error("Unable to load screening");
@@ -60,10 +72,10 @@ onMounted(async () => {
             <MovieRoom :rows="rows" :cols="cols" :occupied="occupied" @selected-spots="updateSpots"/>
             <div class="my-auto flex flex-col items-center gap-2">
                 <p class="w-40 text-center">Posti selezionati: {{ selectedSpots.length }}</p>
-                <p v-show="selectedSpots.length != 0" class="font-bold w-40 text-center">Totale: {{ ticketPrice * selectedSpots.length }} €</p>
+                <p v-show="selectedSpots.length != 0" class="font-bold w-40 text-center">Totale: {{ getTotalPrice().toFixed(2) }} €</p>
                 <SimpleButton color="primary" :disabled="selectedSpots.length == 0" :bold="true" content="Prenota" :handle-click="() => bookingModal = true"/>
             </div>
         </div>
     </div>
-    <PayPallModal v-if="bookingModal" price="10" @close="bookingModal = false" />
+    <PayPallModal v-if="bookingModal" :price="getTotalPrice().toFixed()" :user-id="user.userId" :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close="bookingModal = false" />
 </template>

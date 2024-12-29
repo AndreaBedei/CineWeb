@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import SimpleButton from "./SimpleButton.vue";
+import type { Spot } from "@/views/edit_halls/MovieRoom.vue";
+import axios from "axios";
 
 const props = defineProps<{
     price: string;
+    screeningId: string,
+    userId: string,
+    selectedSpots: Spot[];
 }>();
 
 const emit = defineEmits(["close"]);
@@ -65,7 +70,16 @@ onMounted(async () => {
 });
 
 function finalizeBooking() {
-
+    axios.post(`http://localhost:3001/reservations`, {
+        userId: props.userId,
+        screeningId: props.screeningId,
+        seats: props.selectedSpots,
+        price: props.price
+    }).then(() => {
+        alert("Prenotazione completata!");
+    }, () => {
+        alert("Prenotazione fallita.");
+    })
 }
 
 function closeModal() {
