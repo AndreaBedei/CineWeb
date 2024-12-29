@@ -150,10 +150,18 @@ function changeMonth(direction: "prev" | "next") {
 
 // Aggiungi una nuova proiezione
 async function addProjection() {
+    msgUserError.value = "";
+    msgUserOk.value = "";
     checkLoading.value = true;
     const { hour, minute } = newProjection.value;
     const startTime = dayjs(selectedDate.value).hour(hour).minute(minute); // Combina la data selezionata con l'ora di inizio
     let response: AxiosResponse;
+
+    if (startTime.isBefore(dayjs())) {
+        msgUserError.value = "La data della proiezione non può essere nel passato.";
+        checkLoading.value = false;
+        return;
+    }
 
     try {
         if (screeningId.value === "") {
@@ -189,6 +197,7 @@ async function addProjection() {
     } catch (error) {
         console.error("Errore di connessione:", error);
         msgUserError.value = "Errore di connessione durante l'inserimento della proiezione.";
+        checkLoading.value = false;
     } finally {
         checkLoading.value = false;
     }
@@ -357,7 +366,7 @@ onUnmounted(() => {
                         <label for="hour" class="text-sm">Ora:</label>
                         <select id="hour" v-model="newProjection.hour"
                             class="border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
-                            <option v-for="hour in 17" :key="hour" :value="hour + 7">{{ hour + 7 }}</option>
+                            <option v-for="hour in 16" :key="hour" :value="hour + 7">{{ hour + 7 }}</option>
                         </select>
 
                         <!-- Selezione minuti -->

@@ -55,22 +55,41 @@ interface Ticket {
     _id: string;
     screening: {
         _doc: {
-            movie: {
-                title: string;
-                _id: string;
-            };
             screeningDate: string | number | Date;
             cinemaHall: {
                 cinema: string;
                 name: string;
             };
+            movie: string;
+            movieTitle: string;
         };
     };
     seats: string[];
 }
 
+interface TicketFuture {
+    _id: string;
+    screening: {
+        _doc: {
+            screeningDate: string | number | Date;
+            cinemaHall: {
+                cinema: string;
+                name: string;
+            };
+            movie: {
+                title: string;
+                _id: string;
+            };
+            movieTitle: string;
+        };
+    };
+    seats: string[];
+}
+
+
+
 const pastReservation = ref<Ticket[]>([]);
-const futureReservation = ref<Ticket[]>([]);
+const futureReservation = ref<TicketFuture[]>([]);
 
 function showCheckModal(title: string, message: string) {
     modalTitle.value = title;
@@ -122,6 +141,7 @@ async function handleFormSubmit(form: { value: { email: string; name: string; su
 onMounted(async () => {
     getUserData();
     pastReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/past`)).data;
+    console.log(pastReservation.value);
     futureReservation.value = (await axios.get(`http://localhost:3001/reservations/user/${id}/future`)).data;
 });
 
@@ -136,10 +156,9 @@ function goToNotifications() {
 }
 
 async function goToMovie(ticket: Ticket) {
-    const response = await axios.get(`http://localhost:3001/movies/movie/${ticket.screening._doc.movie._id}`);
-    console.log(response.data); 
+    const response = await axios.get(`http://localhost:3001/movies/movie/${ticket.screening._doc.movie}`);
     if (response.data) {
-        router.push({ path: `/movie`, query: { id: ticket.screening._doc.movie._id } });
+        router.push({ path: `/movie`, query: { id: ticket.screening._doc.movie } });
     } else {
         showCheckModal('Spiecenti', "Purtroppo il film non è più presente nella piattaforma!");
     }
@@ -210,7 +229,7 @@ async function goToMovie(ticket: Ticket) {
 
             <div :class="{ 'col-span-2': !isCurrentUser, 'col-span-1': isCurrentUser }"
                 class="bg-gray-100 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold mb-4">Film visti in passato</h3>
+                <h3 class="text-lg font-semibold mb-4">Ultimi film visti</h3>
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr>
@@ -222,7 +241,7 @@ async function goToMovie(ticket: Ticket) {
                     </thead>
                     <tbody v-if="Object.keys(pastReservation).length !== 0">
                         <tr v-for="ticket in pastReservation" :key="ticket._id">
-                            <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
+                            <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movieTitle }}</td>
                             <td headers="time" class="border-b p-2">{{ formatDate(ticket.screening._doc.screeningDate)
                                 }}</td>
                             <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}</td>

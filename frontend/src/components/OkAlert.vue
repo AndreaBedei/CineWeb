@@ -15,7 +15,7 @@
 </script>
 
 <template>
-    <div v-if="message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+    <div v-if="message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative m-2"
         role="alert" aria-live="polite">
         <strong class="font-bold">Conferma: </strong>
         <span class="block sm:inline">{{ props.message }}</span>

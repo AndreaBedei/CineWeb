@@ -23,6 +23,6 @@ router.route('/:screeningId/booked-seats')
 router.route('/cinemaHall/:cinemaHallId/date/:date')
     .get(controller.findScreeningsByCinemaHallAndDate);
 
-router.get('/cinemaHall/:cinemaHallId/future-screenings', exports.findFutureScreeningsByCinemaHall);
+router.get('/cinemaHall/:cinemaHallId/future-screenings', controller.findFutureScreeningsByCinemaHall);
 
 module.exports = router;

@@ -8,6 +8,7 @@ import ReviewList from './ReviewList.vue';
 import { useRoute } from 'vue-router';
 import IFrameComponent from './IFrameComponent.vue';
 import { useUserStore } from '@/stores/user';
+import router from '@/router';
 
 const route = useRoute();
 const user = useUserStore();
@@ -19,7 +20,11 @@ const showtimes = ref([]);
 const fetchMovieDetails = async () => {
   try {
     const response = await axios.get(`http://localhost:3001/movies/movie/${movieId.value}`);
-    movie.value = response.data;
+    if (response.data) {
+      movie.value = response.data;
+    } else {
+      router.push('/NotFound');
+    }
   } catch (error) {
     console.error('Errore nel caricamento del film', error);
   }

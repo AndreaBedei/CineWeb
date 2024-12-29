@@ -1,6 +1,7 @@
 const { screeningsModel } = require('../models/screeningsModel');
 const { reservationsModel } = require('../models/reservationsModel');
 const { notificationsModel } = require('../models/notificationsModel');
+const { moviesModel } = require('../models/moviesModel');
 
 exports.screeningsList = (req, res) => {
     screeningsModel.find()
@@ -32,8 +33,6 @@ exports.getScreeningByID = (req, res) => {
 exports.createScreening = async (req, res) => {
     try {
         const { movie, cinemaHall, ticketPrice, screeningDate } = req.body;
-
-        // Recupera il titolo del film
         const movieDoc = await moviesModel.findById(movie);
         if (!movieDoc) {
             return res.status(404).send('Movie not found');
