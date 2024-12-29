@@ -168,19 +168,17 @@ exports.getPastReservationsByUser = (req, res) => {
     reservationsModel.find({ user: userId })
         .populate({
             path: 'screening',
-            populate: [
-                { path: 'movie', select: 'title' },
-                { path: 'cinemaHall', select: 'name cinema' }
-            ]
+            populate: {
+                path: 'cinemaHall',
+                select: 'name cinema'
+            }
         })
-        .populate({
-            path: 'seats',
-            select: 'row column',
-        })
+        .sort({ 'screening.screeningDate': -1 }) // Ordina per data decrescente
+        .limit(10) // Limita a 10 risultati
         .then(docs => {
             const pastReservations = docs.filter(doc => {
                 const screeningDate = new Date(doc.screening.screeningDate);
-                return screeningDate < new Date(); 
+                return screeningDate < new Date();
             });
 
             if (pastReservations.length === 0) {
@@ -193,7 +191,8 @@ exports.getPastReservationsByUser = (req, res) => {
                     ...doc.screening,
                     cinemaHall: `${doc.screening.cinemaHall.name} - ${doc.screening.cinemaHall.cinema}`
                 },
-                seats: doc.seats.map(seat => `${seat.row}${seat.column}`)
+                seats: doc.seats.map(seat => `${seat.row}${seat.column}`),
+                movieTitle: doc.screening.movieTitle // Usa direttamente il campo movieTitle
             }));
 
             return res.json(transformedDocs);
@@ -202,6 +201,8 @@ exports.getPastReservationsByUser = (req, res) => {
             res.status(500).send(err);
         });
 };
+
+
 
 exports.getFutureReservationsByUser = (req, res) => {
     const userId = req.params.userId;

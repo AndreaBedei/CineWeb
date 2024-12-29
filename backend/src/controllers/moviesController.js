@@ -80,23 +80,13 @@ exports.deleteMovie = async (req, res) => {
     session.startTransaction();
 
     try {
-        // 1. Trovare tutte le screening con il film specificato
-        const screenings = await screeningsModel.find({ movie: movieId }).session(session);
-
-        // 2. Per ogni screening, eliminare le reservations
-        const screeningIds = screenings.map(screening => screening._id);
-        await reservationsModel.deleteMany({ screening: { $in: screeningIds } }).session(session);
-
-        // 3. Eliminare tutte le screening trovate
-        await screeningsModel.deleteMany({ _id: { $in: screeningIds } }).session(session);
-
-        // 4. Eliminare tutte le recensioni per il film specificato
+        // 1. Eliminare tutte le recensioni per il film specificato
         await reviewsModel.deleteMany({ movie: movieId }).session(session);
 
-        // 5. Eliminare tutte le notifiche che hanno il film come risorsa
+        // 2. Eliminare tutte le notifiche che hanno il film come risorsa
         await notificationsModel.deleteMany({ resource: movieId }).session(session);
 
-        // 6. Eliminare il film
+        // 3. Eliminare il film
         const movie = await moviesModel.findByIdAndDelete(movieId).session(session);
 
         if (!movie) {
@@ -115,7 +105,6 @@ exports.deleteMovie = async (req, res) => {
         res.status(500).send(err);
     }
 };
-
 
 exports.availableMovies = async (req, res) => {
     try {

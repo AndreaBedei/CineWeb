@@ -25,7 +25,11 @@ const screeningSchema = new mongoose.Schema({
         type: Number,
         min: 0
     },
-    screeningDate: Date
+    screeningDate: Date,
+    movieTitle: {
+        type: String,
+        required: true 
+    }
 });
 
 const screeningsModel = mongoose.model('Screening', screeningSchema);

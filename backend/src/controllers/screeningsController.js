@@ -29,16 +29,31 @@ exports.getScreeningByID = (req, res) => {
         });
 }
 
-exports.createScreening = (req, res) => {
-    const screening = new screeningsModel(req.body);
-    screening.save()
-        .then(doc => {
-            res.status(201).json(doc);
-        })
-        .catch(err => {
-            res.status(500).send(err);
+exports.createScreening = async (req, res) => {
+    try {
+        const { movie, cinemaHall, ticketPrice, screeningDate } = req.body;
+
+        // Recupera il titolo del film
+        const movieDoc = await moviesModel.findById(movie);
+        if (!movieDoc) {
+            return res.status(404).send('Movie not found');
+        }
+
+        const screening = new screeningsModel({
+            movie,
+            cinemaHall,
+            ticketPrice,
+            screeningDate,
+            movieTitle: movieDoc.title 
         });
-}
+
+        const savedScreening = await screening.save();
+        res.status(201).json(savedScreening);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
 
 exports.updateScreening = (req, res) => {
     const screeningId = req.params.id;
@@ -243,5 +258,28 @@ exports.findScreeningsByCinemaHallAndDate = async (req, res) => {
         res.json(screenings);
     } catch (err) {
         res.status(500).send(err);
+    }
+};
+
+exports.findFutureScreeningsByCinemaHall = async (req, res) => {
+    try {
+        const { cinemaHallId } = req.params; // Extract cinema hall ID from request params
+
+        if (!cinemaHallId) {
+            return res.status(400).send('Cinema hall ID is required');
+        }
+
+        const currentDate = new Date(); // Get the current date and time
+
+        const screenings = await screeningsModel.find({
+            cinemaHall: cinemaHallId, // Match the cinema hall ID
+            screeningDate: { $gte: currentDate } // Only include future screenings
+        })
+        .populate('movie', 'title') // Optionally populate the movie information
+        .sort({ screeningDate: 1 }); // Sort screenings by date in ascending order
+
+        res.json(screenings); // Return the list of screenings (empty if none found)
+    } catch (err) {
+        res.status(500).send(err); // Handle any server errors
     }
 };

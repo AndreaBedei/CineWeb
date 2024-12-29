@@ -17,7 +17,6 @@ router.route('/available')
 router.route('/latest')
     .get(controller.latestMovies);
 
-
 router.route('/genre/:genreId')
     .get(controller.availableMoviesByGenre);
 
