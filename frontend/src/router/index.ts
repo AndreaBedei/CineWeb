@@ -9,6 +9,7 @@ import NotificationsView from '@/views/notifications/NotificationsView.vue'
 import BookingView from '@/views/booking/BookingView.vue'
 import EditHallsView from '@/views/edit_halls/EditHallsView.vue'
 import AccessDeniedView from '@/views/access_denied/AccessDeniedView.vue'
+import NotFoundView from '@/views/not_found/NotFoundView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,8 +67,13 @@ const router = createRouter({
             component: AccessDeniedView,
         },
         {
+            path: '/notfound',
+            name: 'notfound',
+            component: NotFoundView,
+        },
+        {
             path: '/:pathMatch(.*)*',
-            redirect: { name: 'home' }
+            redirect: { name: 'notfound' }
         }
     ],
 })
