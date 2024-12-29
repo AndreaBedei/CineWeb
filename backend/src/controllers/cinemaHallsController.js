@@ -54,7 +54,7 @@ exports.updateCinemaHall = async (req, res) => {
             return res.status(404).send('Cinema hall not found');
         }
 
-        await seatsModel.deleteMany({ cinemaHall: cinemaHallId });
+        await seatsModel.updateMany({ cinemaHall: cinemaHallId }, { isAvailable: false });
 
         const updatedCinemaHall = await cinemaHallsModel.findByIdAndUpdate(
             cinemaHallId,
@@ -65,9 +65,10 @@ exports.updateCinemaHall = async (req, res) => {
         const { numberOfRows, numberOfColumns } = updatedCinemaHall;
         const seats = [];
 
+        // Creiamo nuovi posti per la sala aggiornata
         for (let row = 0; row < numberOfRows; row++) {
             for (let column = 0; column < numberOfColumns; column++) {
-                seats.push({ cinemaHall: updatedCinemaHall._id, row, column });
+                seats.push({ cinemaHall: updatedCinemaHall._id, row, column, isAvailable: true });
             }
         }
 
@@ -89,16 +90,15 @@ exports.deleteCinemaHall = async (req, res) => {
             return res.status(404).send('Cinema hall not found');
         }
 
-        await seatsModel.deleteMany({ cinemaHall: cinemaHallId });
+        await seatsModel.updateMany({ cinemaHall: cinemaHallId }, { isAvailable: false });
 
         await cinemaHallsModel.findByIdAndDelete(cinemaHallId);
 
-        res.json({ message: 'Cinema hall and associated seats deleted' });
+        res.json({ message: 'Cinema hall deleted and associated seats marked as unavailable' });
     } catch (err) {
         res.status(500).send(err);
     }
 };
-
 
 exports.getCinemaHallsByCinema = (req, res) => {
     const cinemaName = req.params.cinema; 
