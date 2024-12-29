@@ -135,8 +135,14 @@ function goToNotifications() {
     router.push('/notify');
 }
 
-function goToMovie(ticket: Ticket) {
-    router.push({ path: `/movie`, query: { id: ticket.screening._doc.movie._id } });
+async function goToMovie(ticket: Ticket) {
+    const response = await axios.get(`http://localhost:3001/movies/movie/${ticket.screening._doc.movie._id}`);
+    console.log(response.data); 
+    if (response.data) {
+        router.push({ path: `/movie`, query: { id: ticket.screening._doc.movie._id } });
+    } else {
+        showCheckModal('Spiecenti', "Purtroppo il film non è più presente nella piattaforma!");
+    }
 }
 
 </script>
@@ -170,7 +176,7 @@ function goToMovie(ticket: Ticket) {
             </div>
         </div>
 
-        <div v-if="!user.isAdmin" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div v-if="!user.isAdmin || (user.isAdmin && !isCurrentUser)" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div v-if="isCurrentUser" class="bg-gray-100 p-4 rounded-lg shadow">
                 <h3 class="text-lg font-semibold mb-4">I tuoi biglietti</h3>
                 <table class="w-full text-left border-collapse">
@@ -235,7 +241,7 @@ function goToMovie(ticket: Ticket) {
                 </table>
             </div>
         </div>
-        <div v-else>
+        <div v-else-if="user.isAdmin && isCurrentUser">
             <SimpleButton content="Modifica sale" color="primary" :handle-click="() => router.push('/edithalls')"/>
         </div>
     </div>

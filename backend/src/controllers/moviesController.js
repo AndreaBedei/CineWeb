@@ -23,12 +23,12 @@ exports.readMovie = (req, res) => {
         .populate('genres', 'name') 
         .then(doc => {
             if (!doc) {
-                return res.status(404).send('Movie not found');
+                return res.json("");
             }
             res.json(doc);
         })
         .catch(err => {
-            res.status(500).send(err);
+            return res.json("");
         });
 }
 

@@ -105,7 +105,7 @@ watch(() => user.ready, () => {
       <AddMovieModal v-if="user.isAdmin && modalFilm" @close="closeModal" />
     </div>
     <div v-for="(title) in movieCarousels" :key="title[0]">
-      <Carousel :title="title[0]" :movies="title[1]" />
+      <Carousel v-if="title[1].length>0" :title="title[0]" :movies="title[1]" />
     </div>
     <SimpleButton v-if="movieCarousels.size !== 0 && user.interests.length === 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
   </div>

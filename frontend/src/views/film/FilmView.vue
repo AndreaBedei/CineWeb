@@ -73,7 +73,7 @@ watch(() => route.query.id, (newId) => {
 
 <template>
   <div class="p-4 w-full max-w-7xl mx-auto">
-    <MovieDetails v-if="movie" :movie="movie" @updateVideo="updateVideo" />
+    <MovieDetails v-if="movie" :movie="movie" :hasNoShowTimes="showtimes.length===0"  @updateVideo="updateVideo" />
     <Showtimes v-if="movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm v-if="!user.isAdmin && movie" @update="updateReviews"/>

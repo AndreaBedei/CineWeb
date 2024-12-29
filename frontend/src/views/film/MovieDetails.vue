@@ -14,6 +14,11 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  hasNoShowTimes : {
+    type: Boolean,
+    required: false,
+    default: false
+  }
 });
 
 interface MovieDetails {
@@ -40,6 +45,7 @@ const duration = ref(props.movie.duration);
 const year = ref(props.movie.productionYear);
 const user = useUserStore();
 const checkDelete = ref(false);
+const checkNotDetete = ref(false);
 
 onMounted(() => {
   fetchMovieDetails(props.movie.title, props.movie.productionYear);
@@ -104,6 +110,14 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
   updateOk.value = true;
   emit("updateVideo");
 }
+
+async function deleteFilmClick() {
+  if (props.hasNoShowTimes) {
+    checkDelete.value = true;
+  } else {
+    checkNotDetete.value = true;
+  }
+};
 
 </script>
 
@@ -176,7 +190,7 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
           </li>
         </ul>
         <div class="flex justify-end w-full mt-4">
-          <SimpleButton class="mx-2" v-if="user.isAdmin" content="Elimina film" color="red" rounding="small" :handle-click="() => checkDelete = true" />
+          <SimpleButton class="mx-2" v-if="user.isAdmin" content="Elimina film" color="red" rounding="small" :handle-click="deleteFilmClick" />
           <SimpleButton v-if="user.isAdmin" content="Aggiorna dati" color="primary" rounding="small" :handle-click="openModalModifyMovie" />
         </div>
       </div>
@@ -184,4 +198,5 @@ function updateValue(titleN: string, posterN: string, durationN: string, genresN
   </section>
   <ModifyMovieModal v-if="user.isAdmin && modalFilm" :movieId="movie._id" :update="true" :year="year" modal-title="Modifica film" :name="title" :poster="poster" :trailerLink="trailerLink" :duration="duration" :genresO="genres" @close="closeModal" @update="updateValue" />
   <PageModal v-if="checkDelete" :confirm="true" title="Elimina film" message="Sei sicuro di voler eliminare il film?" @closeModal="checkDelete = false" @confirm="deleteFilm" />
+  <PageModal v-if="checkNotDetete" :confirm="false" title="Impossibile" message="Impossibile eliminare il film visto che ci sono delle proiezioni future!" @closeModal="checkNotDetete = false"/>
 </template>
