@@ -63,6 +63,7 @@ function getInputSize(input: typeof props.inputs[0]) {
     </div>
 </template>
 
+
 <style lang="css" scoped>
 .grid-template {
     grid-template-columns: min-content auto;

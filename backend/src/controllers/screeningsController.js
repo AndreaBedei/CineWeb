@@ -221,7 +221,7 @@ exports.getBookedSeatsByScreening = async (req, res) => {
             });
 
         if (!reservations.length) {
-            return res.status(404).json({ message: 'No seats booked for this screening' });
+            return res.status(200).send([]);
         }
 
         const bookedSeats = reservations.flatMap(reservation => reservation.seats);

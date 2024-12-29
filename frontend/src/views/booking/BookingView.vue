@@ -15,7 +15,7 @@ const screeningId = ref(route.query.id);
 const ticketPrice = ref(0);
 const cols = ref(0);
 const rows = ref(0);
-const occupied: Ref<{ row: number, col:number }[]> = ref([])
+const occupied: Ref<{ row: number, col: number }[]> = ref([])
 const selectedSpots: Ref<Spot[]> = ref([])
 
 const bookingModal = ref(false);
@@ -68,14 +68,22 @@ onMounted(async () => {
         <div class="my-4">
             <h1 class="text-2xl font-bold text-center">Prenota posti</h1>
         </div>
-        <div class="flex gap-10 m-auto">
-            <MovieRoom :rows="rows" :cols="cols" :occupied="occupied" @selected-spots="updateSpots"/>
-            <div class="my-auto flex flex-col items-center gap-2">
+        <div class="flex flex-wrap gap-10 m-auto justify-center">
+            <!-- Primo componente -->
+            <MovieRoom v-if="rows" :rows="rows" :cols="cols" :occupied="occupied" @selected-spots="updateSpots"
+                class="flex-grow min-w-[300px]" />
+
+            <!-- Secondo componente -->
+            <div v-if="rows" class="my-auto flex flex-col items-center gap-2 flex-grow min-w-[200px]">
                 <p class="w-40 text-center">Posti selezionati: {{ selectedSpots.length }}</p>
-                <p v-show="selectedSpots.length != 0" class="font-bold w-40 text-center">Totale: {{ getTotalPrice().toFixed(2) }} €</p>
-                <SimpleButton color="primary" :disabled="selectedSpots.length == 0" :bold="true" content="Prenota" :handle-click="() => bookingModal = true"/>
+                <p v-show="selectedSpots.length != 0" class="font-bold w-40 text-center">Totale: {{
+                    getTotalPrice().toFixed(2) }} €</p>
+                <SimpleButton color="primary" :disabled="selectedSpots.length == 0" :bold="true" content="Prenota"
+                    :handle-click="() => bookingModal = true" class="mb-4" />
             </div>
         </div>
     </div>
-    <PayPallModal v-if="bookingModal" :price="getTotalPrice().toFixed()" :user-id="user.userId" :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close="bookingModal = false" />
+
+    <PayPallModal v-if="bookingModal" :price="getTotalPrice().toFixed(2)" :user-id="user.userId"
+        :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close="bookingModal = false" />
 </template>

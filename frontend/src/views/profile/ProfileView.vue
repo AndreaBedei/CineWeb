@@ -314,9 +314,6 @@ function deleteBooking() {
                 </div>
             </section>
         </div>
-        <div v-else-if="user.isAdmin && isCurrentUser">
-            <SimpleButton content="Modifica sale" color="primary" :handle-click="() => router.push('/edithalls')" />
-        </div>
     </div>
     <Modal v-if="isModalVisibleProfile" title="Modifica Profilo" :name="name" :surname="surname" :interests="interests"
         @closeModal="closeModalProfile" @submitForm="handleFormSubmit" />
