@@ -154,7 +154,7 @@ watch(() => user.ready, () => {
       </div>
     </section>
     <section>
-      <ReviewList v-if="reviews" :reviews="reviews" :end-reached="endReached" title="Ultime recensioni aggiunte" @load-more="fetchReviews" />
+      <ReviewList v-if="reviews && user.isAdmin" :reviews="reviews" :end-reached="endReached" title="Ultime recensioni aggiunte" @load-more="fetchReviews" />
     </section>
   </section>
 </template>
