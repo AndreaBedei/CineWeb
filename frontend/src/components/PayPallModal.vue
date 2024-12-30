@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import SimpleButton from "./SimpleButton.vue";
 import type { Spot } from "@/views/edit_halls/MovieRoom.vue";
 import axios from "axios";
+import PageModal from "./PageModal.vue";
 
 const props = defineProps<{
     price: string;
