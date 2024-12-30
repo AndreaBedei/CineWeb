@@ -7,6 +7,8 @@ import SimpleButton from '@/components/SimpleButton.vue';
 import PayPallModal from '@/components/PayPallModal.vue';
 import { useUserStore } from '@/stores/user';
 import router from '@/router';
+import PageModal from "@/components/PageModal.vue";
+
 
 const route = useRoute();
 const user = useUserStore();
@@ -60,9 +62,28 @@ onMounted(async () => {
     occupied.value = (seatsResponse.data as { row: number, column: number }[]).map(o => ({ row: o.row, col: o.column }))
 
 });
+
+const isModalShown = ref(false);
+const modalTitle = ref("");
+const modalContent = ref("");
+
+function showModal(title: string, message: string) {
+    bookingModal.value = false;
+    isModalShown.value = true;
+    modalTitle.value = title;
+    modalContent.value = message;
+}
+
+function hideModal() {
+    isModalShown.value = false;
+}
+
+
 </script>
 
 <template>
+    <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false" v-on:close-modal="hideModal"/>
+
     <div class="flex flex-col w-full">
         <div class="my-4">
             <h1 class="text-2xl font-bold text-center">Prenota posti</h1>
@@ -84,5 +105,5 @@ onMounted(async () => {
     </div>
 
     <PayPallModal v-if="bookingModal" :price="getTotalPrice().toFixed(2)" :user-id="user.userId"
-        :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close="bookingModal = false" />
+        :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close-msg="showModal" @close="bookingModal = false" />
 </template>

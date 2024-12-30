@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import SimpleButton from "./SimpleButton.vue";
 import type { Spot } from "@/views/edit_halls/MovieRoom.vue";
 import axios from "axios";
-import PageModal from "./PageModal.vue";
 
 const props = defineProps<{
     price: string;
@@ -12,7 +11,7 @@ const props = defineProps<{
     selectedSpots: Spot[];
 }>();
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "closeMsg"]);
 
 declare global {
     interface Window {
@@ -41,20 +40,6 @@ const loadPayPalScript = async () => {
     });
 };
 
-const isModalShown = ref(false);
-const modalTitle = ref("");
-const modalContent = ref("");
-
-function showModal(title: string, message: string) {
-    isModalShown.value = true;
-    modalTitle.value = title;
-    modalContent.value = message;
-}
-
-function hideModal() {
-    isModalShown.value = false;
-}
-
 onMounted(async () => {
     await loadPayPalScript();
 
@@ -74,7 +59,7 @@ onMounted(async () => {
             },
             async onApprove(_, actions) {
                 return actions.order.capture().then((details) => {
-                    showModal("Successo!", "Pagamento completato da " + details.payer.name.given_name);
+                    emit("closeMsg", "Successo!", "Pagamento completato da " + details.payer.name.given_name);
                 });
             },
             onError(err) {
@@ -91,9 +76,9 @@ function finalizeBooking() {
         seats: props.selectedSpots,
         price: props.price
     }).then(() => {
-        showModal("Successo!", "Prenotazione completata!");
+        emit("closeMsg", "Successo!", "Prenotazione completata!");
     }, () => {
-        showModal("Errore", "Prenotazione fallita.");
+        emit("closeMsg", "Errore!", "Prenotazione fallita.")
     })
 }
 
@@ -103,8 +88,6 @@ function closeModal() {
 </script>
 
 <template>
-    <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false" v-on:close-modal="hideModal"/>
-
     <div role="dialog" aria-labelledby="paypal-modal-title" aria-hidden="false"
         class="fixed inset-0 z-50 bg-gray-800 bg-opacity-50 flex justify-center items-center">
 
