@@ -4,7 +4,6 @@ import PrivacyView from '@/views/privacy/PrivacyView.vue'
 import SignOn from '@/views/signOn/SignOn.vue'
 import ProfileView from '@/views/profile/ProfileView.vue'
 import FilmView from '@/views/film/FilmView.vue'
-import AddMovieRoomView from '@/views/add_movie_room/AddMovieRoomView.vue'
 import NotificationsView from '@/views/notifications/NotificationsView.vue'
 import BookingView from '@/views/booking/BookingView.vue'
 import EditHallsView from '@/views/edit_halls/EditHallsView.vue'
@@ -39,11 +38,6 @@ const router = createRouter({
             path: '/movie',
             name: 'movie',
             component: FilmView
-        },
-        {
-            path: '/addmovieroom',
-            name: 'addmovieroom',
-            component: AddMovieRoomView
         },
         {
             path: '/notify',

@@ -54,7 +54,7 @@ function getInputSize(input: typeof props.inputs[0]) {
             {{ input.label }}
         </label>
         <input v-for="(input, n) in inputs" v-bind:key="input.id" :id="input.id" :type="getInputType(input)" :value="input.value" @input="updateValue(n, ($event.target as HTMLInputElement).value)" :placeholder="getInputPlaceholder(input)"
-            class="border border-slate-300 focus:ring-2 focus:ring-primary col-start-2 col-end-2"
+            class="border border-slate-300 focus:ring-2 focus:ring-primary col-start-2 col-end-2 min-w-0"
             :class="getInputSize(input) == 'fit' ? 'h-fit p-1 rounded-md' : 'p-3 rounded-lg'"
             :required="getInputRequired(input)"
             :min="input.inputType == 'number' ? input.range?.min : undefined"

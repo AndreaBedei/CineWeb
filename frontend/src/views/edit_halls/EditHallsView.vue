@@ -6,6 +6,7 @@ import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import MovieRoom from './MovieRoom.vue';
+import PageModal from '@/components/PageModal.vue';
 
 const router = useRouter()
 const user = useUserStore()
@@ -93,6 +94,20 @@ watch(selectedCinema, async (newCinemaName) => {
 
 // });
 
+const isModalShown = ref(false);
+const modalTitle = ref("");
+const modalContent = ref("");
+
+function showModal(title: string, message: string) {
+    isModalShown.value = true;
+    modalTitle.value = title;
+    modalContent.value = message;
+}
+
+function hideModal() {
+    isModalShown.value = false;
+}
+
 const name = ref("");
 const rows = ref("1");
 const cols = ref("1");
@@ -108,9 +123,9 @@ function addMovieRoom() {
         .then(() => {
             getRooms(selectedCinema.value);
             hideEditor();
-            alert(`Nuova sala '${name.value}' aggiunta!`) // TODO: (also backend should double-check that the user is an admin)
+            showModal("Successo!", `Nuova sala '${name.value}' aggiunta!`) // TODO: (also backend should double-check that the user is an admin)
         }, () => {
-            alert("Aggiunta della sala fallita.");
+            showModal("Errore", "Aggiunta della sala fallita.");
         });
     } else {
         axios.put(`http://localhost:3001/cinemaHalls/${rooms.value.get(selectedRoom.value)?._id}`, {
@@ -120,10 +135,10 @@ function addMovieRoom() {
             numberOfColumns: cols.value
         })
         .then(() => {
+            showModal("Successo!", `Sala '${name.value}' modificata!`)
             getRooms(selectedCinema.value);
-            alert(`Nuova sala '${name.value}' aggiunta!`) // TODO: (also backend should double-check that the user is an admin)
         }, () => {
-            alert("Aggiunta della sala fallita.");
+            showModal("Errore", "Modifica della sala fallita.");
         });
     }
 }
@@ -136,15 +151,19 @@ function deleteMovieRoom() {
             .then(() => {
                 const roomName = selectedRoom.value;
                 getRooms(selectedCinema.value);
-                alert(`Sala '${roomName}' eliminata!`);
+                if (roomName == name.value) {
+                    selectedRoom.value = "";
+                    hideEditor();
+                }
+                showModal("Successo!", `Sala '${roomName}' eliminata!`);
             }, () => {
-                alert("Eliminazione della sala fallita.");
+                showModal("Errore", "Eliminazione della sala fallita.");
             });
         } else {
-            alert("Impossibile eliminare la sala, ci sono proiezioni attive.");
+            showModal("Errore", "Impossibile eliminare la sala, ci sono proiezioni attive.");
         }
     }, () => {
-        alert("Eliminazione della sala fallita.");
+        showModal("Errore", "Eliminazione della sala fallita.");
     });
 }
 
@@ -215,7 +234,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full flex flex-col gap-2 mx-auto">
+    <div class="w-full flex flex-col gap-2 mx-auto px-8">
         <div class="flex flex-col gap-2 mx-auto">
             <section>
                 <label for="cinema" class="block text-sm font-medium text-gray-700">Cinema</label>
@@ -256,13 +275,15 @@ onMounted(() => {
             </div>
         </div>
 
+        <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false" v-on:close-modal="hideModal"/>
+
         <div v-show="displayEditor" class="flex flex-col mb-8">
             <div class="my-4">
                 <h1 class="text-2xl font-bold text-center">{{ editorMode == 'add' ? 'Aggiungi nuova sala' : 'Modifica sala' }}</h1>
             </div>
             <div id="room-view" class="flex flex-grow justify-center gap-2">
                 <div
-                    class="flex flex-col gap-2 bg-gray-50 border-1, border-solid border-slate-500 rounded-lg w-4/5 max-w-[800px] p-5 self-center">
+                    class="flex flex-col gap-2 bg-gray-50 border-1, border-solid border-slate-500 rounded-lg w-[80vw] md:w-[60vw] p-5 self-center">
                     <form class="flex flex-col gap-2" @submit.prevent="addMovieRoom" @reset="resetValues">
                         <InputList :inputs="[
                             {

@@ -30,7 +30,6 @@ function getTotalPrice() {
 
 onMounted(async () => {
     if (!screeningId.value) {
-        alert("Screening mancante");
         router.push("/");
     }
 
@@ -68,10 +67,10 @@ onMounted(async () => {
         <div class="my-4">
             <h1 class="text-2xl font-bold text-center">Prenota posti</h1>
         </div>
-        <div class="flex flex-wrap gap-10 m-auto justify-center">
+        <div class="flex flex-wrap gap-10 m-auto justify-center p-8">
             <!-- Primo componente -->
             <MovieRoom v-if="rows" :rows="rows" :cols="cols" :occupied="occupied" @selected-spots="updateSpots"
-                class="flex-grow min-w-[300px]" />
+                class="flex-grow max-w-[80vw] max-h-[40vh]" />
 
             <!-- Secondo componente -->
             <div v-if="rows" class="my-auto flex flex-col items-center gap-2 flex-grow min-w-[200px]">

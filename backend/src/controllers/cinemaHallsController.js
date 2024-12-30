@@ -105,7 +105,7 @@ exports.getCinemaHallsByCinema = (req, res) => {
 
     cinemaHallsModel.find({ cinema: cinemaName }) 
         .then(docs => {
-            if (!docs || docs.length === 0) {
+            if (!docs) {
                 return res.status(404).send('No cinema halls found for the specified cinema');
             }
             res.json(docs);

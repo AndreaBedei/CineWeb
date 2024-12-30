@@ -55,7 +55,7 @@ function colors(isSelected: boolean, isOccupied: boolean) {
                 class="flex flex-shrink-0 gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0"  role="row">
                 <button v-for="col in Array.from(Array(cols).keys())" :key="`${row}-${col}`"
                     :disabled="!interactive || isSpotOccupied(row, col)" @click="toggleSelection(Number(row), col)"
-                    class="rounded-md aspect-[0.66] min-w-4 md:min-w-8 max-w-10 min-h-10 max-h-full text-gray-800"
+                    class="rounded-md aspect-[0.66] min-w-8 max-w-10 min-h-10 max-h-full text-gray-800"
                     :class="[colors(selectedSpotsIds.has(`${row}-${col}`), isSpotOccupied(row, col)), { 'ms-auto': col == 0 }, { 'me-auto': col == cols - 1 }]"
                     :title="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)" role="gridcell"
                     :aria-disabled="!interactive || isSpotOccupied(row, col)"
