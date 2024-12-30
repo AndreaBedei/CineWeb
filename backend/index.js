@@ -54,6 +54,12 @@ app.use('/image', imagesRouter);
 app.use('/img', express.static(path.join(__dirname, 'img')));
 
 io.on('connection', (socket) => {
+    let userId = "";
+    /**
+     * @type {Boolean | undefined}
+     */
+    let isAdmin;
+
     // Riconosci gli amministratori
     socket.on('registerAdmin', (id) => {
         if (adminSockets.has(id)) {
@@ -63,7 +69,9 @@ io.on('connection', (socket) => {
             }
             adminSockets.delete(id);
         }
+        userId = id;
         adminSockets.set(id, socket);
+        isAdmin = true;
     });
 
     socket.on('registerUser', (id) => {
@@ -74,7 +82,9 @@ io.on('connection', (socket) => {
             }
             userSockets.delete(id);
         }
+        userId = id;
         userSockets.set(id, socket);
+        isAdmin = false;
     });
 
     socket.on('newReview', (reviewData) => {
