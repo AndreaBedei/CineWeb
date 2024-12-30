@@ -40,6 +40,20 @@ const loadPayPalScript = async () => {
     });
 };
 
+const isModalShown = ref(false);
+const modalTitle = ref("");
+const modalContent = ref("");
+
+function showModal(title: string, message: string) {
+    isModalShown.value = true;
+    modalTitle.value = title;
+    modalContent.value = message;
+}
+
+function hideModal() {
+    isModalShown.value = false;
+}
+
 onMounted(async () => {
     await loadPayPalScript();
 
@@ -59,7 +73,7 @@ onMounted(async () => {
             },
             async onApprove(_, actions) {
                 return actions.order.capture().then((details) => {
-                    alert("Pagamento completato da " + details.payer.name.given_name);
+                    showModal("Successo!", "Pagamento completato da " + details.payer.name.given_name);
                 });
             },
             onError(err) {
@@ -76,9 +90,9 @@ function finalizeBooking() {
         seats: props.selectedSpots,
         price: props.price
     }).then(() => {
-        alert("Prenotazione completata!");
+        showModal("Successo!", "Prenotazione completata!");
     }, () => {
-        alert("Prenotazione fallita.");
+        showModal("Errore", "Prenotazione fallita.");
     })
 }
 
@@ -88,6 +102,8 @@ function closeModal() {
 </script>
 
 <template>
+    <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false" v-on:close-modal="hideModal"/>
+
     <div role="dialog" aria-labelledby="paypal-modal-title" aria-hidden="false"
         class="fixed inset-0 z-50 bg-gray-800 bg-opacity-50 flex justify-center items-center">
 
