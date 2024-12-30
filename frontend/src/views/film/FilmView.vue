@@ -15,16 +15,16 @@ const user = useUserStore();
 const movieId = ref(route.query.id); // Sostituisci con un ID dinamico
 const movie = ref(null);
 interface Review {
+  _id: string;
+  user: {
     _id: string;
-    user: {
-      _id: string;
-      name: string;
-      profilePicture: string;
-      surname: string;
-    };
-    rating: number;
-    text: string;
-    reviewDate: string;
+    name: string;
+    profilePicture: string;
+    surname: string;
+  };
+  rating: number;
+  text: string;
+  reviewDate: string;
 }
 
 const reviews = ref<Review[]>([]);
@@ -57,9 +57,10 @@ const endReached = ref(false);
 const fetchReviews = async () => {
   try {
     const response = await axios.get(`http://localhost:3001/reviews/screening/${movieId.value}?limit=5&offset=${currentOffset.value}`);
+    console.log(response.data);
     if (response.data.length === 0) {
       endReached.value = true;
-    } else if (response.data){
+    } else if (response.data) {
       const newReviews = response.data;
       reviews.value.push(...newReviews);
       currentOffset.value += 5;
@@ -79,6 +80,9 @@ onMounted(() => {
   fetchMovieDetails();
   fetchShowtimes();
   fetchReviews();
+  user.socket.on('newScreeningNotification', () => {
+    fetchShowtimes();
+  });
 });
 
 function updateVideo() {
@@ -97,10 +101,10 @@ watch(() => route.query.id, (newId) => {
 
 <template>
   <div class="p-4 w-full max-w-7xl mx-auto">
-    <MovieDetails v-if="movie" :movie="movie" :hasNoShowTimes="showtimes.length===0"  @updateVideo="updateVideo" />
+    <MovieDetails v-if="movie" :movie="movie" :hasNoShowTimes="showtimes.length === 0" @updateVideo="updateVideo" />
     <Showtimes v-if="movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
-    <ReviewForm v-if="!user.isAdmin && movie" @update="updateReviews"/>
+    <ReviewForm v-if="!user.isAdmin && movie" @update="updateReviews" />
     <ReviewList v-if="movie" :reviews="reviews" :endReached="endReached" @loadMore="fetchReviews" />
   </div>
 </template>

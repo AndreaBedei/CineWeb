@@ -256,42 +256,35 @@ watch(selectedRoom, async (newRoom) => {
 });
 
 function disableBodyScroll() {
-  document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
 }
 
 function enableBodyScroll() {
-  document.body.style.overflow = "";
+    document.body.style.overflow = "";
 }
 
 onMounted(() => {
-  disableBodyScroll();
+    disableBodyScroll();
 });
 
 onUnmounted(() => {
-  enableBodyScroll();
+    enableBodyScroll();
 });
 </script>
 
 <template>
-    <section
-    class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto"
-    aria-labelledby="modal-title"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div
-      class="bg-white rounded-lg shadow-lg w-full max-w-md md:max-w-3xl overflow-y-auto"
-      style="max-height: 90vh;"
-    >
+    <section class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto"
+        aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md md:max-w-3xl overflow-y-auto"
+            style="max-height: 90vh;">
             <header class="flex justify-between items-center bg-primary text-white px-4 py-1">
-                <h4 class="text-lg font-semibold">{{ screeningId === '' ? 'Nuova' : 'Modifica' }} Proiezione Per Film "{{ movie?.title }}"</h4>
+                <h4 class="text-lg font-semibold">{{ screeningId === '' ? 'Nuova' : 'Modifica' }} Proiezione Per Film
+                    "{{ movie?.title }}"</h4>
                 <button @click="closeModal" class="text-white hover:text-gray-200">
                     ✕
                 </button>
             </header>
-            <LoadingAlert v-if="checkLoading" />
-            <ErrorAlert v-if="msgUserError" :message="msgUserError" @clear="msgUserError = ''" />
-            <OkAlert v-if="msgUserOk" :message="msgUserOk" @clear="msgUserOk = ''" />
+
             <form @submit.prevent="addProjection" class="p-2 space-y-2" method="post">
                 <!-- Selezione del cinema -->
                 <section>
@@ -361,6 +354,12 @@ onUnmounted(() => {
                     <p v-else-if="selectedRoom !== ''" class="text-gray-700 mt-2">Nessuna proiezione in questa sala per
                         questa data.</p>
 
+                    <div class="my-2">
+                        <LoadingAlert v-if="checkLoading" />
+                        <ErrorAlert v-if="msgUserError" :message="msgUserError" @clear="msgUserError = ''" />
+                        <OkAlert v-if="msgUserOk" :message="msgUserOk" @clear="msgUserOk = ''" />
+                    </div>
+
                     <div class="mt-4 flex items-center gap-4">
                         <!-- Selezione ora -->
                         <label for="hour" class="text-sm">Ora:</label>
@@ -379,8 +378,6 @@ onUnmounted(() => {
 
                         <!-- Spaziatore per spingere il bottone a destra -->
                         <div class="flex-grow"></div>
-
-                        <!-- Bottone -->
 
                         <SimpleButton v-if="screeningId === ''" class="justify-end" content="Aggiungi" type="submit"
                             color="green" rounding="small" />

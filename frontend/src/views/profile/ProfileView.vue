@@ -232,7 +232,7 @@ function deleteBooking() {
 
         <div v-if="!user.isAdmin || (user.isAdmin && !isCurrentUser)" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <section v-if="isCurrentUser" class="bg-gray-100 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold mb-4">I tuoi biglietti</h3>
+                <h3 class="text-lg font-semibold mb-4">Prossime prenotazioni</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -277,7 +277,7 @@ function deleteBooking() {
 
             <section :class="{ 'col-span-2': !isCurrentUser, 'col-span-1': isCurrentUser }"
                 class="bg-gray-100 p-4 rounded-lg shadow">
-                <h3 class="text-lg font-semibold mb-4">Ultimi film visti</h3>
+                <h3 class="text-lg font-semibold mb-4">Prenotazioni passate</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>

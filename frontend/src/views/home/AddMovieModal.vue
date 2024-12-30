@@ -193,8 +193,7 @@ function closeModal() {
                     {{ props.modalTitle }}
                 </h2>
             </header>
-            <ErrorAlert v-if="msgUser" :message="msgUser" @clear="msgUser = ''" />
-            <LoadingAlert v-if="check" />
+
             <form @submit.prevent="handleSubmit">
                 <!-- Nome -->
                 <BaseInput id="nome-film" label="Nome del film" v-model="name" :require="true" />
@@ -226,6 +225,12 @@ function closeModal() {
                         </div>
                     </div>
                 </section>
+
+                <div class="my-2">
+                    <ErrorAlert v-if="msgUser" :message="msgUser" @clear="msgUser = ''" />
+                    <LoadingAlert v-if="check" />
+                </div>
+
                 <!-- Bottoni -->
                 <div class="flex justify-end space-x-4">
                     <SimpleButton content="Annulla" color="red" :handleClick="closeModal" rounding="small" />
