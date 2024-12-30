@@ -72,7 +72,7 @@ function toggleExpandedMenu() {
 
         <SearchBar v-if="logged" class="flex-grow" />
 
-        <div class="hidden md:flex gap-2">
+        <div class="hidden md:flex gap-2" :class="{ 'ms-auto': !logged }">
             <SimpleButton v-if="logged" content="Profilo" color="secondary" rounding="small"
                 :handle-click="goToProfile"></SimpleButton>
             <SimpleButton v-if="logged" content="Home" color="secondary" rounding="small" :handle-click="goToHome">
@@ -90,7 +90,7 @@ function toggleExpandedMenu() {
             <SimpleButton v-if="!logged" content="Login" color="secondary" rounding="small" :handle-click="goToLogin">
             </SimpleButton>
         </div>
-        <div class="md:hidden relative flex-shrink-0 w-14 z-50">
+        <div class="md:hidden relative flex-shrink-0 w-14 z-50" :class="{ 'ms-auto': !logged }">
             <div class="absolute right-0 h-full aspect-square">
                 <div class="flex gap-2 flex-col bg-slate-700 rounded-full"
                     :class="{ 'aspect-square overflow-hidden': !expanded }">

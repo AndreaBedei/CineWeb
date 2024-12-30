@@ -9,18 +9,9 @@ const router = useRouter();
 const user = useUserStore();
 
 
-// const notifications = ref<string[]>([]);
-
-// onMounted(() => {
-//   // Ricevi notifiche in tempo reale
-//   socket.on('newReviewNotification', (reviewData) => {
-//     notifications.value.push(`Nuova recensione: ${reviewData}`);
-//   });
-// });
-
 watch(router.currentRoute, async (to) => {
     const logged = await user.tryLogin();
-    if (!logged && to.path !== '/signon') {
+    if (!logged && to.path !== '/signon' && to.path !== '/privacy') {
         router.push('/signon');
     }
 });
