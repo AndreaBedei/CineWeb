@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SimpleButton from '@/components/SimpleButton.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -14,8 +15,12 @@ const props = defineProps<{
     rating: number;
     text: string;
     reviewDate: string;
-  }[];
+  }[],
+  title?: string,
+  endReached?: boolean;
 }>();
+
+const emit = defineEmits(['loadMore']);
 
 const goToUserProfile = (userId: string) => {
   router.push({ name: 'profileWithId', params: { userId: userId } });
@@ -25,11 +30,12 @@ const goToUserProfile = (userId: string) => {
 <template>
   <section class="mt-8 bg-gray-50 p-6 rounded-lg shadow-lg">
     <header>
-      <h2 class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Recensioni</h2>
+      <h2 v-if="!title" class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Recensioni</h2>
+      <h2 v-else class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">{{ props.title }}</h2>
     </header>
     <section v-if="Object.keys(props.reviews).length === 0">
       <p class="text-lg text-gray-700 font-medium">
-        Non ci sono recensioni disponibili per questo film
+        Non ci sono recensioni disponibili
       </p>
     </section>
 
@@ -55,6 +61,9 @@ const goToUserProfile = (userId: string) => {
           </div>
         </li>
       </ul>
+      <div v-if="!endReached" class="flex justify-center mt-6">
+        <SimpleButton content="Carica altre recensioni" color="primary" rounding="small" :handle-click="() => emit('loadMore')" />
+      </div>
     </section>
   </section>
 </template>

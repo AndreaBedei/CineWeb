@@ -228,7 +228,6 @@ function hideEditor() {
 }
 
 onMounted(() => {
-    console.log("PAGE MOUNTED")
     getCinemas();
 });
 </script>

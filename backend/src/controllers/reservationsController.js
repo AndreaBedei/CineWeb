@@ -64,27 +64,23 @@ exports.getReservationByID = (req, res) => {
 
 exports.createReservation = async (req, res) => {
     const { screeningId, seats, userId, price } = req.body;
-    console.log(req.body);
 
     if (!screeningId || !seats || !userId || !price) {
         return res.status(400).send('Missing required fields');
     }
 
-    console.log(screeningId, seats, userId, price);
     try {
         // Step 1: Find the cinema hall ID associated with the screening
         const screening = await screeningsModel.findById(screeningId).populate('cinemaHall');
         if (!screening) {
             return res.status(404).send('Screening not found');
         }
-        console.log("ho fatto gli screening");
         const cinemaHallId = screening.cinemaHall._id;
 
         // Step 2: Iterate through the seats array to find seat IDs
         const seatIds = [];
         for (const seat of seats) {
             const { row, col } = seat;
-            console.log(row, col, cinemaHallId);
             const seatDoc = await seatsModel.findOne({
                 cinemaHall: cinemaHallId,
                 row: row,
@@ -98,9 +94,6 @@ exports.createReservation = async (req, res) => {
 
             seatIds.push(seatDoc._id);
         }
-        console.log("ho fatto anche tutti i seats");
-
-        // Step 3: Create the reservation
         const newReservation = new reservationsModel({
             user: userId,
             screening: screeningId,

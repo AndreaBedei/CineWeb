@@ -7,6 +7,7 @@ import { useUserStore } from '../../stores/user';
 import router from '@/router';
 import AddMovieModal from './AddMovieModal.vue';
 import PageModal from '@/components/PageModal.vue';
+import ReviewList from '../film/ReviewList.vue';
 
 const user = useUserStore();
 interface Movie {
@@ -14,6 +15,19 @@ interface Movie {
   title: string;
   poster: string;
   rating?: number;
+}
+
+interface Review {
+    _id: string;
+    user: {
+      _id: string;
+      name: string;
+      profilePicture: string;
+      surname: string;
+    };
+    rating: number;
+    text: string;
+    reviewDate: string;
 }
 
 const movieCarousels = ref(new Map<string, Movie[]>());
@@ -84,13 +98,37 @@ onMounted(() => {
   if (user.ready) {
     fetchMovies();
     loaded.value = true;
+    if(user.isAdmin){
+      fetchReviews();
+    }
   }
 });
 
+const reviews = ref<Review[]>([]);
+const currentOffset = ref(0);
+const endReached = ref(false);
+
+const fetchReviews = async () => {
+  try {
+    const response = await axios.get(`http://localhost:3001/reviews?limit=5&offset=${currentOffset.value}`);
+    if (response.data.length === 0) {
+      endReached.value = true;
+    } else if (response.data){
+      const newReviews = response.data;
+      reviews.value.push(...newReviews);
+      currentOffset.value += 5;
+    }
+  } catch (error) {
+    console.error('Errore nel caricamento delle recensioni', error);
+  }
+};
 
 watch(() => user.ready, () => {
   if (user.ready) {
     fetchMovies();
+    if(user.isAdmin){
+      fetchReviews();
+    }
     loaded.value = true;
   }
 });
@@ -98,18 +136,25 @@ watch(() => user.ready, () => {
 
 <template>
   <PageModal v-if="updateOk" :confirm="false" title="Richiesta ricevuta" message="La sua operazione è stata eseguita con successo." @closeModal="updateOk = false" />
-  <div class="p-4 w-full bg-secondary-light">
-    <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
-    <div v-if="user.isAdmin" class="flex justify-end">
-      <SimpleButton content="Aggiungi film" color="primary" rounding="small" :handle-click="openModalAddMovie" class="mx-2"/>
-      <SimpleButton content="Modifica sale" color="secondary" rounding="small" :handle-click="() => router.push('/edithalls')" />
-      <AddMovieModal v-if="modalFilm" @close="closeModal" />
-    </div>
-    <div v-for="(title) in movieCarousels" :key="title[0]">
-      <Carousel v-if="title[1].length>0" :title="title[0]" :movies="title[1]" />
-    </div>
-    <SimpleButton v-if="movieCarousels.size !== 0 && user.interests.length === 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
-  </div>
+  <section class="p-4 w-full bg-secondary-light">
+    <header>
+      <h1 class="text-4xl text-center font-bold text-primary-dark mt-6 mb-8">CineWeb</h1>
+    </header>
+    <section class="pb-5">
+      <div v-if="user.isAdmin" class="flex justify-end">
+        <SimpleButton content="Aggiungi film" color="primary" rounding="small" :handle-click="openModalAddMovie" class="mx-2"/>
+        <SimpleButton content="Modifica sale" color="secondary" rounding="small" :handle-click="() => router.push('/edithalls')" />
+        <AddMovieModal v-if="modalFilm" @close="closeModal" />
+      </div>
+      <div v-for="(title) in movieCarousels" :key="title[0]">
+        <Carousel v-if="title[1].length>0" :title="title[0]" :movies="title[1]" />
+      </div>
+      <div class="flex justify-center">
+        <SimpleButton v-if="movieCarousels.size !== 0 && user.interests.length === 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
+      </div>
+    </section>
+    <section>
+      <ReviewList v-if="reviews" :reviews="reviews" :end-reached="endReached" title="Ultime recensioni aggiunte" @load-more="fetchReviews" />
+    </section>
+  </section>
 </template>
-
-<style scoped></style>

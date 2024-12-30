@@ -14,7 +14,20 @@ const route = useRoute();
 const user = useUserStore();
 const movieId = ref(route.query.id); // Sostituisci con un ID dinamico
 const movie = ref(null);
-const reviews = ref([]);
+interface Review {
+    _id: string;
+    user: {
+      _id: string;
+      name: string;
+      profilePicture: string;
+      surname: string;
+    };
+    rating: number;
+    text: string;
+    reviewDate: string;
+}
+
+const reviews = ref<Review[]>([]);
 const showtimes = ref([]);
 
 const fetchMovieDetails = async () => {
@@ -39,13 +52,17 @@ const fetchShowtimes = async () => {
   }
 };
 
+const currentOffset = ref(0);
+const endReached = ref(false);
 const fetchReviews = async () => {
   try {
-    const response = await axios.get(`http://localhost:3001/reviews/screening/${movieId.value}`);
-    if (response.data){
-      reviews.value = response.data;
-    } else {
-      reviews.value = [];
+    const response = await axios.get(`http://localhost:3001/reviews/screening/${movieId.value}?limit=5&offset=${currentOffset.value}`);
+    if (response.data.length === 0) {
+      endReached.value = true;
+    } else if (response.data){
+      const newReviews = response.data;
+      reviews.value.push(...newReviews);
+      currentOffset.value += 5;
     }
   } catch (error) {
     console.error('Errore nel caricamento delle recensioni', error);
@@ -82,6 +99,6 @@ watch(() => route.query.id, (newId) => {
     <Showtimes v-if="movie" :showtimes="showtimes" :movie="movie" @update="fetchShowtimes" />
     <IFrameComponent v-if="movie" :movie="movie" />
     <ReviewForm v-if="!user.isAdmin && movie" @update="updateReviews"/>
-    <ReviewList v-if="movie" :reviews="reviews" />
+    <ReviewList v-if="movie" :reviews="reviews" :endReached="endReached" @loadMore="fetchReviews" />
   </div>
 </template>

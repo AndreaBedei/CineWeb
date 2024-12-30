@@ -4,8 +4,17 @@ const { notificationsModel } = require('../models/notificationsModel');
 const mongoose = require('mongoose');
 
 exports.getAllReviews = (req, res) => {
+    const limit = parseInt(req.query.limit); 
+    const offset = parseInt(req.query.offset);
+
     reviewsModel.find()
-        .sort({ reviewDate: -1 })
+        .populate({
+            path: 'user',
+            select: '-password -salt' 
+        })
+        .sort({ reviewDate: -1 }) 
+        .skip(offset) 
+        .limit(limit) 
         .then(docs => {
             res.json(docs);
         })
@@ -48,18 +57,18 @@ exports.getReviewsByUser = (req, res) => {
 
 exports.getReviewsByMovie = (req, res) => {
     const movieId = req.params.movieId;
+    const limit = parseInt(req.query.limit); 
+    const offset = parseInt(req.query.offset);
 
     reviewsModel.find({ movie: movieId })
         .populate({
             path: 'user',
             select: '-password -salt'
         })
-        .limit(10)
         .sort({ reviewDate: -1 })
+        .skip(offset) 
+        .limit(limit) 
         .then(docs => {
-            if (docs.length === 0) {
-                return res.status(200).send("");
-            }
             res.json(docs);
         })
         .catch(err => {
