@@ -150,7 +150,7 @@ watch(() => user.ready, () => {
         <Carousel v-if="title[1].length>0" :title="title[0]" :movies="title[1]" />
       </div>
       <div class="flex justify-center">
-        <SimpleButton v-if="movieCarousels.size !== 0 && user.interests.length === 0 && !user.isAdmin" content="Cambia interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
+        <SimpleButton v-if="movieCarousels.size !== 0 && user.interests.length === 0 && !user.isAdmin" content="Aggiungi interessi" color="secondary" rounding="small" :handle-click="goToProfile"></SimpleButton>
       </div>
     </section>
     <section>
