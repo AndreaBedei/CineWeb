@@ -82,7 +82,7 @@ function toggleExpandedMenu() {
                 class="flex items-center gap-2 rounded-lg transition-colors border-solid border-2 px-5 py-3 bg-secondary hover:bg-secondary-dark text-white border-secondary hover:border-secondary-dark"
                 @click="goToNotify" :class="{ 'bg-yellow-500 animate-pulse': hasNewNotification }">
                 <span>Notifiche</span>
-                <BellIcon class="w-6 h-6" />
+                <BellIcon v-if="hasNewNotification" class="w-6 h-6" />
             </button>
 
             <SimpleButton v-if="logged" content="Logout" color="red" rounding="small" :handle-click="goToLoginAndOut">
@@ -97,7 +97,8 @@ function toggleExpandedMenu() {
                     <SimpleButton color="primary" :title="expanded ? 'Chiudi menù azioni' : 'Apri menù azioni'"
                         rounding="full" :handle-click="toggleExpandedMenu" size="small" :bold="true"
                         class="aspect-square !transition-all" :class="{ '-rotate-90 m-1': expanded }">
-                        <EllipsisVerticalIcon class="py-0" />
+                        <EllipsisVerticalIcon v-if="!hasNewNotification" class="py-0" />
+                        <BellIcon v-else class="py-0" />
                     </SimpleButton>
                     <SimpleButton v-if="logged" title="Profilo" color="secondary" rounding="full"
                         :handle-click="goToProfile" size="small" class="aspect-square m-1">
