@@ -70,6 +70,8 @@ const fetchReviews = async () => {
 };
 
 function updateReviews() {
+  currentOffset.value = 0;
+  reviews.value = [];
   fetchReviews();
 }
 
