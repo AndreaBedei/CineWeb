@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useUserStore } from '@/stores/user';
 import { ref, type Ref } from 'vue';
+
+const user = useUserStore();
 
 const props = withDefaults(
     defineProps<{
@@ -60,7 +63,7 @@ function colors(isSelected: boolean, isOccupied: boolean) {
                     :aria-selected="selectedSpotsIds.has(`${row}-${col}`)"
                     role="gridcell">
                     <button :disabled="!interactive || isSpotOccupied(row, col)"
-                        @click="toggleSelection(Number(row), col)"
+                        @click="!user.isAdmin && toggleSelection(Number(row), col)"
                         class="text-center w-full h-full"
                         :title="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)"
                         :aria-disabled="!interactive || isSpotOccupied(row, col)"

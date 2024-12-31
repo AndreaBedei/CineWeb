@@ -185,6 +185,8 @@ function updateShowTimes() {
                                         class="mx-1" size="small" rounding="small" content="Prenota" color="primary"
                                         :handle-click="() => booking(screening.screeningId)" />
                                     <div v-if="user.isAdmin" class="flex flex-col sm:flex-row items-center gap-1">
+                                        <SimpleButton size="small" rounding="small" content="Prenotazioni" color="primary"
+                                            :handle-click="() => booking(screening.screeningId)" />
                                         <SimpleButton v-if="isFutureDate(screening.screeningDate)" size="small"
                                             rounding="small" content="Modifica" color="secondary" class="mx-1"
                                             :handle-click="() => openModalAddShowTimesWithParams(cinema, screening.cinemaHallId, screening.screeningDate, screening.ticketPrice.toFixed(2), screening.screeningId)" />

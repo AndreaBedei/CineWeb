@@ -76,25 +76,27 @@ function showModal(title: string, message: string) {
 
 function hideModal() {
     isModalShown.value = false;
+    router.back();
 }
-
 
 </script>
 
 <template>
-    <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false" v-on:close-modal="hideModal"/>
+    <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false"
+        v-on:close-modal="hideModal" />
 
     <div class="flex flex-col w-full">
         <div class="my-4">
-            <h1 class="text-2xl font-bold text-center">Prenota posti</h1>
+            <h1 v-if="!user.isAdmin" class="text-2xl font-bold text-center">Prenota posti</h1>
+            <h1 v-else class="text-2xl font-bold text-center">Controlla prenotazioni</h1>
         </div>
         <div class="flex flex-wrap gap-10 mx-[30%] md:mx-auto my-auto justify-center p-8">
             <!-- Primo componente -->
             <MovieRoom v-if="rows" :rows="rows" :cols="cols" :occupied="occupied" @selected-spots="updateSpots"
-                class="flex-grow max-w-[80vw] max-h-[40vh]" />
+                :class="[user.isAdmin ? 'flex-grow w-full h-full' : 'flex-grow max-w-[80vw] max-h-[40vh]']" />
 
             <!-- Secondo componente -->
-            <div v-if="rows" class="my-auto flex flex-col items-center gap-2 flex-grow min-w-[200px]">
+            <div v-if="rows && !user.isAdmin" class="my-auto flex flex-col items-center gap-2 flex-grow min-w-[200px]">
                 <p class="w-40 text-center">Posti selezionati: {{ selectedSpots.length }}</p>
                 <p v-show="selectedSpots.length != 0" class="font-bold w-40 text-center">Totale: {{
                     getTotalPrice().toFixed(2) }} €</p>
@@ -105,5 +107,6 @@ function hideModal() {
     </div>
 
     <PayPallModal v-if="bookingModal" :price="getTotalPrice().toFixed(2)" :user-id="user.userId"
-        :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close-msg="showModal" @close="bookingModal = false" />
+        :screening-id="screeningId!.toString()" :selected-spots="selectedSpots" @close-msg="showModal"
+        @close="bookingModal = false" />
 </template>
