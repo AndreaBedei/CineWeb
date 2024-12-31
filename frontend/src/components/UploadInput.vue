@@ -69,7 +69,7 @@ async function uploadImage() {
     <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
       <input id="imgUpload" type="file" @change="handleFileChange" accept="image/*"
       class="p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary" />
-      <SimpleButton id="uploadButton" label="Carica poster" type="button" :modelValue="''" @click="uploadImage"
+      <SimpleButton id="uploadButton" type="button" :handleClick="uploadImage"
       :disabled="!selectedFile" rounding="small" size="small" content="Carica poster" color="primary" />
     </div>
     <span v-if="props.currentFile || selectedFile" class="text-gray-600">

@@ -25,7 +25,7 @@ watch(() => props.movie.trailerLink, (newLink) => {
 
     <div v-if="video" class="relative w-full h-0 pb-[56.25%] mb-8">
       <iframe :src="`https://www.youtube.com/embed/${video}`"
-        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border: none;"
         class="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl" title="Trailer del film"
         aria-label="Trailer del film">
       </iframe>

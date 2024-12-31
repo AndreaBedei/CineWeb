@@ -235,9 +235,9 @@ onMounted(() => {
 <template>
     <div class="w-full flex flex-col gap-2 mx-auto px-8">
         <div class="flex flex-col gap-2 mx-auto">
-            <section>
+            <div>
                 <label for="cinema" class="block text-sm font-medium text-gray-700">Cinema</label>
-                <select id="cinema" v-model="selectedCinema" required
+                <select id="cinema" v-model="selectedCinema"
                     @change="changeCinema(($event.target as HTMLSelectElement).value)"
                     class="mt-1 w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary bg-white text-gray-700">
                     <option v-for="cinema in cinemas" :key="cinema[0]" :value="cinema[1].name"
@@ -245,12 +245,12 @@ onMounted(() => {
                         {{ cinema[1].name }}
                     </option>
                 </select>
-            </section>
+            </div>
 
             <!-- Selezione della sala -->
-            <section>
+            <div>
                 <label for="room" class="block text-sm font-medium text-gray-700">Sala</label>
-                <select id="room" v-model="selectedRoom" required
+                <select id="room" v-model="selectedRoom"
                     @change="changeRoom(($event.target as HTMLSelectElement).value)"
                     class="mt-1 w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary"
                     :disabled="selectedCinema === ''"
@@ -259,7 +259,7 @@ onMounted(() => {
                         {{ room[1].name }}
                     </option>
                 </select>
-            </section>
+            </div>
 
             <div class="flex gap-2">
                 <SimpleButton color="primary" size="small" :disabled="selectedCinema == ''" :handle-click="() => showEditor('add')">
@@ -276,10 +276,10 @@ onMounted(() => {
 
         <PageModal v-if="isModalShown" :title="modalTitle" :message="modalContent" :confirm="false" v-on:close-modal="hideModal"/>
 
-        <div v-show="displayEditor" class="flex flex-col mb-8">
-            <div class="my-4">
+        <section v-show="displayEditor" class="flex flex-col mb-8">
+            <header class="my-4">
                 <h1 class="text-2xl font-bold text-center">{{ editorMode == 'add' ? 'Aggiungi nuova sala' : 'Modifica sala' }}</h1>
-            </div>
+            </header>
             <div id="room-view" class="flex flex-grow justify-center gap-2">
                 <div
                     class="flex flex-col gap-2 bg-gray-50 border-1, border-solid border-slate-500 rounded-lg w-[80vw] md:w-[60vw] p-5 self-center">
@@ -323,6 +323,6 @@ onMounted(() => {
                     </form>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </template>

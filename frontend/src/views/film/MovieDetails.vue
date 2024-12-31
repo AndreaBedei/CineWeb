@@ -123,9 +123,9 @@ async function deleteFilmClick() {
 
 <template>
   <PageModal v-if="updateOk" :confirm="false" title="Modifica completata" message="Il film è stato modificato con successo" @closeModal="updateOk = false" />
-  <section v-if="isLoading" class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div v-if="isLoading" class="flex items-center justify-center min-h-screen bg-gray-100">
     <p class="text-lg text-gray-700 font-medium">Caricamento...</p>
-  </section>
+  </div>
 
   <section v-else class="flex flex-col md:flex-row gap-8 items-start bg-gray-50 p-6 rounded-lg shadow-lg">
     <!-- Poster -->
@@ -185,7 +185,16 @@ async function deleteFilmClick() {
         <h2 class="text-lg font-semibold text-primary-dark mb-2">Valutazioni</h2>
         <ul class="flex flex-wrap gap-2">
           <li v-for="rating in movieDetails?.Ratings" :key="rating.Source"
-            class="bg-green-100 text-green-800 px-3 py-1 rounded-lg text-sm font-medium">
+            class="bg-green-100 text-green-900 px-3 py-1 rounded-lg text-sm font-medium"
+            :class="{
+              'bg-yellow-200 text-yellow-900': (rating.Source === 'Internet Movie Database' && parseFloat(rating.Value) < 8) ||
+                              (rating.Source === 'Rotten Tomatoes' && parseFloat(rating.Value) < 80) ||
+                              (rating.Source === 'Metacritic' && parseFloat(rating.Value) < 80),
+              'bg-green-200 text-green-900': (rating.Source === 'Internet Movie Database' && parseFloat(rating.Value) >= 8) ||
+                             (rating.Source === 'Rotten Tomatoes' && parseFloat(rating.Value) >= 80) ||
+                             (rating.Source === 'Metacritic' && parseFloat(rating.Value) >= 80)
+            }"
+            >
             {{ rating.Source }}: {{ rating.Value }}
           </li>
         </ul>

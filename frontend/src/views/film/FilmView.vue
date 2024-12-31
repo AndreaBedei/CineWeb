@@ -58,7 +58,6 @@ const endReached = ref(false);
 const fetchReviews = async () => {
   try {
     const response = await axios.get(`http://localhost:3001/reviews/screening/${movieId.value}?limit=5&offset=${currentOffset.value}`);
-    console.log(response.data);
     if (response.data.length === 0) {
       endReached.value = true;
     } else if (response.data) {

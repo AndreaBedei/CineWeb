@@ -78,9 +78,9 @@ async function handleSubmit() {
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" aria-labelledby="modal-title"
     role="dialog" aria-modal="true">
     <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6" role="document">
-      <h4 id="modal-title" class="text-lg font-semibold text-primary-dark mb-4">
+      <h3 id="modal-title" class="text-lg font-semibold text-primary-dark mb-4">
         {{ props.title }}
-      </h4>
+      </h3>
 
       <div v-if="msgUser" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
         role="alert" aria-label="true">

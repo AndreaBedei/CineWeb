@@ -6,7 +6,6 @@ import SimpleButton from '@/components/SimpleButton.vue';
 import dayjs from "dayjs";
 import axios from 'axios';
 import PageModal from '@/components/PageModal.vue';
-import PayPallModal from '@/components/PayPallModal.vue';
 import router from '@/router';
 
 const props = defineProps({
@@ -38,7 +37,6 @@ const title = ref('');
 const message = ref('');
 const elimination = ref(true);
 
-const bookingModal = ref(false);
 
 function formatDate(date: string): string {
     const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -129,13 +127,13 @@ function updateShowTimes() {
             <h2 class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Orari</h2>
         </header>
 
-        <section v-if="Object.keys(props.showtimes).length === 0">
+        <div v-if="Object.keys(props.showtimes).length === 0">
             <p class="text-lg text-gray-700 font-medium">
                 Non ci sono orari disponibili per questo film
             </p>
-        </section>
+        </div>
 
-        <section v-else>
+        <div v-else>
             <section v-for="(screenings, cinema) in props.showtimes" :key="cinema" class="p-4">
                 <header>
                     <h3 class="text-2xl font-bold text-primary-dark border-b pb-2 mb-4">
@@ -146,7 +144,7 @@ function updateShowTimes() {
                 <!-- Tabella -->
                 <div class="overflow-x-auto">
                     <table
-                        class="table-auto w-full text-left text-sm text-gray-700 border-collapse border min-w-max border-gray-300">
+                        class="table-auto w-full text-left text-sm text-black border-collapse border min-w-max border-gray-300">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th :id="'room' + cinema" scope="col" class="py-2 px-1 font-semibold text-center">
@@ -199,7 +197,7 @@ function updateShowTimes() {
                     </table>
                 </div>
             </section>
-        </section>
+        </div>
         <div class="flex justify-end">
             <SimpleButton v-if="user.isAdmin" content="Aggiungi proiezione" color="primary" rounding="small"
                 :handle-click="openModalAddShowTimes" />
@@ -210,5 +208,4 @@ function updateShowTimes() {
     <AddShowTimesModal v-if="modalShowTime" :movie="movie" :cinema="cinema" :room="cinemaHall" :date="screeningDate"
         :priceV="ticketPrice" :h="h" :m="m" :screeningId="screeningId" class="overflow-auto max-h-screen"
         @update="updateShowTimes" @close="closeModalAddShowTimes" />
-    <PayPallModal v-if="bookingModal" price="10" @close="bookingModal = false" />
 </template>

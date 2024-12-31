@@ -34,13 +34,13 @@ const goToUserProfile = (userId: string) => {
       <h2 v-if="!title" class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">Recensioni</h2>
       <h2 v-else class="text-3xl font-bold text-primary-dark border-b pb-2 mb-4">{{ props.title }}</h2>
     </header>
-    <section v-if="Object.keys(props.reviews).length === 0">
+    <div v-if="Object.keys(props.reviews).length === 0">
       <p class="text-lg text-gray-700 font-medium">
         Non ci sono recensioni disponibili
       </p>
-    </section>
+    </div>
 
-    <section v-else>
+    <div v-else>
       <ul class="divide-y divide-gray-300">
         <li v-for="review in props.reviews" :key="review._id" class="py-4 flex gap-4">
           <button @click="goToUserProfile(review.user._id)"
@@ -53,9 +53,7 @@ const goToUserProfile = (userId: string) => {
             <button @click="goToUserProfile(review.user._id)"
               class="font-semibold cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary"
               aria-label="Vai al profilo di {{ review.user.name }}">
-              <h3 class="inline font-semibold">
-                {{ review.user.name }} {{ review.user.surname }}
-              </h3>
+              {{ review.user.name }} {{ review.user.surname }}
             </button>
             <p v-if="title">Film: {{ review.movieTitle }}</p>
             <p class="text-sm text-gray-500">Voto: {{ review.rating }}</p>
@@ -66,6 +64,6 @@ const goToUserProfile = (userId: string) => {
       <div v-if="!endReached" class="flex justify-center mt-6">
         <SimpleButton content="Carica altre recensioni" color="primary" rounding="small" :handle-click="() => emit('loadMore')" />
       </div>
-    </section>
+    </div>
   </section>
 </template>

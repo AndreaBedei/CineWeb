@@ -52,17 +52,22 @@ function colors(isSelected: boolean, isOccupied: boolean) {
         <div class="flex-grow flex flex-col gap-1 md:gap-2 rounded-md min-w-[50%] overflow-y-auto overflow-x-auto max-h-[90vh]"
             role="grid" aria-label="Tabella dei posti">
             <div v-for="row in Array.from(Array(rows).keys())" :key="row"
-                class="flex flex-shrink-0 gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0"  role="row">
-                <button v-for="col in Array.from(Array(cols).keys())" :key="`${row}-${col}`"
-                    :disabled="!interactive || isSpotOccupied(row, col)" @click="toggleSelection(Number(row), col)"
+                class="flex flex-shrink-0 gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0" role="row">
+                <div v-for="col in Array.from(Array(cols).keys())" :key="`${row}-${col}`"
                     class="rounded-md aspect-[0.66] min-w-8 max-w-10 min-h-10 max-h-full text-gray-800"
                     :class="[colors(selectedSpotsIds.has(`${row}-${col}`), isSpotOccupied(row, col)), { 'ms-auto': col == 0 }, { 'me-auto': col == cols - 1 }]"
-                    :title="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)" role="gridcell"
-                    :aria-disabled="!interactive || isSpotOccupied(row, col)"
                     :aria-selected="selectedSpotsIds.has(`${row}-${col}`)"
-                    :aria-label="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)">
-                    {{ col + 1 }}
-                </button>
+                    role="gridcell">
+                    <button :disabled="!interactive || isSpotOccupied(row, col)"
+                        @click="toggleSelection(Number(row), col)"
+                        class="text-center w-full h-full"
+                        :title="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)"
+                        :aria-disabled="!interactive || isSpotOccupied(row, col)"
+                        type="button"
+                        :aria-label="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)">
+                        {{ col + 1 }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>

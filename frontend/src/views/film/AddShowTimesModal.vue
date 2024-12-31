@@ -287,7 +287,7 @@ onUnmounted(() => {
 
             <form @submit.prevent="addProjection" class="p-2 space-y-2" method="post">
                 <!-- Selezione del cinema -->
-                <section>
+                <div>
                     <label for="cinema" class="block text-sm font-medium text-gray-700">Cinema</label>
                     <select id="cinema" v-model="selectedCinema" required
                         @change="changeCinema(($event.target as HTMLSelectElement).value)"
@@ -297,10 +297,10 @@ onUnmounted(() => {
                             {{ cinema.name }}
                         </option>
                     </select>
-                </section>
+                </div>
 
                 <!-- Selezione della sala -->
-                <section>
+                <div>
                     <label for="room" class="block text-sm font-medium text-gray-700">Sala</label>
                     <select id="room" v-model="selectedRoom" required
                         @change="changeRoom(($event.target as HTMLSelectElement).value)"
@@ -311,10 +311,10 @@ onUnmounted(() => {
                             {{ room.name }}
                         </option>
                     </select>
-                </section>
+                </div>
 
                 <!-- Calendario -->
-                <section>
+                <div>
                     <div class="flex justify-between items-center">
                         <button type="button" @click="changeMonth('prev')" class="text-primary hover:primary-dark">
                             ← Mese precedente
@@ -333,16 +333,18 @@ onUnmounted(() => {
                             {{ dayjs(day).date() }}
                         </p>
                     </div>
-                </section>
+                </div>
 
                 <BaseInput id="price" label="Prezzo" type="number" v-model="price" :require="true"
                     :range="{ min: 0, max: 100, step: 0.01 }" />
 
                 <!-- Proiezioni per la data selezionata -->
                 <section v-if="selectedDate">
-                    <h5 v-if="selectedRoom !== ''" class="text-lg font-bold">
-                        Proiezioni per il {{ dayjs(selectedDate).format("DD MMMM YYYY") }}
-                    </h5>
+                    <header>
+                        <h5 v-if="selectedRoom !== ''" class="text-lg font-bold">
+                            Proiezioni per il {{ dayjs(selectedDate).format("DD MMMM YYYY") }}
+                        </h5>
+                    </header>
                     <ul v-if="projections.length !== 0" class="mt-2 space-y-1">
                         <li class="flex gap-3 items-center bg-gray-100 rounded-md px-4 py-1"
                             v-for="projection in projections" :key="projection.date + projection.times">

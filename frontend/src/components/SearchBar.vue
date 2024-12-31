@@ -89,7 +89,8 @@ watch(searchTerm, (newTerm) => {
 <template>
   <div ref="searchContainer" class="relative w-full max-w-lg mx-auto my-2">
     <!-- Input di ricerca -->
-    <input type="search" :placeholder="props.placeholder || 'Cerca un film...'" v-model="searchTerm"
+    <label for="search" class="sr-only">Cerca un film</label>
+    <input id="search" type="text" :placeholder="props.placeholder || 'Cerca un film...'" v-model="searchTerm"
       @keydown="handleKeydown"
       class="w-full bg-white border border-gray-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary-light focus:outline-none text-gray-500"
       role="combobox" aria-expanded="true" aria-haspopup="listbox" aria-autocomplete="list" />

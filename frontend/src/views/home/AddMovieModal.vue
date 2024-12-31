@@ -213,7 +213,9 @@ function closeModal() {
 
                 <!-- Categorie -->
                 <section class="mb-4">
-                    <h3 class="block text-primary-dark font-semibold mb-2 mt-2">Categorie</h3>
+                    <header>
+                        <h3 class="block text-primary-dark font-semibold mb-2 mt-2">Categorie</h3>
+                    </header>
                     <div class="grid gap-4 grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         <div v-for="genre in genres" :key="genre._id" class="flex items-center space-x-2">
                             <input type="checkbox" :id="'genre-' + genre._id" :value="genre" v-model="selectedGenres"

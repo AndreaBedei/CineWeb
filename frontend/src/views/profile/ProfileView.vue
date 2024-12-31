@@ -202,8 +202,10 @@ function deleteBooking() {
 </script>
 
 <template>
-    <div class="p-4 space-y-6 w-screen">
-        <h1 class="text-2xl font-bold text-center">Profilo Utente</h1>
+    <section class="p-4 space-y-6 w-screen">
+        <header>
+            <h1 class="text-2xl font-bold text-center">Profilo Utente</h1>
+        </header>
         <div class="bg-gray-100 p-4 rounded-lg shadow flex flex-col lg:flex-row items-center lg:items-start">
             <img :src="`http://localhost:3001/img/profile/${image}`" alt="Foto Utente"
                 class="w-24 h-24 rounded-full object-cover mb-4 lg:mb-0 lg:mr-4" />
@@ -218,14 +220,14 @@ function deleteBooking() {
                 </p>
             </div>
             <div v-if="isCurrentUser" class="flex flex-col space-y-2 mt-4 lg:mt-0 lg:ml-4">
-                <SimpleButton content="Modifica informazioni" color="primary" :outlineOnly="false" :rounded="true"
+                <SimpleButton content="Modifica informazioni" color="primary" :outlineOnly="false" rounding="none"
                     size="small" bold :disabled="false" :handle-click="openModalProfile" />
 
-                <SimpleButton content="Modifica password" color="primary" :outlineOnly="false" :rounded="true"
+                <SimpleButton content="Modifica password" color="primary" :outlineOnly="false" rounding="none"
                     size="small" bold :disabled="false" :handle-click="openModalPassword" />
 
 
-                <SimpleButton content="Vedi Notifiche" color="secondary" :outlineOnly="false" :rounded="true"
+                <SimpleButton content="Vedi Notifiche" color="secondary" :outlineOnly="false" rounding="none"
                     size="small" bold :disabled="false" :handle-click="goToNotifications" />
             </div>
         </div>
@@ -286,34 +288,34 @@ function deleteBooking() {
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr>
-                                <th id="film" class="border-b p-2">Film</th>
-                                <th id="time" class="border-b p-2">Orario</th>
-                                <th id="cinema" class="border-b p-2">Cinema</th>
-                                <th v-if="isCurrentUser" id="action" class="border-b p-2">Recensione</th>
+                                <th id="filmPast" class="border-b p-2">Film</th>
+                                <th id="timePast" class="border-b p-2">Orario</th>
+                                <th id="cinemaPast" class="border-b p-2">Cinema</th>
+                                <th v-if="isCurrentUser" id="actionPast" class="border-b p-2">Recensione</th>
                             </tr>
                         </thead>
                         <tbody v-if="Object.keys(pastReservation).length !== 0">
                             <tr v-for="ticket in pastReservation" :key="ticket._id">
-                                <td headers="film" class="border-b p-2">
+                                <td headers="filmPast" class="border-b p-2">
                                     <a href="#" @click.prevent="() => goToMovie(ticket.screening._doc.movie)" class="hover:underline">
                                         {{ ticket.screening._doc.movieTitle }}
                                     </a>
                                 </td>
-                                <td headers="time" class="border-b p-2">{{
+                                <td headers="timePast" class="border-b p-2">{{
                                     formatDate(ticket.screening._doc.screeningDate)
                                 }}</td>
-                                <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}
+                                <td headers="cinemaPast" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}
                                 </td>
-                                <td v-if="isCurrentUser" headers="action" class="border-b p-2">
+                                <td v-if="isCurrentUser" headers="actionPast" class="border-b p-2">
                                     <SimpleButton content="Recensisci"
-                                        color="green" :outlineOnly="false" :rounded="true" size="small" bold
+                                        color="green" :outlineOnly="false" rounding="small" size="small" bold
                                         :disabled="false" :handle-click="() => goToMovie(ticket.screening._doc.movie)" />
                                 </td>
                             </tr>
                         </tbody>
                         <tbody v-else>
                             <tr>
-                                <td headers="film time cinema action" class="border-b p-2 text-center" colspan="4">
+                                <td headers="filmPast timePast cinemaPast actionPast" class="border-b p-2 text-center" colspan="4">
                                     Nessun
                                     film visto in passato</td>
                             </tr>
@@ -322,7 +324,7 @@ function deleteBooking() {
                 </div>
             </section>
         </div>
-    </div>
+    </section>
     <Modal v-if="isModalVisibleProfile" title="Modifica Profilo" :name="name" :surname="surname" :interests="interests"
         @closeModal="closeModalProfile" @submitForm="handleFormSubmit" />
     <PasswordModal v-if="isModalVisiblePassword" title="Modifica Password" :id="id" @closeModal="closeModalPassword"

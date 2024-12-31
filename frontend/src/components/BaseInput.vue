@@ -9,7 +9,7 @@ const props = withDefaults(
         modelValue: string | Date,
         require?: boolean,
         read?: boolean,
-        placeholder?: string,
+        placeholder?: string | undefined,
         inputSize?: "fit" | "max",
         layout?: "row" | "column",
         range?: { min: number, max: number, step: number }
@@ -19,7 +19,7 @@ const props = withDefaults(
     {
         type: "text",
         require: false,
-        placeholder: "",
+        placeholder: undefined,
         inputSize: "max",
         layout: "column"
     }

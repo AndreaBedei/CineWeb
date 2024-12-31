@@ -65,15 +65,11 @@ onMounted(fetchNotifications);
         <ul v-if="notifications.length > 0" class="space-y-4">
             <li v-for="notification in notifications" :key="notification._id"
                 class="bg-gray-50 rounded-lg shadow-md p-4 border border-gray-200 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                :aria-label="'Notifica ' + notification._id" @click="() => goToMovie(notification.resource)"
-                role="link">
-                <p class="text-sm text-gray-600">
-                    <span class="font-bold"></span>
-                </p>
-                <p class="text-sm text-gray-500 mt-2">
+                :aria-label="'Notifica ' + notification._id" @click="() => goToMovie(notification.resource)">
+                <p class="text-sm text-black mt-2">
                     <span class="font-bold">Messaggio:</span> {{ notification.text }}
                 </p>
-                <p class="text-sm text-gray-400 mt-2">
+                <p class="text-sm text-gray-600 mt-2">
                     <span class="font-bold">Ricevuto il:</span> {{ formatDate(notification.timestamp) }}
                 </p>
                 <!-- Azioni amministratore -->
