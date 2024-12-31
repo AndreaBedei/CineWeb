@@ -48,14 +48,14 @@ function colors(isSelected: boolean, isOccupied: boolean) {
 </script>
 
 <template>
-    <div class="flex justify-center bg-slate-400 rounded-lg px-2 lg:px-14 py-2 lg:py-4">
+    <div class="flex justify-center bg-slate-400 rounded-lg px-5 md:px-14 py-2 md:py-4">
         <div class="flex-grow flex flex-col gap-1 md:gap-2 rounded-md min-w-[50%] overflow-y-auto overflow-x-auto max-h-[90vh]"
             role="grid" aria-label="Tabella dei posti">
             <div v-for="row in Array.from(Array(rows).keys())" :key="row"
                 class="flex flex-shrink-0 gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0"  role="row">
                 <button v-for="col in Array.from(Array(cols).keys())" :key="`${row}-${col}`"
                     :disabled="!interactive || isSpotOccupied(row, col)" @click="toggleSelection(Number(row), col)"
-                    class="rounded-md aspect-[0.66] min-w-8 max-w-10 min-h-10 max-h-full text-gray-800"
+                    class="rounded-md aspect-[0.66] min-w-8 min-h-10 max-h-full md:w-[5vh] text-gray-800"
                     :class="[colors(selectedSpotsIds.has(`${row}-${col}`), isSpotOccupied(row, col)), { 'ms-auto': col == 0 }, { 'me-auto': col == cols - 1 }]"
                     :title="'Riga ' + Number(row + 1) + ', colonna ' + (col + 1)" role="gridcell"
                     :aria-disabled="!interactive || isSpotOccupied(row, col)"
