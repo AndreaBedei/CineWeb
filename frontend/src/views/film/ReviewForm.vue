@@ -89,6 +89,7 @@ async function deleteReview() {
   message.value = '';
   date.value = '';
   hasReviewed.value = false;
+  user.socket.emit('deleteReview', { movieId: movieId.value });
   emit('update');
 }
 

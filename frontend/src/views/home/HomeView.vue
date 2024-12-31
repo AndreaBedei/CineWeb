@@ -100,13 +100,13 @@ onMounted(() => {
     loaded.value = true;
     if (user.isAdmin) {
       fetchReviews();
-      user.socket.on('newReviewNotification', () => {
-        currentOffset.value = 0;
-        reviews.value = [];
-        fetchReviews();
-      });
     }
   }
+  user.socket.on('deleteReviewNotification', () => {
+    currentOffset.value = 0;
+    reviews.value = [];
+    fetchReviews();
+  });
 });
 
 const reviews = ref<Review[]>([]);

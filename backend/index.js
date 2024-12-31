@@ -101,6 +101,20 @@ io.on('connection', (socket) => {
         });
     });
 
+    socket.on('deleteReview', (reviewData) => {
+        adminSockets.forEach((adminSocket, adminId) => {
+            if (adminSocket.connected) {
+                try {
+                    adminSocket.emit('deleteReviewNotification', reviewData);
+                } catch (error) {
+                    console.error(`Errore nell'invio della notifica a admin ID: ${adminId}`, error);
+                }
+            } else {
+                console.warn(`Socket non connesso per admin ID: ${adminId}`);
+            }
+        });
+    });
+
     socket.on('newFilm', async (film) => {
         genres = film.genres;
         const userPromises = genres.map(async (genreId) => {
