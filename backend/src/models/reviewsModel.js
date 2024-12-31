@@ -21,6 +21,7 @@ const reviewSchema = new mongoose.Schema({
             message: 'Invalid movie ID'
         }
     },
+    movieTitle: {type: String},
     text: {
         type: String,
         maxlength: 1000  
