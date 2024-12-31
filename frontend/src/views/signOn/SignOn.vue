@@ -54,11 +54,11 @@ function closeRegister() {
 
       <div v-if="!currentView" class="flex flex-col space-y-4 w-2/3 lg:w-1/2">
         <button @click="showLogin"
-          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark focus:ring-2 focus:ring-primary">
+          class="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary-dark focus:ring-2 focus:ring-secondary">
           Accedi
         </button>
         <button @click="showRegister"
-          class="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary-dark focus:ring-2 focus:ring-secondary">
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark focus:ring-2 focus:ring-primary">
           Registrati
         </button>
       </div>

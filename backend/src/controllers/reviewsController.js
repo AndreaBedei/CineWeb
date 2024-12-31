@@ -76,11 +76,23 @@ exports.getReviewsByMovie = (req, res) => {
         });
 };
 
-
 exports.createReview = async (req, res) => {
     try {
-        const review = new reviewsModel(req.body);
+        // Trova il titolo del film
+        const movie = await moviesModel.findById(req.body.movie);
+        if (!movie) {
+            return res.status(404).send('Movie not found');
+        }
+
+        // Crea la recensione con il titolo del film
+        const review = new reviewsModel({
+            ...req.body,
+            movieTitle: movie.title
+        });
+
         const savedReview = await review.save();
+
+        // Trova gli amministratori per le notifiche
         const admins = await usersModel.find({ isAdmin: true }, '_id');
         if (admins.length > 0) {
             const notifications = admins.map(admin => ({
@@ -90,11 +102,13 @@ exports.createReview = async (req, res) => {
             }));
             await notificationsModel.insertMany(notifications);
         }
+
         res.status(201).json(savedReview);
     } catch (err) {
         res.status(500).send(err);
     }
 };
+
 
 exports.readReview = (req, res) => {
     reviewsModel.findById(req.params.id)
