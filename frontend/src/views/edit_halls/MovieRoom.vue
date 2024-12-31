@@ -51,6 +51,7 @@ function colors(isSelected: boolean, isOccupied: boolean) {
     <div class="flex justify-center bg-slate-400 rounded-lg px-5 md:px-14 py-2 md:py-4">
         <div class="flex-grow flex flex-col gap-1 md:gap-2 rounded-md min-w-[50%] overflow-y-auto overflow-x-auto max-h-[90vh]"
             role="grid" aria-label="Tabella dei posti">
+            <div class="min-h-3 h-3 rounded-full bg-white mx-10 mb-4"></div>
             <div v-for="row in Array.from(Array(rows).keys())" :key="row"
                 class="flex flex-shrink-0 gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0"  role="row">
                 <button v-for="col in Array.from(Array(cols).keys())" :key="`${row}-${col}`"
