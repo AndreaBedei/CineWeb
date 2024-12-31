@@ -74,6 +74,7 @@ const fetchReviews = async () => {
 function updateReviews() {
   currentOffset.value = 0;
   reviews.value = [];
+  endReached.value = false;
   fetchReviews();
 }
 
@@ -96,7 +97,7 @@ watch(() => route.query.id, (newId) => {
   showtimes.value = [];
   fetchMovieDetails();
   fetchShowtimes();
-  fetchReviews();
+  updateReviews();
 });
 </script>
 

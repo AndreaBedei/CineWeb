@@ -95,6 +95,10 @@ async function deleteReview() {
 
 watch(() => route.query.id, (newId) => {
   movieId.value = newId as string;
+  rating.value = "0";
+  message.value = '';
+  date.value = '';
+  hasReviewed.value = false;
   getDatas();
 });
 </script>
@@ -114,7 +118,8 @@ watch(() => route.query.id, (newId) => {
         placeholder="Scrivi qui la tua recensione"></textarea>
 
       <div class="flex justify-end">
-        <SimpleButton class="mx-1" v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red" rounding="small" />
+        <SimpleButton class="mx-1" v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina"
+          color="red" rounding="small" />
         <SimpleButton type="submit" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="green" rounding="small" />
       </div>
     </form>
