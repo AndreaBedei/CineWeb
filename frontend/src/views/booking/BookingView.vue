@@ -88,7 +88,7 @@ function hideModal() {
         <div class="my-4">
             <h1 class="text-2xl font-bold text-center">Prenota posti</h1>
         </div>
-        <div class="flex flex-wrap gap-10 m-auto justify-center p-8">
+        <div class="flex flex-wrap gap-10 mx-[30%] md:mx-auto my-auto justify-center p-8">
             <!-- Primo componente -->
             <MovieRoom v-if="rows" :rows="rows" :cols="cols" :occupied="occupied" @selected-spots="updateSpots"
                 class="flex-grow max-w-[80vw] max-h-[40vh]" />

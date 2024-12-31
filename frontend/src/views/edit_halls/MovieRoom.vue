@@ -48,13 +48,14 @@ function colors(isSelected: boolean, isOccupied: boolean) {
 </script>
 
 <template>
-    <div class="flex justify-center bg-slate-400 rounded-lg px-2 lg:px-14 py-2 lg:py-4">
+    <div class="flex justify-center bg-slate-400 rounded-lg px-5 md:px-14 py-2 md:py-4">
         <div class="flex-grow flex flex-col gap-1 md:gap-2 rounded-md min-w-[50%] overflow-y-auto overflow-x-auto max-h-[90vh]"
             role="grid" aria-label="Tabella dei posti">
+            <div class="min-h-3 h-3 rounded-full bg-white mx-10 mb-4"></div>
             <div v-for="row in Array.from(Array(rows).keys())" :key="row"
                 class="flex flex-shrink-0 gap-1 md:gap-2 pb-2 last:pb-0 md:pb-0" role="row">
                 <div v-for="col in Array.from(Array(cols).keys())" :key="`${row}-${col}`"
-                    class="rounded-md aspect-[0.66] min-w-8 max-w-10 min-h-10 max-h-full text-gray-800"
+                    class="rounded-md aspect-[0.66] min-w-8 max-w-10 min-h-10 max-h-full text-gray-800 md:w-[5vh]"
                     :class="[colors(selectedSpotsIds.has(`${row}-${col}`), isSpotOccupied(row, col)), { 'ms-auto': col == 0 }, { 'me-auto': col == cols - 1 }]"
                     :aria-selected="selectedSpotsIds.has(`${row}-${col}`)"
                     role="gridcell">
