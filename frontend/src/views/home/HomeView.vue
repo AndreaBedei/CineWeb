@@ -28,6 +28,7 @@ interface Review {
   rating: number;
   text: string;
   reviewDate: string;
+  movieTitle: string;
 }
 
 const movieCarousels = ref(new Map<string, Movie[]>());

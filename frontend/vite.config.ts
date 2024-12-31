@@ -20,7 +20,7 @@ export default defineConfig({
 
   server: {
     host: '0.0.0.0', // Rende il server accessibile da qualsiasi indirizzo IP
-    port: 10000,      // Puoi cambiare la porta se necessario
+    port: 30000,      // Puoi cambiare la porta se necessario
     strictPort: true, // Fallisce se la porta Ã¨ giÃ  occupata
   },
 })

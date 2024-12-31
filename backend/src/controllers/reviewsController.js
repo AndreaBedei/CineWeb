@@ -1,5 +1,6 @@
 const { reviewsModel } = require('../models/reviewsModel');
 const { usersModel } = require('../models/usersModel');
+const { moviesModel } = require('../models/moviesModel');
 const { notificationsModel } = require('../models/notificationsModel');
 const mongoose = require('mongoose');
 
@@ -78,6 +79,7 @@ exports.getReviewsByMovie = (req, res) => {
 
 exports.createReview = async (req, res) => {
     try {
+         
         // Trova il titolo del film
         const movie = await moviesModel.findById(req.body.movie);
         if (!movie) {
@@ -89,9 +91,7 @@ exports.createReview = async (req, res) => {
             ...req.body,
             movieTitle: movie.title
         });
-
         const savedReview = await review.save();
-
         // Trova gli amministratori per le notifiche
         const admins = await usersModel.find({ isAdmin: true }, '_id');
         if (admins.length > 0) {
@@ -102,7 +102,6 @@ exports.createReview = async (req, res) => {
             }));
             await notificationsModel.insertMany(notifications);
         }
-
         res.status(201).json(savedReview);
     } catch (err) {
         res.status(500).send(err);

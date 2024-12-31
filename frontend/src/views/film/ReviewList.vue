@@ -15,6 +15,7 @@ const props = defineProps<{
     rating: number;
     text: string;
     reviewDate: string;
+    movieTitle: string;
   }[],
   title?: string,
   endReached?: boolean;
@@ -56,6 +57,7 @@ const goToUserProfile = (userId: string) => {
                 {{ review.user.name }} {{ review.user.surname }}
               </h3>
             </button>
+            <p v-if="title">Film: {{ review.movieTitle }}</p>
             <p class="text-sm text-gray-500">Voto: {{ review.rating }}</p>
             <p>{{ review.text }}</p>
           </div>

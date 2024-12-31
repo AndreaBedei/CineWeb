@@ -25,6 +25,7 @@ interface Review {
   rating: number;
   text: string;
   reviewDate: string;
+  movieTitle: string;
 }
 
 const reviews = ref<Review[]>([]);

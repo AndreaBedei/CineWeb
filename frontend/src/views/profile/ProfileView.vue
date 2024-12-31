@@ -167,10 +167,10 @@ watch(() => route.params.userId, (newId) => {
     getReservations();
 });
 
-async function goToMovie(ticket: Ticket) {
-    const response = await axios.get(`http://localhost:3001/movies/movie/${ticket.screening._doc.movie}`);
+async function goToMovie(movie: string) {
+    const response = await axios.get(`http://localhost:3001/movies/movie/${movie}`);
     if (response.data) {
-        router.push({ path: `/movie`, query: { id: ticket.screening._doc.movie } });
+        router.push({ path: `/movie`, query: { id: movie } });
     } else {
         showCheckModal('Spiecenti', "Purtroppo il film non è più presente nella piattaforma!");
     }
@@ -247,7 +247,11 @@ function deleteBooking() {
                         </thead>
                         <tbody v-if="Object.keys(futureReservation).length !== 0">
                             <tr v-for="ticket in futureReservation" :key="ticket._id">
-                                <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movie.title }}</td>
+                                <td headers="film" class="border-b p-2">
+                                    <a href="#" @click.prevent="() => goToMovie(ticket.screening._doc.movie._id)" class="hover:underline">
+                                        {{ ticket.screening._doc.movie.title }}
+                                    </a>
+                                </td>
                                 <td headers="time" class="border-b p-2">{{
                                     formatDate(ticket.screening._doc.screeningDate)
                                 }}</td>
@@ -290,16 +294,20 @@ function deleteBooking() {
                         </thead>
                         <tbody v-if="Object.keys(pastReservation).length !== 0">
                             <tr v-for="ticket in pastReservation" :key="ticket._id">
-                                <td headers="film" class="border-b p-2">{{ ticket.screening._doc.movieTitle }}</td>
+                                <td headers="film" class="border-b p-2">
+                                    <a href="#" @click.prevent="() => goToMovie(ticket.screening._doc.movie)" class="hover:underline">
+                                        {{ ticket.screening._doc.movieTitle }}
+                                    </a>
+                                </td>
                                 <td headers="time" class="border-b p-2">{{
                                     formatDate(ticket.screening._doc.screeningDate)
                                 }}</td>
                                 <td headers="cinema" class="border-b p-2">{{ ticket.screening._doc.cinemaHall.cinema }}
                                 </td>
                                 <td v-if="isCurrentUser" headers="action" class="border-b p-2">
-                                    <SimpleButton :content="user.isAdmin ? 'Controlla Recensioni' : 'Recensisci'"
+                                    <SimpleButton content="Recensisci"
                                         color="green" :outlineOnly="false" :rounded="true" size="small" bold
-                                        :disabled="false" :handle-click="() => goToMovie(ticket)" />
+                                        :disabled="false" :handle-click="() => goToMovie(ticket.screening._doc.movie)" />
                                 </td>
                             </tr>
                         </tbody>
