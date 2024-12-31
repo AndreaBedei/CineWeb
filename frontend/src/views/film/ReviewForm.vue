@@ -115,7 +115,7 @@ watch(() => route.query.id, (newId) => {
 
       <div class="flex justify-end">
         <SimpleButton class="mx-1" v-if="hasReviewed" :handleClick="deleteReview" type="button" content="Elimina" color="red" rounding="small" />
-        <SimpleButton type="submit" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="primary" rounding="small" />
+        <SimpleButton type="submit" :content="hasReviewed ? 'Aggiorna' : 'Pubblica'" color="green" rounding="small" />
       </div>
     </form>
   </div>

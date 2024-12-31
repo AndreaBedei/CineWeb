@@ -4,6 +4,7 @@ import BaseInput from '@/components/BaseInput.vue';
 import axios from 'axios';
 import ErrorAlert from "@/components/ErrorAlert.vue";
 import { useUserStore } from '@/stores/user';
+import SimpleButton from '@/components/SimpleButton.vue';
 
 const props = defineProps<{
     title: string;
@@ -167,12 +168,8 @@ async function uploadImage() {
                             </option>
                         </select>
 
-                        <button type="button" @click="addInterest"
-                            :disabled="!newInterest || selectedInterests.length >= maxInterests"
-                            class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            aria-describedby="interest-help">
-                            Aggiungi
-                        </button>
+                        <SimpleButton :handle-click="addInterest" color="primary" size="regular" rounding="small"
+                            content="Aggiungi" :disabled="!newInterest || selectedInterests.length >= maxInterests" aria-describedby="interest-help"/>
                     </div>
 
                     <p id="interest-help" class="text-sm text-neutral-dark mt-2">
@@ -182,17 +179,10 @@ async function uploadImage() {
                 </section>
 
                 <div class="flex justify-end space-x-2">
-                    <button type="button" @click="emit('closeModal')"
-                        class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary-dark focus:ring-2 focus:ring-secondary focus:outline-none"
-                        aria-label="Chiudi modale">
-                        Chiudi
-                    </button>
+                    <SimpleButton :handle-click="() => emit('closeModal')" color="secondary" size="small" rounding="small"
+                        content="Annulla" />
 
-                    <button type="submit"
-                        class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:outline-none"
-                        aria-label="Salva informazioni">
-                        Salva
-                    </button>
+                    <SimpleButton color="green" type="submit" size="small" rounding="small" content="Salva" />
                 </div>
             </form>
         </div>

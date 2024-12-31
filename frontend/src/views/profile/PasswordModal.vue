@@ -12,6 +12,7 @@ const emit = defineEmits(['closeModal', 'submitForm']);
 
 // Stato per gli input
 import { ref } from 'vue';
+import SimpleButton from '@/components/SimpleButton.vue';
 const oldPwd = ref('');
 const newPwd = ref('');
 const newPwdCk = ref('');
@@ -103,17 +104,8 @@ async function handleSubmit() {
         <BaseInput id="newpwdck" label="Conferma nuova password*" type="password" v-model="newPwdCk" require />
 
         <div class="flex justify-end space-x-2">
-          <button type="button" @click="emit('closeModal')"
-            class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary-dark focus:ring-2 focus:ring-secondary focus:outline-none"
-            aria-label="Chiudi modale">
-            Chiudi
-          </button>
-
-          <button type="submit"
-            class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:outline-none"
-            aria-label="Salva informazioni">
-            Salva
-          </button>
+          <SimpleButton :handle-click="() => emit('closeModal')" color="secondary" size="small" rounding="small" content="Annulla" />
+          <SimpleButton type="submit" color="green" size="small" rounding="small" content="Salva" />
         </div>
       </form>
     </div>
