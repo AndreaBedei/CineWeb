@@ -109,7 +109,7 @@ watch(() => route.query.id, (newId) => {
     <form @submit.prevent="submitReview">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <BaseInput id="review-date" label="Data" type="text" v-model="date" :read="true" />
-        <BaseInput id="rating" label="Voto al film" type="number" v-model="rating" :require="true"
+        <BaseInput id="rating" label="Voto al film (1-5)" type="number" v-model="rating" :require="true"
           :range="{ min: 1, max: 5, step: 1 }" />
       </div>
       <label for="message" class="block text-primary-dark font-semibold mt-2">Recensione</label>

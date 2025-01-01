@@ -331,3 +331,4 @@ function deleteBooking() {
         @submitForm="handleFormSubmit" />
     <ModalOk v-if="showModal" :confirm="confirmDelete" :title="modalTitle" :message="modalMessage" @closeModal="closeModal" @confirm="deleteBooking" />
 </template>
+

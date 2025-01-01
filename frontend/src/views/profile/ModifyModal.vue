@@ -117,7 +117,7 @@ async function uploadImage() {
 <template>
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6" role="document">
+        <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 overflow-y-auto" role="document" style="max-height: 90vh;">
             <h3 id="modal-title" class="text-lg font-semibold text-primary-dark mb-4">
                 {{ props.title }}
             </h3>

@@ -68,7 +68,7 @@ function toggleExpandedMenu() {
 
 <template>
     <div class="flex gap-2 p-2 bg-neutral-dark text-white border-b border-neutral-dark sticky top-0 z-50">
-        <img src="../assets/img/icon.svg" alt="Icona CineWeb" class="w-10 h-10 sm:w-12 sm:h-12 self-center" />
+        <img src="../assets/img/icon.svg" alt="Icona CineWeb" class="w-10 h-10 sm:w-12 sm:h-12 self-center cursor-pointer" @click="goToHome" />
 
         <SearchBar v-if="logged" class="flex-grow" />
 
@@ -87,10 +87,10 @@ function toggleExpandedMenu() {
 
             <SimpleButton v-if="logged" content="Logout" color="red" rounding="small" :handle-click="goToLoginAndOut">
             </SimpleButton>
-            <SimpleButton v-if="!logged" content="Login" color="secondary" rounding="small" :handle-click="goToLogin">
+            <SimpleButton v-if="!logged && $route.path !== '/signon'" content="Login" color="secondary" rounding="small" :handle-click="goToLogin">
             </SimpleButton>
         </div>
-        <div class="md:hidden relative flex-shrink-0 w-14 z-50" :class="{ 'ms-auto': !logged }">
+        <div v-if="!logged && $route.path !== '/signon'"  class="md:hidden relative flex-shrink-0 w-14 z-50" :class="{ 'ms-auto': !logged }">
             <div class="absolute right-0 h-full aspect-square">
                 <div class="flex gap-2 flex-col bg-slate-700 rounded-full"
                     :class="{ 'aspect-square overflow-hidden': !expanded }">
