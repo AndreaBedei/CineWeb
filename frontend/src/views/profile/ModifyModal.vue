@@ -181,7 +181,9 @@ async function uploadImage() {
                     </p>
                 </div>
 
-                <LoadingAlert v-if="isLoading" />
+                <div class="my-2">
+                    <LoadingAlert v-if="isLoading" />
+                </div>
 
                 <div class="flex justify-end space-x-2">
                     <SimpleButton :handle-click="() => emit('closeModal')" color="secondary" size="small" rounding="small"
