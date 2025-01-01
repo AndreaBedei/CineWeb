@@ -5,6 +5,7 @@ import axios from 'axios';
 import ErrorAlert from "@/components/ErrorAlert.vue";
 import { useUserStore } from '@/stores/user';
 import SimpleButton from '@/components/SimpleButton.vue';
+import LoadingAlert from '@/components/LoadingAlert.vue';
 
 const props = defineProps<{
     title: string;
@@ -14,6 +15,7 @@ const props = defineProps<{
 }>();
 
 const newName = ref(props.name);
+const isLoading = ref(false);
 const newSurname = ref(props.surname);
 const msgUser = ref('');
 const selectedFile = ref<File | null>(null);
@@ -54,6 +56,7 @@ function removeInterest(index: number) {
 }
 
 function handleSubmit() {
+    isLoading.value = true;
     if (selectedFile.value) {
         const form = ref({
             name: newName.value,
@@ -88,7 +91,6 @@ function handleFileChange(event: Event) {
 
 // Carica il file al server
 async function uploadImage() {
-
     // Creazione del FormData
     const formData = new FormData();
     if (selectedFile.value) {
@@ -110,6 +112,8 @@ async function uploadImage() {
         }
     } catch (error) {
         console.error('Errore durante il caricamento:', error);
+    } finally {
+        isLoading.value = false;
     }
 }
 </script>
@@ -123,7 +127,6 @@ async function uploadImage() {
             </h3>
 
             <ErrorAlert v-if="msgUser" :message="msgUser" @clear="msgUser = ''" />
-
             <form @submit.prevent="handleSubmit" class="space-y-4">
                 <BaseInput id="nome" label="Nome*" v-model="newName" require />
 
@@ -177,6 +180,8 @@ async function uploadImage() {
                         {{ selectedInterests.length }}.
                     </p>
                 </div>
+
+                <LoadingAlert v-if="isLoading" />
 
                 <div class="flex justify-end space-x-2">
                     <SimpleButton :handle-click="() => emit('closeModal')" color="secondary" size="small" rounding="small"

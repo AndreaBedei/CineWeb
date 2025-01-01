@@ -81,6 +81,7 @@ onMounted(() => {
 });
 
 async function handleSubmit() {
+    msgUser.value = '';
     check.value = true;
     if (upload.value === false && props.poster === '') {
         msgUser.value = "Devi prima caricare il poster per il film.";
