@@ -1,39 +1,59 @@
-# cineweb
+# 🎥 CineWeb
 
-This template should help get you started developing with Vue 3 in Vite.
+**CineWeb** è un'applicazione moderna e intuitiva per gli amanti del cinema, sviluppata con **Vue 3** e **Node.js**. Grazie alla sua interfaccia user-friendly e alle funzionalità avanzate, CineWeb ti consente di esplorare film, leggere recensioni, e lasciare il tuo contributo con feedback personali. 
 
-## Recommended IDE Setup
+🚀 **Testalo ora:** [abedo.ddns.info](http://abedo.ddns.info)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Type Support for `.vue` Imports in TS
+## 🌟 Funzionalità principali
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- **Esplora film:** Una vasta collezione di film con dettagli e trailer.
+- **Recensioni degli utenti:** Scrivi e leggi recensioni su film che ami o odi.
+- **Design responsive:** Goditi l'esperienza CineWeb su desktop, tablet e smartphone.
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## 🛠️ Setup del progetto
 
-## Project Setup
+### 1️⃣ Installazione delle dipendenze
 
+#### Frontend
+Nella cartella `frontend`, esegui:
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
+#### Backend
+Nella cartella `backend`, esegui:
 ```sh
-npm run dev
+npm install
 ```
 
-### Type-Check, Compile and Minify for Production
+### 2️⃣ Avvio del progetto
 
+#### Avvia il Frontend
+Nella cartella `frontend`, esegui:
 ```sh
-npm run build
+npm run dev -- --host
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
+#### Avvia il Backend
+Nella cartella `backend`, esegui:
 ```sh
-npm run lint
+node index.js
 ```
+---
+## 📁 Risorse utili
+
+- **Mockup e Design:** Tutti i mockup sono disponibili nella cartella `design`.
+- **Relazione tecnica:** La documentazione del progetto è nella cartella `doc`.
+---
+
+## 🛠️ Tecnologie utilizzate
+- **Frontend:** Vue 3, Vite, Tailwind CSS
+- **Backend:** Node.js, Express
+- **Database:** MongoDB
+- **Deploy:** Server ospitato su abedo.ddns.info
+
+
