@@ -2,7 +2,7 @@
 
 **CineWeb** è un'applicazione moderna e intuitiva per gli amanti del cinema, sviluppata con **Vue 3** e **Node.js**. Grazie alla sua interfaccia user-friendly e alle funzionalità avanzate, CineWeb ti consente di esplorare film, leggere recensioni, e lasciare il tuo contributo con feedback personali. 
 
-🚀 **Testalo ora:** [abedo.ddns.info](http://abedo.ddns.info)
+🚀 **Testalo ora:** [abedo.ddns.info](https://abedo.ddns.info)
 
 ---
 
