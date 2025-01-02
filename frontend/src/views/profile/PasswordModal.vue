@@ -103,6 +103,8 @@ async function handleSubmit() {
 
         <BaseInput id="newpwdck" label="Conferma nuova password*" type="password" v-model="newPwdCk" require />
 
+        <small class="text-gray-600">Requisiti Password: La password deve contenere:<br>- Almeno 8 caratteri<br>- Almeno un numero<br>- Almeno un carattere speciale.</small>
+
         <div class="flex justify-end space-x-2">
           <SimpleButton :handle-click="() => emit('closeModal')" color="secondary" size="small" rounding="small" content="Annulla" />
           <SimpleButton type="submit" color="green" size="small" rounding="small" content="Salva" />
